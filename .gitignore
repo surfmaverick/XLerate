@@ -1,0 +1,60 @@
+# Excel temporary files
+~$*
+*.xlk
+*.xlsx
+*.xlsm
+*.xls
+*.xltx
+*.xltm
+*.xlam
+*.xlsb
+
+# Exception for distribution files
+!dist/*.xlam
+
+# Excel backup files
+*.xlk
+
+# VBA binary form files
+*.frx
+
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Windows Folder config file
+[Dd]esktop.ini
+
+# Windows Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# macOS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Backup files
+*.bak
+*.[Bb]ak
+*.tmp
+*.temp
+
+# Logs
+*.log
+logs/
+Log/
