@@ -8,7 +8,6 @@ XLerate is an Excel add-in designed to speed up financial modeling tasks and spo
 - Trace all precedents and dependents in a single operation
 - Visualize formula dependencies across multiple worksheets
 - Quick navigation through formula chains
-- Export dependency maps for documentation
 
 ### Formula Consistency Checker
 - Instantly identify inconsistencies in adjacent formulas
