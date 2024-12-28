@@ -48,13 +48,13 @@ After installation, you'll find the XLerate tab in your Excel ribbon with two ma
 
 ### Formula Tracer
 1. Select a cell with a formula
-2. Click "Trace All" in the XLerate ribbon
-3. Navigate through dependencies using the interactive map
+2. Click "Trace Precedents" or "Trace Dependents" in the XLerate ribbon (or add them to the quick access toolbar for faster use)
+3. Navigate through dependencies using the arrow keys in the interactive dialog box
 
 ### Consistency Checker
 1. Select a range of cells
-2. Click "Check Consistency" in the XLerate ribbon
-3. Review highlighted inconsistencies in the selection
+2. Click "Horizontal Check" in the XLerate ribbon under Formula Consistency
+3. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
 
 ## 🛠️ Contributing
 
