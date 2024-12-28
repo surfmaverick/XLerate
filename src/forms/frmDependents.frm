@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 Private Sub lstDependents_Click()
     On Error Resume Next
     Dim dependentAddress As String
-    dependentAddress = lstDependents.Value
+    dependentAddress = lstDependents.value
     Debug.Print "dependentAddress: " & dependentAddress
     
     'Parse out sheet name and cell address

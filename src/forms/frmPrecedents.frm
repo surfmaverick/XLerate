@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 Private Sub lstPrecedents_Click()
     On Error Resume Next
     Dim precedentAddress As String
-    precedentAddress = lstPrecedents.Value
+    precedentAddress = lstPrecedents.value
     Debug.Print "precedentAddress: " & precedentAddress
     
     'Parse out sheet name and cell address

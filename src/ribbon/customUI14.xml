@@ -27,6 +27,32 @@
                         screentip="Check Horizontal Formula Consistency"
                         supertip="Checks if formulas are consistent across rows"/>
                 </group>
+                <group id="formatGroup" label="Formatting">
+                    <splitButton id="formatSplitBtn" size="large">
+                        <button id="formatMainBtn"
+                            label="Format"
+                            imageMso="NumberFormat"
+                            screentip="Format Options"
+                            supertip="Various formatting options"/>
+                        <menu id="formatMenu">
+                            <button id="cycleFormatsBtn"
+                                label="Cycle number formats"
+                                imageMso="NumberFormat"
+                                onAction="CycleNumberFormat"
+                                screentip="Cycle Number Formats"
+                                supertip="Cycle through configured number formats"/>
+                        </menu>
+                    </splitButton>
+                </group>
+                <group id="settingsGroup" label="Settings">
+                    <button id="settingsBtn"
+                        label="Settings"
+                        size="large"
+                        imageMso="PropertySheet"
+                        onAction="ShowSettingsForm"
+                        screentip="Format Settings"
+                        supertip="Configure number format cycling options"/>
+                </group>
             </tab>
         </tabs>
     </ribbon>
