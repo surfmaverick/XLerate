@@ -14,7 +14,6 @@ XLerate is an Excel add-in for Windows and Mac designed to speed up financial mo
 - Instantly identify inconsistencies in adjacent formulas
 - Visual highlighting of formula pattern breaks
 - Help prevent common modeling errors
-- Support for complex financial modeling patterns
 
 ### Cell format cycling
 - Cycling through set number formats with one shortcut
