@@ -17,7 +17,7 @@ XLerate is an Excel add-in for Windows and Mac designed to speed up financial mo
 
 ### Cell format cycling
 - Cycling through set number formats with `Ctrl + Shift + 1`
-- Setting custom formattings in menu
+- Setting custom formats in menu
 
 ### Other Features
 - Currently in development (see below how to contribute)
