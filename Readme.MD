@@ -3,12 +3,12 @@ XLerate is an Excel add-in designed to speed up financial modeling tasks and spo
 
 ## 🚀 Features
 
-### 🔍 Advanced Formula Tracer
+### Advanced Formula Tracer
 - Trace all precedents and dependents in a single operation
 - Visualize formula dependencies across multiple worksheets
 - Quick navigation through formula chains
 
-### ✨ Formula Consistency Checker
+### Formula Consistency Checker
 - Instantly identify inconsistencies in adjacent formulas
 - Visual highlighting of formula pattern breaks
 - Help prevent common modeling errors
@@ -16,7 +16,7 @@ XLerate is an Excel add-in designed to speed up financial modeling tasks and spo
 
 ## 💾 Installation
 
-### 🪟 Windows
+### Windows 🪟
 1. Download the latest release (`XLerate.xlam`) from the `dist` folder
 2. Place the file in your Excel add-ins folder (typically `C:\Users\[Username]\AppData\Roaming\Microsoft\AddIns`)
 3. Enable the add-in in Excel:
@@ -24,7 +24,7 @@ XLerate is an Excel add-in designed to speed up financial modeling tasks and spo
    - Manage: Excel Add-ins → Go
    - Check "XLerate" and click OK
 
-### 🍎 Mac
+### Mac 🍎
 1. Download the latest release (`XLerate.xlam`) from the `dist` folder
 2. Place the file in your Excel add-ins folder:
    - Modern Office 365 (Big Sur and newer): `~/Library/Containers/com.microsoft.Excel/Data/Library/Application Support/Microsoft/Office/Add-ins`
@@ -43,12 +43,12 @@ Note: On Mac, if you receive a security warning, you may need to:
 
 After installation, you'll find the XLerate tab in your Excel ribbon with two main tools:
 
-### 🔬 Formula Tracer
+### Formula Tracer
 1. Select a cell with a formula
 2. Click "Trace All" in the XLerate ribbon
 3. Navigate through dependencies using the interactive map
 
-### ✅ Consistency Checker
+### Consistency Checker
 1. Select a range of cells
 2. Click "Check Consistency" in the XLerate ribbon
 3. Review highlighted inconsistencies in the selection
