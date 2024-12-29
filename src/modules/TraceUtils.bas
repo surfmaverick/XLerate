@@ -1,6 +1,6 @@
 Attribute VB_Name = "TraceUtils"
 Option Explicit
-    
+
 Private Function fullAddress(inCell As Range) As String
     fullAddress = inCell.Address(External:=True)
 End Function
@@ -21,34 +21,87 @@ Public Sub ShowTracePrecedents()
         ' Clear existing items
         .lstPrecedents.Clear
         
+        ' Set up list box properties
+        .lstPrecedents.ColumnCount = 3
+        .lstPrecedents.ColumnWidths = .GetColumnWidths()
+        
+        ' Add headers using separate labels
+        .AddHeaders
+        
+        ' Display formula of selected cell
+        .Controls("txtFormula").Text = selectedRange.Formula
+        
+        ' Add indentation prefix for hierarchy
+        Const INDENT_CHAR As String = "  "
+        
         ' Iterate through each cell in the selected range
         Dim cell As Range
         For Each cell In selectedRange
-            ' Add the cell details to the list
-            .lstPrecedents.AddItem cell.Worksheet.Name & "!" & cell.Address
+            .lstPrecedents.AddItem
+            With .lstPrecedents
+                .List(.ListCount - 1, 0) = cell.Worksheet.Name & "!" & cell.Address
+                .List(.ListCount - 1, 1) = GetCellValueAsString(cell)
+                .List(.ListCount - 1, 2) = cell.Formula
+            End With
         Next cell
     
         ' Collect precedents for the entire range
-        Dim dependentsStr As String
-        dependentsStr = findPrecedents(selectedRange)
+        Dim precedentsStr As String
+        precedentsStr = findPrecedents(selectedRange)
     
         ' Populate the ListBox with precedents
-        Dim precedentArr() As String
-        precedentArr = Split(dependentsStr, Chr(13))
-        
-        Dim i As Long
-        For i = LBound(precedentArr) To UBound(precedentArr)
-            If precedentArr(i) <> "" Then
-                Dim precedentAddress As String
-                precedentAddress = precedentArr(i)
-    
-                .lstPrecedents.AddItem precedentAddress
-            End If
-        Next i
+        If precedentsStr <> "" Then
+            Dim precedentArr() As String
+            precedentArr = Split(precedentsStr, Chr(13))
+            
+            Dim i As Long
+            For i = LBound(precedentArr) To UBound(precedentArr)
+                If precedentArr(i) <> "" Then
+                    Dim precedentAddress As String
+                    precedentAddress = precedentArr(i)
+                    
+                    ' Get the actual range object for the precedent
+                    Dim precedentRange As Range
+                    On Error Resume Next
+                    Set precedentRange = Range(precedentAddress)
+                    If Not precedentRange Is Nothing Then
+                        .lstPrecedents.AddItem
+                        With .lstPrecedents
+                            .List(.ListCount - 1, 0) = INDENT_CHAR & precedentAddress
+                            .List(.ListCount - 1, 1) = GetCellValueAsString(precedentRange)
+                            .List(.ListCount - 1, 2) = precedentRange.Formula
+                        End With
+                    Else
+                        .lstPrecedents.AddItem
+                        With .lstPrecedents
+                            .List(.ListCount - 1, 0) = INDENT_CHAR & precedentAddress
+                        End With
+                    End If
+                    On Error GoTo 0
+                End If
+            Next i
+        End If
+
+        ' Select the first row if available
+        If .lstPrecedents.ListCount > 0 Then
+            .lstPrecedents.ListIndex = 0
+        End If
 
         .Show vbModeless
     End With
 End Sub
+Private Function GetCellValueAsString(cell As Range) As String
+    On Error Resume Next
+    If IsError(cell.value) Then
+        GetCellValueAsString = "#ERROR"
+    ElseIf IsEmpty(cell.value) Then
+        GetCellValueAsString = ""
+    Else
+        GetCellValueAsString = CStr(cell.value)
+    End If
+    On Error GoTo 0
+End Function
+
 
 Private Function findPrecedents(ByVal inRange As Range) As String
     Dim sheetIdx As Integer
@@ -137,29 +190,71 @@ Public Sub ShowTraceDependents()
         ' Clear existing items
         .lstDependents.Clear
         
+        ' Set up list box properties
+        .lstDependents.ColumnCount = 3
+        .lstDependents.ColumnWidths = .GetColumnWidths()
+        
+        ' Add headers using separate labels
+        .AddHeaders
+        
+        ' Display formula of selected cell
+        .Controls("txtFormula").Text = selectedRange.Formula
+        
+        ' Add indentation prefix for hierarchy
+        Const INDENT_CHAR As String = "  "
+        
         ' Iterate through each cell in the selected range
         Dim cell As Range
         For Each cell In selectedRange
-            ' Add the cell details to the list
-            .lstDependents.AddItem cell.Worksheet.Name & "!" & cell.Address
+            .lstDependents.AddItem
+            With .lstDependents
+                .List(.ListCount - 1, 0) = cell.Worksheet.Name & "!" & cell.Address
+                .List(.ListCount - 1, 1) = GetCellValueAsString(cell)
+                .List(.ListCount - 1, 2) = cell.Formula
+            End With
         Next cell
-
+    
+        ' Collect dependents for the entire range
         Dim dependentsStr As String
         dependentsStr = findDependents(selectedRange)
+    
+        ' Populate the ListBox with dependents
+        If dependentsStr <> "" Then
+            Dim dependentArr() As String
+            dependentArr = Split(dependentsStr, Chr(13))
+            
+            Dim i As Long
+            For i = LBound(dependentArr) To UBound(dependentArr)
+                If dependentArr(i) <> "" Then
+                    Dim dependentAddress As String
+                    dependentAddress = dependentArr(i)
+                    
+                    ' Get the actual range object for the dependent
+                    Dim dependentRange As Range
+                    On Error Resume Next
+                    Set dependentRange = Range(dependentAddress)
+                    If Not dependentRange Is Nothing Then
+                        .lstDependents.AddItem
+                        With .lstDependents
+                            .List(.ListCount - 1, 0) = INDENT_CHAR & dependentAddress
+                            .List(.ListCount - 1, 1) = GetCellValueAsString(dependentRange)
+                            .List(.ListCount - 1, 2) = dependentRange.Formula
+                        End With
+                    Else
+                        .lstDependents.AddItem
+                        With .lstDependents
+                            .List(.ListCount - 1, 0) = INDENT_CHAR & dependentAddress
+                        End With
+                    End If
+                    On Error GoTo 0
+                End If
+            Next i
+        End If
 
-        ' Populate the ListBox
-        Dim dependentArr() As String
-        dependentArr = Split(dependentsStr, Chr(13))
-
-        Dim i As Long
-        For i = LBound(dependentArr) To UBound(dependentArr)
-            If dependentArr(i) <> "" Then
-                Dim dependentAddress As String
-                dependentAddress = dependentArr(i)
-
-                .lstDependents.AddItem dependentAddress
-            End If
-        Next i
+        ' Select the first row if available
+        If .lstDependents.ListCount > 0 Then
+            .lstDependents.ListIndex = 0
+        End If
 
         .Show vbModeless
     End With
