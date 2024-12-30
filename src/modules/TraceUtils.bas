@@ -105,7 +105,7 @@ End Function
 
 Private Function findPrecedents(ByVal inRange As Range) As String
     Dim sheetIdx As Integer
-    sheetIdx = Sheets(inRange.Parent.Name).Index
+    sheetIdx = Sheets(inRange.Parent.Name).index
 
     Dim inAddresses As String, returnSelection As Range
     Dim i As Long, pCount As Long, qCount As Long
@@ -262,7 +262,7 @@ End Sub
 
 Private Function findDependents(ByVal inRange As Range) As String
     Dim sheetIdx As Integer
-    sheetIdx = Sheets(inRange.Parent.Name).Index
+    sheetIdx = Sheets(inRange.Parent.Name).index
 
     Dim inAddresses As String, returnSelection As Range
     Dim i As Long, pCount As Long, qCount As Long

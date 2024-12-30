@@ -29,3 +29,16 @@ Public Sub OnCheckHorizontalConsistency(control As IRibbonControl)
     Application.Run "CheckHorizontalConsistency"
     On Error GoTo 0
 End Sub
+
+Public Sub DoCycleNumberFormat(control As IRibbonControl)
+     On Error Resume Next
+    Application.Run "ModNumberFormat.CycleNumberFormat"
+    On Error GoTo 0
+End Sub
+
+Public Sub ShowSettingsForm(control As IRibbonControl)
+    Debug.Print "ShowSettingsForm callback was triggered"
+    ShowSettings   ' Direct call instead of Application.Run
+End Sub
+
+

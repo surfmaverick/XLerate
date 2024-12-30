@@ -7,12 +7,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
+' In ThisWorkbook
 Private Sub Workbook_Open()
-    LoadSettings
+    ModNumberFormat.InitializeFormats
+    ModNumberFormat.GetFormatList ' Force array initialization
     Application.OnKey "^+1", "CycleNumberFormat"
 End Sub
 
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
-    Application.OnKey "^+1"
+    Application.OnKey "^+1" ' Clear the shortcut
 End Sub
-
