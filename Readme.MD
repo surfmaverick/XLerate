@@ -52,9 +52,7 @@ Note: On Mac, if you receive a security warning, you may need to:
 
 ## 📖 Usage
 
-After installation, you'll find the XLerate tab in your Excel ribbon.
-
-We **highly recommend** adding individual functions you use often to Excel's quick access toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:", dropdown select "XLerate Tab" and add any function as needed.
+After installation, you'll find the XLerate tab in your Excel ribbon:
 
 ### Formula Tracer
 1. Select a cell with a formula
@@ -76,6 +74,8 @@ We **highly recommend** adding individual functions you use often to Excel's qui
 1. Select a cell or range of cells
 2. Click "Error Warap" in the XLerate ribbon under Formatting to add an IFERROR statement to any formulas within your selection
 3. If one of the selected cells does not contain a formula and is not affected a pop-up window will alert you to this
+
+We **highly recommend** adding individual functions you use often to Excel's quick access toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:", dropdown select "XLerate Tab" and add any function as needed.
 
 ## 🛠️ Contributing
 
