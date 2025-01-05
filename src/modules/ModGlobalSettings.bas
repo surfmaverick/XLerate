@@ -1,67 +1,127 @@
 Attribute VB_Name = "ModGlobalSettings"
+' ModGlobalSettings.cls
 Option Explicit
 
-Private GlobalSettings As clsUISettings
+Private GlobalCellFormats As Collection  ' Store formats in a collection
+Public Const FONT_BOLD As Long = 1
+Public Const FONT_ITALIC As Long = 2
+Public Const FONT_UNDERLINE As Long = 4
+Public Const FONT_STRIKETHROUGH As Long = 8
 
-Public Sub InitializeUISettings()
-    If GlobalSettings Is Nothing Then
-        Set GlobalSettings = New clsUISettings
+Public Sub InitializeCellFormats()
+    If GlobalCellFormats Is Nothing Then
+        Set GlobalCellFormats = New Collection
     End If
     
-    If Not LoadSettingsFromWorkbook() Then
-        ' Use defaults from class
-        SaveSettingsToWorkbook
+    If Not LoadCellFormatsFromWorkbook() Then
+        ' Create default formats
+        Dim defaultFormat As clsCellFormatType
+        Set defaultFormat = New clsCellFormatType
+        With defaultFormat
+            .Name = "Default"
+            .BackColor = RGB(255, 255, 255)
+            .BorderStyle = xlContinuous
+            .BorderColor = RGB(0, 0, 0)
+            .FillPattern = xlSolid
+            .FontStyle = 0
+            .FontColor = RGB(0, 0, 0)
+        End With
+        GlobalCellFormats.Add defaultFormat
+        
+        ' Add more default formats as needed...
+        
+        SaveCellFormatsToWorkbook
     End If
 End Sub
 
-Public Function GetUISettings() As clsUISettings
-    If GlobalSettings Is Nothing Then
-        InitializeUISettings
+Public Function GetCellFormatList() As Collection
+    If GlobalCellFormats Is Nothing Then
+        InitializeCellFormats
     End If
-    Set GetUISettings = GlobalSettings
+    Set GetCellFormatList = GlobalCellFormats
 End Function
 
-Private Sub SaveSettingsToWorkbook()
+Private Sub SaveCellFormatsToWorkbook()
     Dim propValue As String
+    Dim format As clsCellFormatType
     
-    ' Serialize settings to string
-    propValue = GlobalSettings.BackgroundColor & "|" & _
-                GlobalSettings.FontName & "|" & _
-                GlobalSettings.FontSize & "|" & _
-                GlobalSettings.AccentColor
+    For Each format In GlobalCellFormats
+        propValue = propValue & format.Name & "|" & _
+                   format.BackColor & "|" & _
+                   format.BorderStyle & "|" & _
+                   format.BorderColor & "|" & _
+                   format.FillPattern & "|" & _
+                   format.FontStyle & "|" & _
+                   format.FontColor & "||"
+    Next format
     
-    ' Save to custom property
     On Error Resume Next
-    ThisWorkbook.CustomDocumentProperties("UISettings").Delete
+    ThisWorkbook.CustomDocumentProperties("SavedCellFormats").Delete
     On Error GoTo 0
-    ThisWorkbook.CustomDocumentProperties.Add Name:="UISettings", _
+    ThisWorkbook.CustomDocumentProperties.Add Name:="SavedCellFormats", _
         LinkToContent:=False, Type:=msoPropertyTypeString, value:=propValue
         
     ThisWorkbook.Save
 End Sub
 
-Private Function LoadSettingsFromWorkbook() As Boolean
+Private Function LoadCellFormatsFromWorkbook() As Boolean
     On Error Resume Next
     Dim propValue As String
-    propValue = ThisWorkbook.CustomDocumentProperties("UISettings")
+    propValue = ThisWorkbook.CustomDocumentProperties("SavedCellFormats")
     On Error GoTo 0
     
     If propValue = "" Then
-        LoadSettingsFromWorkbook = False
+        LoadCellFormatsFromWorkbook = False
         Exit Function
     End If
     
-    Dim parts() As String
-    parts = Split(propValue, "|")
+    Set GlobalCellFormats = New Collection
     
-    If UBound(parts) = 3 Then
-        GlobalSettings.BackgroundColor = CLng(parts(0))
-        GlobalSettings.FontName = parts(1)
-        GlobalSettings.FontSize = CInt(parts(2))
-        GlobalSettings.AccentColor = CLng(parts(3))
-        LoadSettingsFromWorkbook = True
-    Else
-        LoadSettingsFromWorkbook = False
-    End If
+    Dim formatsArray() As String
+    formatsArray = Split(propValue, "||")
+    
+    Dim i As Long
+    For i = LBound(formatsArray) To UBound(formatsArray) - 1
+        If formatsArray(i) <> "" Then
+            Dim formatParts() As String
+            formatParts = Split(formatsArray(i), "|")
+            
+            Dim newFormat As clsCellFormatType
+            Set newFormat = New clsCellFormatType
+            With newFormat
+                .Name = formatParts(0)
+                .BackColor = CLng(formatParts(1))
+                .BorderStyle = CLng(formatParts(2))
+                .BorderColor = CLng(formatParts(3))
+                .FillPattern = CLng(formatParts(4))
+                .FontStyle = CLng(formatParts(5))
+                .FontColor = CLng(formatParts(6))
+            End With
+            GlobalCellFormats.Add newFormat
+        End If
+    Next i
+    
+    LoadCellFormatsFromWorkbook = (GlobalCellFormats.Count > 0)
 End Function
 
+Public Sub AddFormat(newFormat As clsCellFormatType)
+    If GlobalCellFormats Is Nothing Then InitializeCellFormats
+    GlobalCellFormats.Add newFormat
+    SaveCellFormatsToWorkbook
+End Sub
+
+Public Sub RemoveFormat(index As Integer)
+    If GlobalCellFormats Is Nothing Then Exit Sub
+    If index <= 0 Or index > GlobalCellFormats.Count Then Exit Sub
+    GlobalCellFormats.Remove index
+    SaveCellFormatsToWorkbook
+End Sub
+
+Public Sub UpdateFormat(index As Integer, updatedFormat As clsCellFormatType)
+    If GlobalCellFormats Is Nothing Then Exit Sub
+    If index <= 0 Or index > GlobalCellFormats.Count Then Exit Sub
+    
+    GlobalCellFormats.Remove index
+    GlobalCellFormats.Add updatedFormat, , , index - 1
+    SaveCellFormatsToWorkbook
+End Sub

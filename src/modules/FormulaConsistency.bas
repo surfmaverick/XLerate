@@ -1,4 +1,5 @@
 Attribute VB_Name = "FormulaConsistency"
+' FormulaConsistency.cls
 Option Explicit
 
 ' Constants for cell patterns and colors
@@ -15,18 +16,18 @@ Public Sub CheckHorizontalConsistency()
     
     ' First pass - check and store horizontal consistency information
     Dim horizontalConsistentFormulasR1C1 As New Collection
-    Dim r As Long, c As Long
+    Dim R As Long, c As Long
     
     ' Find horizontally consistent formula patterns
-    For r = usedRng.Row To usedRng.Row + usedRng.Rows.Count - 1
+    For R = usedRng.Row To usedRng.Row + usedRng.Rows.Count - 1
         For c = usedRng.Column To usedRng.Column + usedRng.Columns.Count - 2
-            If Cells(r, c).HasFormula And Cells(r, c + 1).HasFormula Then
-                If Cells(r, c).FormulaR1C1 = Cells(r, c + 1).FormulaR1C1 Then
-                    AddToCollection horizontalConsistentFormulasR1C1, Cells(r, c).FormulaR1C1
+            If Cells(R, c).HasFormula And Cells(R, c + 1).HasFormula Then
+                If Cells(R, c).FormulaR1C1 = Cells(R, c + 1).FormulaR1C1 Then
+                    AddToCollection horizontalConsistentFormulasR1C1, Cells(R, c).FormulaR1C1
                 End If
             End If
         Next c
-    Next r
+    Next R
     
     ' Check each cell for consistency with neighbors
     Dim cell As Range

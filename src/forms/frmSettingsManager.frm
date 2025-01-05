@@ -13,36 +13,27 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+' frmSettingsManager
 Option Explicit
-
 ' Control declarations
-Private lstCategories As MSForms.ListBox
 Private NumbersPanel As MSForms.Frame
-Private FormatListBox As MSForms.ListBox
-Private txtName As MSForms.TextBox
-Private txtFormat As MSForms.TextBox
-Private DynamicButtonHandlers As Collection
-Private ListBoxHandler As clsListBoxHandler
+Private CellsPanel As MSForms.Frame
+Private DatesPanel As MSForms.Frame
+Private numberSettings As frmNumberSettings
+Private WithEvents lstCategories As MSForms.ListBox
+Attribute lstCategories.VB_VarHelpID = -1
+
 
 Private Sub UserForm_Initialize()
+    Debug.Print "SettingsManager Initialize started"
     On Error GoTo ErrorHandler
     
-    Debug.Print "Form Initialize started"
-    
-    ' Initialize the formats module at form load
-    ModNumberFormat.InitializeFormats
-    
     ' Initialize form layout
-    Me.BackColor = RGB(255, 255, 255)
-    Me.Caption = "Settings"
-    Me.Width = 600
-    Me.Height = 400
-    Debug.Print "Form layout set"
+    InitializeFormLayout
+    Debug.Print "Form layout initialized"
     
-    ' Initialize the collection
-    If DynamicButtonHandlers Is Nothing Then Set DynamicButtonHandlers = New Collection
-
-    ' Create navigation listbox
+    ' Create navigation listbox with event handling
+    Debug.Print "Creating categories listbox"
     Set lstCategories = Me.Controls.Add("Forms.ListBox.1", "lstCategories")
     With lstCategories
         .Left = 12
@@ -50,320 +41,201 @@ Private Sub UserForm_Initialize()
         .Width = 150
         .Height = 300
     End With
-    Debug.Print "Created lstCategories"
+    Debug.Print "Categories list created"
     
+    ' Create panels
+    InitializePanels
+    Debug.Print "Panels initialized"
+    
+    InitializeHierarchyList
+    Debug.Print "Hierarchy list initialized"
+    
+    Debug.Print "SettingsManager Initialize completed successfully"
+    Exit Sub
+    
+ErrorHandler:
+    Debug.Print "Error in SettingsManager Initialize: " & Err.Description & " (Error " & Err.Number & ")"
+    Resume Next
+End Sub
+
+Private Sub InitializePanels()
     ' Create Numbers panel frame
     Set NumbersPanel = Me.Controls.Add("Forms.Frame.1", "NumbersPanel")
     With NumbersPanel
         .Left = 170
         .Top = 12
         .Width = 410
-        .Height = 350
+        .Height = 450
         .Caption = ""
         .BackColor = RGB(255, 255, 255)
-    End With
-    Debug.Print "Created NumbersPanel"
-    
-    ' Create format list box within NumbersPanel
-    Set FormatListBox = NumbersPanel.Controls.Add("Forms.ListBox.1", "FormatListBox")
-    With FormatListBox
-        .Left = 10
-        .Top = 10
-        .Width = 390
-        .Height = 200
-        .MultiSelect = 0      ' Ensure single selection mode
-        Debug.Print "FormatListBox Settings:"
-        Debug.Print "  Style: " & .Style
-        Debug.Print "  ListStyle: " & .ListStyle
-    End With
-    Debug.Print "Created FormatListBox"
-    
-    ' Create text boxes for Name and Format within NumbersPanel
-    Set txtName = NumbersPanel.Controls.Add("Forms.TextBox.1", "txtName")
-    With txtName
-        .Left = 10
-        .Top = 270
-        .Width = 290
-        .Height = 20
+        .Visible = False
     End With
     
-    Set txtFormat = NumbersPanel.Controls.Add("Forms.TextBox.1", "txtFormat")
-    With txtFormat
-        .Left = 10
-        .Top = 320
-        .Width = 290
-        .Height = 20
-    End With
-    Debug.Print "Created text boxes"
-    
-    ' In UserForm_Initialize, add labels
-    Dim lblName As MSForms.Label
-    Set lblName = NumbersPanel.Controls.Add("Forms.Label.1", "lblName")
-    With lblName
-        .Left = 10
-        .Top = 250
-        .Caption = "Name:"
+    ' Create Cells panel frame
+    Set CellsPanel = Me.Controls.Add("Forms.Frame.1", "CellsPanel")
+    With CellsPanel
+        .Left = 170
+        .Top = 12
+        .Width = 410
+        .Height = 450
+        .Caption = ""
+        .BackColor = RGB(255, 255, 255)
+        .Visible = False
     End With
     
-    Dim lblFormat As MSForms.Label
-    Set lblFormat = NumbersPanel.Controls.Add("Forms.Label.1", "lblFormat")
-    With lblFormat
-        .Left = 10
-        .Top = 300
-        .Caption = "Format:"
+    ' Create Dates panel frame
+    Set DatesPanel = Me.Controls.Add("Forms.Frame.1", "DatesPanel")
+    With DatesPanel
+        .Left = 170
+        .Top = 12
+        .Width = 410
+        .Height = 450
+        .Caption = ""
+        .BackColor = RGB(255, 255, 255)
+        .Visible = False
     End With
     
-    ' Create Add button
-    Dim btnAdd As MSForms.CommandButton
-    Set btnAdd = NumbersPanel.Controls.Add("Forms.CommandButton.1", "btnAdd")
-    With btnAdd
-        .Left = 310
-        .Top = 220
-        .Width = 80
-        .Height = 25
-        .Caption = "Add"
-    End With
-    AttachButtonHandler btnAdd, "Add"
-    Debug.Print "Created Add button"
-    
-    ' Create Remove button
-    Dim btnRemove As MSForms.CommandButton
-    Set btnRemove = NumbersPanel.Controls.Add("Forms.CommandButton.1", "btnRemove")
-    With btnRemove
-        .Left = 310
-        .Top = 250
-        .Width = 80
-        .Height = 25
-        .Caption = "Remove"
-    End With
-    AttachButtonHandler btnRemove, "Remove"
-    Debug.Print "Created Remove button"
-    
-    ' In UserForm_Initialize, after other controls
-    Dim btnSave As MSForms.CommandButton
-    Set btnSave = NumbersPanel.Controls.Add("Forms.CommandButton.1", "btnSave")
-    With btnSave
-        .Left = 310
-        .Top = 290
-        .Width = 80
-        .Height = 25
-        .Caption = "Save"
-    End With
-    AttachButtonHandler btnSave, "Save"
-    
-    Dim btnCancel As MSForms.CommandButton
-    Set btnCancel = NumbersPanel.Controls.Add("Forms.CommandButton.1", "btnCancel")
-    With btnCancel
-        .Left = 310
-        .Top = 320
-        .Width = 80
-        .Height = 25
-        .Caption = "Cancel"
-    End With
-    AttachButtonHandler btnCancel, "Cancel"
-        
-    ' Initialize the numbers panel
-    RefreshFormatListBox  ' Load the formats first
-    
-    Set ListBoxHandler = New clsListBoxHandler  ' Set up handler
-    ListBoxHandler.Initialize FormatListBox, Me
-    
-    InitializeHierarchyList  ' This will select Numbers and show the panel
-    
-    ' Populate the textboxes with the first item's data
-    If FormatListBox.ListCount > 0 Then
-        FormatListBox.ListIndex = 0
-        Dim formats() As clsFormatType
-        formats = ModNumberFormat.GetFormatList()
-        UpdateTextBoxes formats(0).Name, formats(0).FormatCode
-        Debug.Print "Initial Selection: Name = " & txtName.Text & ", Format = " & txtFormat.Text
-    End If
-
-ErrorHandler:
-    Debug.Print "Error in UserForm_Initialize: " & Err.Description & " (Error " & Err.Number & ")"
-    Resume Next
+    ' Initialize both settings within their respective panels
+    InitializeNumberSettings NumbersPanel
+    InitializeCellSettings CellsPanel
+    InitializeDateSettings DatesPanel
 End Sub
 
-
-Private Sub InitializeNumbersPanel()
-    RefreshFormatListBox
-    ShowPanel "Numbers"
+Private Sub InitializeNumberSettings(parentFrame As MSForms.Frame)
+    ' Create a new instance of frmNumberSettings
+    Dim numberSettings As New frmNumberSettings
+    ' Initialize it within the panel
+    numberSettings.InitializeInPanel parentFrame
 End Sub
 
-Public Sub UpdateTextBoxes(ByVal Name As String, ByVal format As String)
-    txtName.Text = Name
-    txtFormat.Text = format
+Private Sub InitializeCellSettings(parentFrame As MSForms.Frame)
+    ' Create a new instance of frmCellSettings
+    Dim cellSettings As New frmCellSettings
+    ' Initialize it within the panel
+    cellSettings.InitializeInPanel parentFrame
+End Sub
+
+Private Sub InitializeDateSettings(parentFrame As MSForms.Frame)
+    Debug.Print "Initializing date settings"
+    Dim dateSettings As New frmDateSettings
+    dateSettings.InitializeInPanel parentFrame
+    Debug.Print "Date settings initialized"
 End Sub
 
 ' Show the requested panel and hide others
 Private Sub ShowPanel(panelName As String)
+    Debug.Print vbNewLine & "=== ShowPanel called ==="
+    Debug.Print "panelName: '" & panelName & "'"
+    
+    DebugPanelState
+    
+    ' Hide all panels first
+    NumbersPanel.Visible = False
+    DatesPanel.Visible = False
+    CellsPanel.Visible = False
+    
     Select Case panelName
         Case "Numbers"
             NumbersPanel.Visible = True
-        Case "None"
-            NumbersPanel.Visible = False
-        Case Else
-            NumbersPanel.Visible = False
+        Case "Dates"
+            DatesPanel.Visible = True
+        Case "Cells"
+            CellsPanel.Visible = True
     End Select
+    
+    DebugPanelState
+    Debug.Print "=== ShowPanel completed ==="
+End Sub
+
+Private Sub UserForm_Terminate()
+    Set numberSettings = Nothing
+    Set NumbersPanel = Nothing
+    Set CellsPanel = Nothing
+    Set DatesPanel = Nothing
+    Set lstCategories = Nothing
 End Sub
 
 ' Add this event handler for the listbox
 Private Sub lstCategories_Click()
+    Debug.Print vbNewLine & "=== lstCategories_Click triggered ==="
+    On Error GoTo ErrorHandler
+    
     Dim selectedCategory As String
     selectedCategory = Trim(lstCategories.Text)
+    Debug.Print "Selected category: '" & selectedCategory & "'"
+    Debug.Print "Category length: " & Len(selectedCategory)
+    Debug.Print "ASCII codes: "
+    Dim i As Integer
+    For i = 1 To Len(selectedCategory)
+        Debug.Print "Position " & i & ": " & Asc(Mid(selectedCategory, i, 1))
+    Next i
     
-    ' If header is clicked, force selection back to Numbers
     If lstCategories.List(lstCategories.ListIndex, 1) = "HEADER" Then
-        lstCategories.ListIndex = 1  ' Select Numbers
+        Debug.Print "Header clicked, selecting default item"
+        lstCategories.ListIndex = 1
         Exit Sub
     End If
     
+    Debug.Print "Processing category selection"
+    ' Remove any potential hidden characters and extra spaces
+    selectedCategory = Replace(selectedCategory, vbTab, "")
+    selectedCategory = Replace(selectedCategory, vbCr, "")
+    selectedCategory = Replace(selectedCategory, vbLf, "")
+    selectedCategory = Trim(selectedCategory)
+    
     Select Case selectedCategory
-        Case "  Numbers"
+        Case "Numbers"
             ShowPanel "Numbers"
+        Case "Cells"
+            ShowPanel "Cells"
+        Case "Dates"
+            ShowPanel "Dates"
         Case Else
+            Debug.Print "Unknown category selected"
             ShowPanel "None"
     End Select
-End Sub
+    Debug.Print "=== lstCategories_Click completed ==="
+    Exit Sub
 
+ErrorHandler:
+    Debug.Print "Error in lstCategories_Click: " & Err.Description & " (Error " & Err.Number & ")"
+    Resume Next
+End Sub
+Private Sub DebugPanelState()
+    Debug.Print vbNewLine & "=== Panel State Debug ==="
+    Debug.Print "NumbersPanel is Nothing: " & (NumbersPanel Is Nothing)
+    If Not NumbersPanel Is Nothing Then Debug.Print "NumbersPanel.Visible: " & NumbersPanel.Visible
+    
+    Debug.Print "DatesPanel is Nothing: " & (DatesPanel Is Nothing)
+    If Not DatesPanel Is Nothing Then Debug.Print "DatesPanel.Visible: " & DatesPanel.Visible
+    
+    Debug.Print "CellsPanel is Nothing: " & (CellsPanel Is Nothing)
+    If Not CellsPanel Is Nothing Then Debug.Print "CellsPanel.Visible: " & CellsPanel.Visible
+End Sub
 
 Private Sub InitializeFormLayout()
     Me.BackColor = RGB(255, 255, 255)
     Me.Caption = "Settings"
     Me.Width = 600
-    Me.Height = 400
+    Me.Height = 500
     Debug.Print "Form layout set"
 End Sub
 
 Private Sub InitializeHierarchyList()
+    Debug.Print "Initializing hierarchy list"
     lstCategories.Clear
-
-    ' Add top-level category as header (disabled)
-    With lstCategories
-        .AddItem "Formatting"
-        .List(.ListCount - 1, 1) = "HEADER"  ' Use second column to mark as header
-        .AddItem "  Numbers"  ' Subcategory with indentation
-        .ListIndex = 1  ' Select Numbers by default
-    End With
-    
-    ' Initialize with Numbers panel shown
-    ShowPanel "Numbers"
-End Sub
-
-Private Sub AttachButtonHandler(ByRef Button As MSForms.CommandButton, ByVal Role As String)
-    Dim ButtonHandler As clsDynamicButtonHandler
-    ' Create a new handler for the button
-    Set ButtonHandler = New clsDynamicButtonHandler
-    ' Initialize the handler with the button, its role, and the parent form
-    ButtonHandler.Initialize Button, Role, Me
-    ' Add the handler to the collection
-    DynamicButtonHandlers.Add ButtonHandler
-End Sub
-
-
-' Add a new format to the list
-Public Sub btnAdd_Click()
-    Dim newName As String
-    Dim newFormat As clsFormatType
-
-    newName = InputBox("Enter the name for the new format:", "Add Format")
-    If newName <> "" Then
-        ' Create a new format object
-        Set newFormat = New clsFormatType
-        newFormat.Name = newName
-        newFormat.FormatCode = "General" ' Default format code
-
-        ' Add to the ModNumberFormat list
-        ModNumberFormat.AddFormat newFormat
-
-        ' Refresh the ListBox
-        RefreshFormatListBox
-    End If
-End Sub
-
-Public Sub btnRemove_Click()
-    If FormatListBox.ListIndex >= 0 Then
-        Dim selectedIndex As Integer
-        selectedIndex = FormatListBox.ListIndex
-        
-        ' Remove from ModNumberFormat list
-        ModNumberFormat.RemoveFormat selectedIndex
-        
-        ' Refresh the ListBox to reflect the removed item
-        RefreshFormatListBox
-    Else
-        MsgBox "Please select a format to remove.", vbExclamation
-    End If
-End Sub
-
-' Save changes to the selected format
-Public Sub btnOK_Click()
-    If FormatListBox.ListIndex >= 0 Then
-        Dim selectedIndex As Integer
-        selectedIndex = FormatListBox.ListIndex
-               
-        ' Update the selected format in FormatList
-        Dim updatedFormat As clsFormatType
-        Set updatedFormat = New clsFormatType
-        updatedFormat.Name = txtName.Text
-        updatedFormat.FormatCode = txtFormat.Text
-        
-        ModNumberFormat.UpdateFormat selectedIndex, updatedFormat
-        
-        ' Save the updated FormatList to the workbook
-        ModNumberFormat.SaveFormatsToWorkbook
-        
-        ' Refresh the ListBox to reflect the updated name
-        RefreshFormatListBox
-        
-        ' Reselect the updated item to show changes
-        FormatListBox.ListIndex = selectedIndex
-    Else
-        MsgBox "Please select a format to save.", vbExclamation
-    End If
-End Sub
-
-
-' Cancel changes and close the form
-Public Sub btnCancel_Click()
-    Unload Me
-End Sub
-
-
-Private Sub txtName_Change()
-    If FormatListBox.ListIndex >= 0 Then
-        Dim updatedFormat As New clsFormatType
-        updatedFormat.Name = txtName.Text
-        updatedFormat.FormatCode = txtFormat.Text
-        ModNumberFormat.UpdateFormat FormatListBox.ListIndex, updatedFormat
-        FormatListBox.List(FormatListBox.ListIndex) = txtName.Text
-    End If
-End Sub
-
-Private Sub txtFormat_Change()
-    If FormatListBox.ListIndex >= 0 Then
-        Dim updatedFormat As New clsFormatType
-        updatedFormat.Name = txtName.Text
-        updatedFormat.FormatCode = txtFormat.Text
-        ModNumberFormat.UpdateFormat FormatListBox.ListIndex, updatedFormat
-    End If
-End Sub
-
-Private Sub RefreshFormatListBox()
-    FormatListBox.Clear
-    
-    Dim formats() As clsFormatType
-    formats = ModNumberFormat.GetFormatList()
     
     Dim i As Integer
-    For i = LBound(formats) To UBound(formats)
-        Debug.Print "Adding format to ListBox [" & i & "]: " & formats(i).Name
-        FormatListBox.AddItem formats(i).Name
-    Next i
+
+    With lstCategories
+        .AddItem "Formatting"
+        .List(.ListCount - 1, 1) = "HEADER"
+        .AddItem "Numbers"
+        .AddItem "Dates"
+        .AddItem "Cells"
+        .ListIndex = 1
+    End With
     
-    If FormatListBox.ListCount > 0 Then
-        FormatListBox.ListIndex = 0  ' Select first item
-        Debug.Print "Set initial selection to index 0"
-    End If
+    ShowPanel "Numbers"
 End Sub
 

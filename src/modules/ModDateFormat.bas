@@ -1,5 +1,5 @@
-Attribute VB_Name = "ModNumberFormat"
-' ModNumberFormat
+Attribute VB_Name = "ModDateFormat"
+' ModDateFormat
 Option Explicit
 
 Private FormatList() As clsFormatType
@@ -7,59 +7,61 @@ Private FormatList() As clsFormatType
 Public Function GetFormatList() As clsFormatType()
     Debug.Print "--- GetFormatList called ---"
     If Not IsArrayInitialized(FormatList) Then
-        Debug.Print "FormatList not initialized - initializing now"
-        InitializeFormats
+        Debug.Print "FormatList not initialized - checking saved formats"
+        If Not LoadFormatsFromWorkbook() Then
+            Debug.Print "No saved formats found - initializing defaults"
+            InitializeDateFormats
+        End If
     End If
-    
-    ' Debug print the current state
-    Debug.Print "FormatList contains " & (UBound(FormatList) - LBound(FormatList) + 1) & " items"
-    Dim i As Integer
-    For i = LBound(FormatList) To UBound(FormatList)
-        Debug.Print "  Item " & i & ": " & FormatList(i).Name
-    Next i
-    
     GetFormatList = FormatList
 End Function
 
 Private Function IsArrayInitialized(ByRef arr As Variant) As Boolean
     On Error Resume Next
-    IsArrayInitialized = (UBound(arr) >= 0)  ' Check if array has any elements
+    IsArrayInitialized = (UBound(arr) >= 0)
     On Error GoTo 0
 End Function
 
-Public Sub InitializeFormats()
-    Debug.Print "InitializeFormats called"
+' In ModDateFormat.InitializeDateFormats
+Public Sub InitializeDateFormats()
+    On Error GoTo ErrorHandler
+    Debug.Print "=== InitializeDateFormats START ==="
     
-    ' Clear existing FormatList
-    Erase FormatList
-    
-    If LoadFormatsFromWorkbook() Then
-        Debug.Print "Successfully loaded formats from workbook"
-    Else
-        Debug.Print "Loading default formats"
+    ' First try to load saved formats
+    If Not LoadFormatsFromWorkbook() Then
+        Debug.Print "No saved formats found - creating defaults"
+        ' Create default formats only if no saved formats exist
         Dim formatObj As clsFormatType
         ReDim FormatList(2)
         
         Set formatObj = New clsFormatType
-        formatObj.Name = "Comma 0 Dec Lg Align"
-        formatObj.FormatCode = "_(* #,##0_);(* (#,##0);_(* ""-""_);_(@_)"
+        formatObj.Name = "Year Only"
+        formatObj.FormatCode = "yyyy"
         Set FormatList(0) = formatObj
+        Debug.Print "Created format 0: " & FormatList(0).Name
         
         Set formatObj = New clsFormatType
-        formatObj.Name = "Comma 1 Dec Lg Align"
-        formatObj.FormatCode = "_(* #,##0.0_);(* (#,##0.0);_(* ""-""_);_(@_)"
+        formatObj.Name = "Month Year"
+        formatObj.FormatCode = "mmm-yyyy"
         Set FormatList(1) = formatObj
+        Debug.Print "Created format 1: " & FormatList(1).Name
         
         Set formatObj = New clsFormatType
-        formatObj.Name = "Comma 2 Dec Lg Align"
-        formatObj.FormatCode = "_(* #,##0.00_);(* (#,##0.00);_(* ""-""_);_(@_)"
+        formatObj.Name = "Full Date"
+        formatObj.FormatCode = "dd-mmm-yy"
         Set FormatList(2) = formatObj
+        Debug.Print "Created format 2: " & FormatList(2).Name
         
         SaveFormatsToWorkbook
     End If
-    Debug.Print "Format initialization complete, count: " & UBound(FormatList) - LBound(FormatList) + 1
-End Sub
+    
+    Debug.Print "=== InitializeDateFormats END ==="
+    Exit Sub
 
+ErrorHandler:
+    Debug.Print "Error in InitializeDateFormats: " & Err.Description
+    Resume Next
+End Sub
 
 Public Sub AddFormat(newFormat As clsFormatType)
     Debug.Print "Adding format: " & newFormat.Name
@@ -81,73 +83,83 @@ Public Sub RemoveFormat(index As Integer)
 End Sub
 
 Public Sub UpdateFormat(index As Integer, updatedFormat As clsFormatType)
-    Debug.Print "Updating format at index " & index & " to Name: " & updatedFormat.Name & ", FormatCode: " & updatedFormat.FormatCode
     If index >= 0 And index <= UBound(FormatList) Then
         Set FormatList(index) = updatedFormat
         SaveFormatsToWorkbook
-    Else
-        Debug.Print "UpdateFormat index out of bounds"
     End If
 End Sub
 
-
 Public Sub SaveFormatsToWorkbook()
-    Debug.Print "Saving formats to workbook"
-    Dim propValue As String, i As Integer
-    For i = LBound(FormatList) To UBound(FormatList)
-        Debug.Print "Saving format: Name = " & FormatList(i).Name & ", FormatCode = " & FormatList(i).FormatCode
-        propValue = propValue & FormatList(i).Name & "|" & FormatList(i).FormatCode & "||"
-    Next i
+   Debug.Print "=== SaveFormatsToWorkbook START ==="
+   
+   ' Wrap the delete in its own error handler
+   On Error Resume Next
+   ThisWorkbook.CustomDocumentProperties("SavedDateFormats").Delete
+   If Err.Number <> 0 Then Debug.Print "Error deleting old property: " & Err.Description
+   On Error GoTo ErrorHandler
+   
+   Dim propValue As String, i As Integer
+   For i = LBound(FormatList) To UBound(FormatList)
+       Debug.Print "Format " & i & ": " & FormatList(i).Name & " | " & FormatList(i).FormatCode
+       propValue = propValue & FormatList(i).Name & "|" & FormatList(i).FormatCode & "||"
+   Next i
+   
+   ThisWorkbook.CustomDocumentProperties.Add Name:="SavedDateFormats", _
+       LinkToContent:=False, Type:=msoPropertyTypeString, value:=propValue
+       
+   Debug.Print "Property added successfully"
+   ThisWorkbook.Save
+   Debug.Print "Workbook saved successfully"
+   Debug.Print "=== SaveFormatsToWorkbook END ==="
+   Exit Sub
 
-    On Error Resume Next
-    ThisWorkbook.CustomDocumentProperties("SavedFormats").Delete
-    On Error GoTo 0
-    ThisWorkbook.CustomDocumentProperties.Add Name:="SavedFormats", _
-        LinkToContent:=False, Type:=msoPropertyTypeString, value:=propValue
-    ThisWorkbook.Save
+ErrorHandler:
+   Debug.Print "Error in SaveFormatsToWorkbook: " & Err.Description
+   MsgBox "Error saving formats: " & Err.Description, vbExclamation
+   Resume Next
 End Sub
 
 Private Function LoadFormatsFromWorkbook() As Boolean
-    Debug.Print "=== LoadFormatsFromWorkbook START ==="
+    Debug.Print "=== LoadFormatsFromWorkbook Debug ==="
     On Error Resume Next
     Dim propValue As String
-    propValue = ThisWorkbook.CustomDocumentProperties("SavedFormats")
-    
+    propValue = ThisWorkbook.CustomDocumentProperties("SavedDateFormats")
+    Debug.Print "Loaded propValue: " & propValue
     If Err.Number <> 0 Then
-        Debug.Print "Error reading CustomDocumentProperties: " & Err.Description
+        Debug.Print "Error loading property: " & Err.Description
         LoadFormatsFromWorkbook = False
         Exit Function
     End If
     On Error GoTo 0
 
     If propValue = "" Then
-        Debug.Print "No saved formats found in workbook"
+        Debug.Print "No saved formats found"
         LoadFormatsFromWorkbook = False
         Exit Function
     End If
-
-    Debug.Print "Found saved formats string: " & Left(propValue, 50) & "..."  ' Print first 50 chars
     
     Dim formatsArray() As String, formatParts() As String
     formatsArray = Split(propValue, "||")
+    Debug.Print "Found " & (UBound(formatsArray) - 1) & " format entries"
+    
     ReDim FormatList(UBound(formatsArray) - 1)
-
     Dim i As Integer
     For i = LBound(formatsArray) To UBound(formatsArray) - 1
         If formatsArray(i) <> "" Then
+            Debug.Print "Processing format " & i & ": " & formatsArray(i)
             formatParts = Split(formatsArray(i), "|")
             Set FormatList(i) = New clsFormatType
             FormatList(i).Name = formatParts(0)
             FormatList(i).FormatCode = formatParts(1)
-            Debug.Print "Loaded format [" & i & "]: " & FormatList(i).Name & " | " & FormatList(i).FormatCode
+            Debug.Print "Successfully loaded format: " & FormatList(i).Name
         End If
     Next i
 
+    Debug.Print "=== LoadFormatsFromWorkbook Completed ==="
     LoadFormatsFromWorkbook = True
-    Debug.Print "=== LoadFormatsFromWorkbook END ==="
 End Function
 
-Public Sub CycleNumberFormat()
+Public Sub CycleDateFormat()
     If Selection Is Nothing Then Exit Sub
     
     Dim currentFormat As String, nextFormat As String

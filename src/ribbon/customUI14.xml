@@ -38,10 +38,22 @@
                         <menu id="formatMenu">
                             <button id="cycleFormatsBtn"
                                 label="Cycle number formats"
-                                imageMso="NumberFormat"
+                                imageMso="CommaStyle"
                                 onAction="DoCycleNumberFormat"
                                 screentip="Cycle Number Formats"
                                 supertip="Cycle through configured number formats"/>
+                            <button id="cycleCellFormatsBtn"
+                                label="Cycle cell formats"
+                                imageMso="FormatPainter"
+                                onAction="DoCycleCellFormat"
+                                screentip="Cycle Cell Formats"
+                                supertip="Cycle through configured cell formats, including background and borders"/>
+                            <button id="cycleDateFormatsBtn"
+                                label="Cycle date formats"
+                                imageMso="DateAndTimeInsert"
+                                onAction="DoCycleDateFormat"
+                                screentip="Cycle Date Formats"
+                                supertip="Cycle through configured date formats"/>
                         </menu>
                     </splitButton>
                 </group>

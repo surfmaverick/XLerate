@@ -36,6 +36,18 @@ Public Sub DoCycleNumberFormat(control As IRibbonControl)
     On Error GoTo 0
 End Sub
 
+Public Sub DoCycleCellFormat(control As IRibbonControl)
+    On Error Resume Next
+    Application.Run "ModCellFormat.CycleCellFormat"
+    On Error GoTo 0
+End Sub
+
+Public Sub DoCycleDateFormat(control As IRibbonControl)
+    On Error Resume Next
+    Application.Run "ModDateFormat.CycleDateFormat"
+    On Error GoTo 0
+End Sub
+
 Public Sub ShowSettingsForm(control As IRibbonControl)
     Debug.Print "ShowSettingsForm callback was triggered"
     ShowSettings   ' Direct call instead of Application.Run
