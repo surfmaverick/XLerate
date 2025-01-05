@@ -70,7 +70,7 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 3. For faster access the number, cell and date cycles can be accessed by pressing `Ctrl + Shift + 1-3` repeatedly
 4. Click on the "Settings" button in ribbon to access the predifined styles for numbers, cells and dates and to add your own styles to the cycles, or remove or modify existing ones
 
-### Error wrapping
+### Error Wrapping
 1. Select a cell or range of cells
 2. Click "Error Warap" in the XLerate ribbon under Formatting to add an IFERROR statement to any formulas within your selection
 3. If one of the selected cells does not contain a formula and is not affected a pop-up window will alert you to this
