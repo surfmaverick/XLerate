@@ -54,7 +54,7 @@ Note: On Mac, if you receive a security warning, you may need to:
 
 After installation, you'll find the XLerate tab in your Excel ribbon.
 
-We highly recommend adding individual functions you use often to Excels quick acces toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:" dropdown select the XLerate Tab and add any functions you prefer.
+We *highly recommend* adding individual functions you use often to Excels quick acces toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:", dropdown select the XLerate Tab and add any functions you prefer.
 
 ### Formula Tracer
 1. Select a cell with a formula
