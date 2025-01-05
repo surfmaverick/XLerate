@@ -52,17 +52,28 @@ Note: On Mac, if you receive a security warning, you may need to:
 
 ## 📖 Usage
 
-After installation, you'll find the XLerate tab in your Excel ribbon with two main tools:
+After installation, you'll find the XLerate tab in your Excel ribbon (or add individual functions to the quick access toolbar for faster use):
 
 ### Formula Tracer
 1. Select a cell with a formula
-2. Click "Trace Precedents" or "Trace Dependents" in the XLerate ribbon (or add them to the quick access toolbar for faster use)
+2. Click "Trace Precedents" or "Trace Dependents" in the XLerate ribbon
 3. Navigate through dependencies using the arrow keys in the interactive dialog box
 
 ### Consistency Checker
 1. Select a range of cells
 2. Click "Horizontal Check" in the XLerate ribbon under Formula Consistency
 3. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
+
+### Number, Cell and Date formatting cycles
+1. Select a cell or range of cells
+2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
+3. For faster access the number, cell and date cycles can be accessed by pressing `Ctrl + Shift + 1-3` repeatedly
+4. Click on the "Settings" button in ribbon to access the predifined styles for numbers, cells and dates and to add your own styles to the cycles, or remove or modify existing ones
+
+### Error wrapping
+1. Select a cell or range of cells
+2. Click "Error Warap" in the XLerate ribbon under Formatting to add an IFERROR statement to any formulas within your selection
+3. If one of the selected cells does not contain a formula and is not affected a pop-up window will alert you to this
 
 ## 🛠️ Contributing
 
