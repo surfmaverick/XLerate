@@ -1,7 +1,7 @@
 # ⚡XLerate
 XLerate is an Excel add-in for Windows and Mac designed to speed up financial modeling tasks and spot potential errors with ease, incl. advanced auditing and formula consistency tools.
 
-<img src="/XLerate.png" alt="XLerate Add-in" width="750" height="auto"/>
+<img src="/XLerate.png" alt="XLerate Add-in" width="800" height="auto"/>
 
 ## 🚀 Features
 
