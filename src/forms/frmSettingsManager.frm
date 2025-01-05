@@ -39,7 +39,7 @@ Private Sub UserForm_Initialize()
         .Left = 12
         .Top = 12
         .Width = 150
-        .Height = 300
+        .Height = 450
     End With
     Debug.Print "Categories list created"
     
