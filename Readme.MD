@@ -15,11 +15,11 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 - Visual highlighting of formula pattern breaks
 - Help prevent common modeling errors
 
-### Cell format cycling
+### Cell Format Cycling
 - Cycling through set number, cell and date formats with shortcuts `Ctrl + Shift + 1-3`
 - Settings menu allows to add/remove/modify custom formats
 
-### Error wrapping
+### Error Wrapping
 - Functionality to wrap cells in IFERROR statements instantly
 
 ### Other Features
@@ -66,7 +66,7 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 2. Click "Horizontal Check" in the XLerate ribbon under Formula Consistency
 3. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
 
-### Number, Cell and Date formatting cycles
+### Number, Cell and Date Formatting Cycles
 1. Select a cell or range of cells
 2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
 3. For faster access the number, cell and date cycles can be accessed by pressing `Ctrl + Shift + 1-3` repeatedly
