@@ -38,8 +38,9 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 ### Mac 🍎
 1. Download the latest release (`XLerate.xlam`) from the `dist` folder
 2. Place the file in your Excel add-ins folder:
-   - Modern Office 365 (Big Sur and newer): `~/Library/Containers/com.microsoft.Excel/Data/Library/Application Support/Microsoft/Office/Add-ins`
-   - Legacy versions: `~/Library/Group Containers/UBF8T346G9.Office/User Content/Add-ins`
+   - Modern Office 365 (Big Sur and newer): `/Users/<username>/Library/Containers/com.microsoft.Excel/Data/Library/Application Support/Microsoft/Office/Add-ins`
+   - Legacy versions: `/Users/<username>/Library/Group Containers/UBF8T346G9.Office/User Content/Add-ins`
+   - If not available, search for "Add-ins" folder
 3. Enable the add-in in Excel:
    - Excel → Tools → Excel Add-ins
    - Click "Browse" if XLerate isn't listed
