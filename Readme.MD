@@ -58,6 +58,7 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 1. Select a cell with a formula
 2. Click "Trace Precedents" or "Trace Dependents" in the XLerate ribbon
 3. Navigate through dependencies using the arrow keys in the interactive dialog box
+4. To quickly close the pop-up window hit `Esc`
 
 ### Consistency Checker
 1. Select a range of cells
