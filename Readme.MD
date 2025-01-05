@@ -1,5 +1,5 @@
 # ⚡XLerate
-XLerate is an Excel add-in for Windows and Mac designed to speed up financial modeling tasks and spot potential errors with ease, incl. advanced auditing and formula consistency tools.
+XLerate is an open-source Excel add-in for Windows and Mac designed to speed up financial modeling tasks and spot potential errors with ease, incl. advanced auditing and formula consistency tools.
 
 <img src="/XLerate.png" alt="XLerate Add-in" width="800" height="auto"/>
 
@@ -15,11 +15,11 @@ XLerate is an Excel add-in for Windows and Mac designed to speed up financial mo
 - Visual highlighting of formula pattern breaks
 - Help prevent common modeling errors
 
-### Cell format cycling
+### Cell Format Cycling
 - Cycling through set number, cell and date formats with shortcuts `Ctrl + Shift + 1-3`
 - Settings menu allows to add/remove/modify custom formats
 
-### Error wrapping
+### Error Wrapping
 - Functionality to wrap cells in IFERROR statements instantly
 
 ### Other Features
@@ -38,8 +38,9 @@ XLerate is an Excel add-in for Windows and Mac designed to speed up financial mo
 ### Mac 🍎
 1. Download the latest release (`XLerate.xlam`) from the `dist` folder
 2. Place the file in your Excel add-ins folder:
-   - Modern Office 365 (Big Sur and newer): `~/Library/Containers/com.microsoft.Excel/Data/Library/Application Support/Microsoft/Office/Add-ins`
-   - Legacy versions: `~/Library/Group Containers/UBF8T346G9.Office/User Content/Add-ins`
+   - Modern Office 365 (Big Sur and newer): `/Users/<username>/Library/Containers/com.microsoft.Excel/Data/Library/Application Support/Microsoft/Office/Add-ins`
+   - Legacy versions: `/Users/<username>/Library/Group Containers/UBF8T346G9.Office/User Content/Add-ins`
+   - If not available, search for "Add-ins" folder
 3. Enable the add-in in Excel:
    - Excel → Tools → Excel Add-ins
    - Click "Browse" if XLerate isn't listed
@@ -58,13 +59,14 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 1. Select a cell with a formula
 2. Click "Trace Precedents" or "Trace Dependents" in the XLerate ribbon
 3. Navigate through dependencies using the arrow keys in the interactive dialog box
+4. To quickly close the dialog window hit `Esc`
 
 ### Consistency Checker
 1. Select a range of cells
 2. Click "Horizontal Check" in the XLerate ribbon under Formula Consistency
 3. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
 
-### Number, Cell and Date formatting cycles
+### Number, Cell and Date Formatting Cycles
 1. Select a cell or range of cells
 2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
 3. For faster access the number, cell and date cycles can be accessed by pressing `Ctrl + Shift + 1-3` repeatedly
