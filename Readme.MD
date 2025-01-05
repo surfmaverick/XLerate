@@ -19,10 +19,9 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 - Cycling through set number, cell and date formats with shortcuts `Ctrl + Shift + 1-3`
 - Settings menu allows to add/remove/modify custom formats
 
-### Error Wrapping
-- Functionality to wrap cells in IFERROR statements instantly
-
 ### Other Features
+- Wrap cells in IFERROR statements instantly
+- Switch signs of values and formulas instantly
 - Currently in development (see below how to contribute)
 
 ## 💾 Installation
@@ -63,7 +62,7 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 
 ### Consistency Checker
 1. Select a range of cells
-2. Click "Horizontal Check" in the XLerate ribbon under Formula Consistency
+2. Click "Horizontal Consistency" in the XLerate ribbon under Auditing   
 3. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
 
 ### Number, Cell and Date Formatting Cycles
@@ -74,8 +73,12 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 
 ### Error Wrapping
 1. Select a cell or range of cells
-2. Click "Error Warap" in the XLerate ribbon under Formatting to add an IFERROR statement to any formulas within your selection
+2. Click "Error Wrap" in the XLerate ribbon under Formatting to add an IFERROR statement to any formulas within your selection
 3. If one of the selected cells does not contain a formula and is not affected a pop-up window will alert you to this
+
+### Switch Sings
+1. Select a cell or range of cells
+2. Click "Switch Sign" in the XLerate ribbon under Formulas to change the sign of a cell or formula from positive to negative or vice versa
 
 We **highly recommend** adding individual functions you use often to Excel's quick access toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:", dropdown select "XLerate Tab" and add any function as needed.
 
