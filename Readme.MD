@@ -6,14 +6,12 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 ## 🚀 Features
 
 ### Advanced Formula Tracer
-- Trace all precedents and dependents in a single operation
-- Visualize formula dependencies across multiple worksheets
+- Trace all precedents and dependents of a cell in a single operation
 - Quick navigation through formula chains
 
 ### Formula Consistency Checker
 - Instantly identify inconsistencies in adjacent formulas
-- Visual highlighting of formula pattern breaks
-- Help prevent common modeling errors
+- Visual highlighting of formula pattern breaks to help prevent common modeling errors
 
 ### Cell Format Cycling
 - Cycling through set number, cell and date formats with shortcuts `Ctrl + Shift + 1-3`
