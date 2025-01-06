@@ -52,7 +52,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 
 **Note:** On Mac, if you receive a security warning, you may need to:
 1. Open System Preferences → Security & Privacy
-2. Click "Open Anyway" for XLerate.xlam
+2. Click "Open Anyway" for `XLerate.xlam`
 
 ## 📖 Usage
 
