@@ -35,7 +35,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
    - Check "XLerate" and click OK
 
 **Note:** Due to Windows security settings, you might have to unblock the add-in: 
-1. Right-click the XLerate.xlam file and select Properties 
+1. Right-click the `XLerate.xlam` file and select Properties 
 2. On the General tab under Security tick the "Unblock" box
 
 ### Mac 🍎
@@ -47,7 +47,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 3. Enable the add-in in Excel:
    - Excel → Tools → Excel Add-ins
    - Click "Browse" if XLerate isn't listed
-   - Locate and select XLerate.xlam
+   - Locate and select `XLerate.xlam`
    - Check "XLerate" and click OK
 
 **Note:** On Mac, if you receive a security warning, you may need to:
