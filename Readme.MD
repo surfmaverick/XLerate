@@ -20,6 +20,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 ### Other Features
 - Wrap cells in IFERROR statements instantly
 - Switch signs of values and formulas instantly
+- CAGR function
 - Currently in development (see below how to contribute)
 
 ## 💾 Installation
@@ -81,6 +82,10 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 ### Switch Sings
 1. Select a cell or range of cells
 2. Click "Switch Sign" in the XLerate ribbon under Formulas to change the sign of a cell or formula from positive to negative or vice versa
+
+### CAGR Function
+1. Type `+CAGR` and select a range of cells with numbers
+2. The formula will calculate an annual CAGR based on the first and last number in the selection and the number of values (years)
 
 We **highly recommend** adding individual functions you use often to Excel's quick access toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:", dropdown select "XLerate Tab" and add any function as needed.
 
