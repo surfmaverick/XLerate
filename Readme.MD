@@ -1,5 +1,5 @@
 # ⚡XLerate
-XLerate is an open-source Excel add-in for Windows and Mac designed to speed up financial modeling tasks and spot potential errors with ease, incl. advanced auditing and formula consistency tools.
+XLerate is an open-source Excel add-in for Windows and Mac designed to speed up financial modelling tasks and spot potential errors with ease, incl. advanced auditing and formula consistency tools.
 
 <img src="/XLerate.png" alt="XLerate Add-in" width="800" height="auto"/>
 
@@ -11,7 +11,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 
 ### Formula Consistency Checker
 - Instantly identify inconsistencies in adjacent formulas
-- Visual highlighting of formula pattern breaks to help prevent common modeling errors
+- Visual highlighting of formula pattern breaks to help prevent common modelling errors
 
 ### Cell Format Cycling
 - Cycling through set number, cell and date formats with shortcuts `Ctrl + Shift + 1-3`
