@@ -104,10 +104,9 @@ We love your input! We want to make contributing to XLerate as easy and transpar
 
 1. Fork the repo and create your branch from `master`
 2. If you've added code that should be tested, add tests
-3. If you've changed APIs, update the documentation
-4. Ensure the test suite passes
-5. Make sure your code follows the existing style
-6. Issue that pull request!
+3. Ensure the test suite passes
+4. Make sure your code follows the existing style
+5. Issue that pull request!
 
 ### Development Environment Setup
 
