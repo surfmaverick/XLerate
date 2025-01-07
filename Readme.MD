@@ -20,7 +20,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 ### Other Features
 - Wrap cells in IFERROR statements instantly
 - Switch signs of values and formulas instantly
-- CAGR function
+- New CAGR function to quickly add compound annual growth rates
 - Currently in development (see below how to contribute)
 
 ## 💾 Installation
