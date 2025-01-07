@@ -150,25 +150,58 @@ End Function
 Public Sub CycleNumberFormat()
     If Selection Is Nothing Then Exit Sub
     
+    ' Check if FormatList is initialized
+    If Not IsArrayInitialized(FormatList) Then
+        Debug.Print "FormatList not initialized - initializing now"
+        InitializeFormats
+    End If
+    
+    ' Additional check after initialization
+    If Not IsArrayInitialized(FormatList) Then
+        Debug.Print "Failed to initialize FormatList"
+        Exit Sub
+    End If
+    
     Dim currentFormat As String, nextFormat As String
     Dim found As Boolean
-    currentFormat = Selection.NumberFormat
     
-    Dim i As Integer
-    For i = LBound(FormatList) To UBound(FormatList)
-        If FormatList(i).FormatCode = currentFormat Then
-            If i < UBound(FormatList) Then
-                nextFormat = FormatList(i + 1).FormatCode
-            Else
-                nextFormat = FormatList(LBound(FormatList)).FormatCode
-            End If
+    ' Get the format of the first cell in the selection
+    currentFormat = Selection.Cells(1).NumberFormat
+    
+    ' If the selection has multiple cells with different formats,
+    ' use the first format in our list
+    Dim cell As Range
+    For Each cell In Selection
+        If cell.NumberFormat <> currentFormat Then
+            currentFormat = FormatList(0).FormatCode
             found = True
             Exit For
         End If
-    Next i
+    Next cell
     
+    If Not found Then
+        ' Find the next format in the cycle
+        Dim i As Integer
+        For i = LBound(FormatList) To UBound(FormatList)
+            If FormatList(i).FormatCode = currentFormat Then
+                If i < UBound(FormatList) Then
+                    nextFormat = FormatList(i + 1).FormatCode
+                Else
+                    nextFormat = FormatList(LBound(FormatList)).FormatCode
+                End If
+                found = True
+                Exit For
+            End If
+        Next i
+    End If
+    
+    ' If no match found or cells had different formats, use first format
     If Not found Then nextFormat = FormatList(LBound(FormatList)).FormatCode
+    
+    ' Apply the format to all selected cells
     Selection.NumberFormat = nextFormat
+    
+    Debug.Print "Applied new format: " & nextFormat & " to " & Selection.Cells.Count & " cells"
 End Sub
 
 
