@@ -67,6 +67,7 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 1. Select a range of cells
 2. Click "Horizontal Consistency" in the XLerate ribbon under Auditing   
 3. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
+4. Click "Horizontal Consistency" again to remove the formatting   
 
 ### Number, Cell and Date Formatting Cycles
 1. Select a cell or range of cells
