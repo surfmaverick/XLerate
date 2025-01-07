@@ -1,14 +1,8 @@
 Attribute VB_Name = "ModNumberFormat"
+' ModNumberFormat
 Option Explicit
 
 Private FormatList() As clsFormatType
-Private Type UndoAction
-    RangeAddress As String
-    OldFormat As String
-End Type
-
-Private UndoStack() As UndoAction
-Private UndoStackSize As Long
 
 Public Function GetFormatList() As clsFormatType()
     Debug.Print "--- GetFormatList called ---"
@@ -17,38 +11,21 @@ Public Function GetFormatList() As clsFormatType()
         InitializeFormats
     End If
     
+    ' Debug print the current state
+    Debug.Print "FormatList contains " & (UBound(FormatList) - LBound(FormatList) + 1) & " items"
+    Dim i As Integer
+    For i = LBound(FormatList) To UBound(FormatList)
+        Debug.Print "  Item " & i & ": " & FormatList(i).Name
+    Next i
+    
     GetFormatList = FormatList
 End Function
 
-Private Sub InitializeUndoStack()
-    ReDim UndoStack(0 To 99)  ' Support up to 100 undo actions
-    UndoStackSize = 0
-End Sub
-
-Private Sub PushUndo(ByVal RangeAddress As String, ByVal OldFormat As String)
-    If UndoStackSize = 0 Then
-        InitializeUndoStack
-    End If
-
-    ' Shift everything down if we're at capacity
-    If UndoStackSize = 100 Then
-        Dim i As Long
-        For i = 0 To 98
-            UndoStack(i) = UndoStack(i + 1)
-        Next i
-        UndoStackSize = 99
-    End If
-
-    ' Store the new undo action
-    With UndoStack(UndoStackSize)
-        .RangeAddress = RangeAddress
-        .OldFormat = OldFormat
-    End With
-    UndoStackSize = UndoStackSize + 1
-
-    ' Set up the undo button with dynamic description
-    Application.OnUndo "Undo Format Change for Range: " & RangeAddress, "UndoLastNumberFormat"
-End Sub
+Private Function IsArrayInitialized(ByRef arr As Variant) As Boolean
+    On Error Resume Next
+    IsArrayInitialized = (UBound(arr) >= 0)  ' Check if array has any elements
+    On Error GoTo 0
+End Function
 
 Public Sub InitializeFormats()
     Debug.Print "InitializeFormats called"
@@ -80,8 +57,9 @@ Public Sub InitializeFormats()
         
         SaveFormatsToWorkbook
     End If
-    Debug.Print "Format initialization complete"
+    Debug.Print "Format initialization complete, count: " & UBound(FormatList) - LBound(FormatList) + 1
 End Sub
+
 
 Public Sub AddFormat(newFormat As clsFormatType)
     Debug.Print "Adding format: " & newFormat.Name
@@ -102,87 +80,32 @@ Public Sub RemoveFormat(index As Integer)
     SaveFormatsToWorkbook
 End Sub
 
-Public Sub CycleNumberFormat()
-    If Selection Is Nothing Then Exit Sub
-    
-    ' Check if FormatList is initialized
-    If Not IsArrayInitialized(FormatList) Then
-        InitializeFormats
-    End If
-    
-    ' Store current format and selection for undo
-    Dim currentFormat As String
-    currentFormat = Selection.NumberFormat
-    
-    ' Store the selection address
-    Dim selAddress As String
-    selAddress = Selection.Address
-    
-    ' Add to undo stack before making changes
-    PushUndo selAddress, currentFormat
-    
-    ' Find and apply next format
-    Dim nextFormat As String
-    Dim found As Boolean
-    
-    Dim i As Integer
-    For i = LBound(FormatList) To UBound(FormatList)
-        If FormatList(i).FormatCode = currentFormat Then
-            If i < UBound(FormatList) Then
-                nextFormat = FormatList(i + 1).FormatCode
-            Else
-                nextFormat = FormatList(LBound(FormatList)).FormatCode
-            End If
-            found = True
-            Exit For
-        End If
-    Next i
-    
-    If Not found Then nextFormat = FormatList(LBound(FormatList)).FormatCode
-    
-    ' Apply the new format
-    Selection.NumberFormat = nextFormat
-    
-    Debug.Print "Applied new format: " & nextFormat
-End Sub
-
-Public Sub UndoLastNumberFormat()
-    If UndoStackSize > 0 Then
-        UndoStackSize = UndoStackSize - 1
-        With UndoStack(UndoStackSize)
-            Range(.RangeAddress).NumberFormat = .OldFormat
-            Debug.Print "Reverted format for Range: " & .RangeAddress
-        End With
-        
-        ' Set up undo for the next item if there is one
-        If UndoStackSize > 0 Then
-            Application.OnUndo "Undo Format Change for Range: " & UndoStack(UndoStackSize - 1).RangeAddress, "UndoLastNumberFormat"
-        Else
-            Application.OnUndo "No further undo actions available", ""
-        End If
+Public Sub UpdateFormat(index As Integer, updatedFormat As clsFormatType)
+    Debug.Print "Updating format at index " & index & " to Name: " & updatedFormat.Name & ", FormatCode: " & updatedFormat.FormatCode
+    If index >= 0 And index <= UBound(FormatList) Then
+        Set FormatList(index) = updatedFormat
+        SaveFormatsToWorkbook
     Else
-        MsgBox "No undo actions available.", vbExclamation
+        Debug.Print "UpdateFormat index out of bounds"
     End If
 End Sub
 
-Public Sub RevertAllFormatting()
-    If UndoStackSize = 0 Then
-        MsgBox "No changes to revert.", vbInformation
-        Exit Sub
-    End If
 
-    While UndoStackSize > 0
-        UndoLastNumberFormat
-    Wend
+Public Sub SaveFormatsToWorkbook()
+    Debug.Print "Saving formats to workbook"
+    Dim propValue As String, i As Integer
+    For i = LBound(FormatList) To UBound(FormatList)
+        Debug.Print "Saving format: Name = " & FormatList(i).Name & ", FormatCode = " & FormatList(i).FormatCode
+        propValue = propValue & FormatList(i).Name & "|" & FormatList(i).FormatCode & "||"
+    Next i
 
-    MsgBox "All formatting changes have been reverted.", vbInformation
-End Sub
-
-Private Function IsArrayInitialized(ByRef arr As Variant) As Boolean
     On Error Resume Next
-    IsArrayInitialized = (UBound(arr) >= 0)
+    ThisWorkbook.CustomDocumentProperties("SavedFormats").Delete
     On Error GoTo 0
-End Function
+    ThisWorkbook.CustomDocumentProperties.Add Name:="SavedFormats", _
+        LinkToContent:=False, Type:=msoPropertyTypeString, value:=propValue
+    ThisWorkbook.Save
+End Sub
 
 Private Function LoadFormatsFromWorkbook() As Boolean
     Debug.Print "=== LoadFormatsFromWorkbook START ==="
@@ -203,7 +126,7 @@ Private Function LoadFormatsFromWorkbook() As Boolean
         Exit Function
     End If
 
-    Debug.Print "Found saved formats string: " & Left(propValue, 50) & "..."
+    Debug.Print "Found saved formats string: " & Left(propValue, 50) & "..."  ' Print first 50 chars
     
     Dim formatsArray() As String, formatParts() As String
     formatsArray = Split(propValue, "||")
@@ -224,20 +147,28 @@ Private Function LoadFormatsFromWorkbook() As Boolean
     Debug.Print "=== LoadFormatsFromWorkbook END ==="
 End Function
 
-Public Sub SaveFormatsToWorkbook()
-    Debug.Print "Saving formats to workbook"
-    Dim propValue As String, i As Integer
+Public Sub CycleNumberFormat()
+    If Selection Is Nothing Then Exit Sub
+    
+    Dim currentFormat As String, nextFormat As String
+    Dim found As Boolean
+    currentFormat = Selection.NumberFormat
+    
+    Dim i As Integer
     For i = LBound(FormatList) To UBound(FormatList)
-        Debug.Print "Saving format: Name = " & FormatList(i).Name & ", FormatCode = " & FormatList(i).FormatCode
-        propValue = propValue & FormatList(i).Name & "|" & FormatList(i).FormatCode & "||"
+        If FormatList(i).FormatCode = currentFormat Then
+            If i < UBound(FormatList) Then
+                nextFormat = FormatList(i + 1).FormatCode
+            Else
+                nextFormat = FormatList(LBound(FormatList)).FormatCode
+            End If
+            found = True
+            Exit For
+        End If
     Next i
-
-    On Error Resume Next
-    ThisWorkbook.CustomDocumentProperties("SavedFormats").Delete
-    On Error GoTo 0
-    ThisWorkbook.CustomDocumentProperties.Add Name:="SavedFormats", _
-        LinkToContent:=False, Type:=msoPropertyTypeString, value:=propValue
-    ThisWorkbook.Save
+    
+    If Not found Then nextFormat = FormatList(LBound(FormatList)).FormatCode
+    Selection.NumberFormat = nextFormat
 End Sub
 
 
