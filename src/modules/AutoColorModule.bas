@@ -4,61 +4,75 @@ Option Explicit
 Private Const COLOR_INPUT As Long = 16711680         ' Blue (RGB 0, 0, 255)
 Private Const COLOR_FORMULA As Long = 0              ' Black (RGB 0, 0, 0)
 Private Const COLOR_WORKSHEET_LINK As Long = 32768   ' Green (RGB 0, 128, 0)
-Private Const COLOR_WORKBOOK_LINK As Long = 128      ' Purple (RGB 128, 0, 128)
+Private Const COLOR_WORKBOOK_LINK As Long = 16751052 ' Light Purple (RGB 204, 153, 255)
 Private Const COLOR_EXTERNAL As Long = 15773696      ' Light Blue (RGB 0, 176, 240)
 Private Const COLOR_HYPERLINK As Long = 33023        ' Orange (RGB 255, 128, 0)
-Private Const COLOR_PARTIAL_INPUT As Long = 16751052 ' Light Purple (RGB 204, 153, 255)
+Private Const COLOR_PARTIAL_INPUT As Long = 128      ' Purple (RGB 128, 0, 128)
+Private Const MAX_CELLS As Long = 50000  ' Maximum number of cells to process in one go
 
 Sub AutoColorCells(control As IRibbonControl)
     Debug.Print "AutoColorCells started"
     
-    ' Use selected range only
-    If TypeName(Selection) <> "Range" Then Exit Sub
+    Application.ScreenUpdating = False
     
     Dim rng As Range
+    If TypeName(Selection) <> "Range" Then Exit Sub
     Set rng = Selection
-    Debug.Print "Using selected range: " & rng.Address
     
-    ApplyAutoColor rng
-    Debug.Print "AutoColorCells ended"
-End Sub
-
-Private Sub ApplyAutoColor(rng As Range)
-    Debug.Print "ApplyAutoColor started for range: " & rng.Address
+    On Error Resume Next
     
-    ' Apply colors
+    ' Get only cells with content (formulas or values), excluding blanks
+    Dim usedCells As Range
+    Set usedCells = rng.SpecialCells(xlCellTypeConstants)
+    
+    Dim formulaCells As Range
+    Set formulaCells = rng.SpecialCells(xlCellTypeFormulas)
+    
+    ' Combine the ranges if both exist
+    If Not usedCells Is Nothing Then
+        If Not formulaCells Is Nothing Then
+            Set usedCells = Union(usedCells, formulaCells)
+        End If
+    Else
+        If Not formulaCells Is Nothing Then
+            Set usedCells = formulaCells
+        End If
+    End If
+    
+    On Error GoTo 0
+    
+    ' If no cells with content found, exit
+    If usedCells Is Nothing Then
+        Application.ScreenUpdating = True
+        Exit Sub
+    End If
+    
+    ' Process only the cells that contain something
     Dim cell As Range
-    For Each cell In rng
-        Debug.Print "Processing cell: " & cell.Address & " Formula: " & cell.Formula
-        
-        ' Apply new color based on cell content
+    For Each cell In usedCells
         If HasFormula(cell) Then
             If IsWorkbookLink(cell) Then
                 cell.Font.Color = COLOR_WORKBOOK_LINK
-                Debug.Print "Workbook Link detected"
             ElseIf IsWorksheetLink(cell) Then
                 cell.Font.Color = COLOR_WORKSHEET_LINK
-                Debug.Print "Worksheet Link detected"
-            ElseIf IsPartialInput(cell) Then
-                cell.Font.Color = COLOR_PARTIAL_INPUT
-                Debug.Print "Partial Input detected"
             ElseIf IsExternalReference(cell) Then
                 cell.Font.Color = COLOR_EXTERNAL
-                Debug.Print "External Reference detected"
+            ElseIf IsPartialInput(cell) Then
+                cell.Font.Color = COLOR_PARTIAL_INPUT
+            ElseIf IsInput(cell) Then
+                cell.Font.Color = COLOR_INPUT
             Else
                 cell.Font.Color = COLOR_FORMULA
-                Debug.Print "Regular Formula detected"
             End If
         ElseIf IsHyperlink(cell) Then
             cell.Font.Color = COLOR_HYPERLINK
-            Debug.Print "Hyperlink detected"
         ElseIf IsInput(cell) Then
             cell.Font.Color = COLOR_INPUT
-            Debug.Print "Input detected"
         End If
     Next cell
     
-    Debug.Print "ApplyAutoColor ended"
+    Application.ScreenUpdating = True
+    Debug.Print "AutoColorCells ended"
 End Sub
 
 Private Function HasFormula(cell As Range) As Boolean
@@ -99,9 +113,10 @@ Private Function IsExternalReference(cell As Range) As Boolean
 End Function
 
 Private Function IsInput(cell As Range) As Boolean
-    ' Consider a cell as input if it has a value but no formula
-    ' Exclude text and dates
-    If cell.HasFormula Then Exit Function
+    ' Consider a cell as input if:
+    ' 1. It has a value but no formula, or
+    ' 2. It's a formula that only contains numbers and operators, or
+    ' 3. It's a formula that doesn't reference any cells
     If IsEmpty(cell.Value) Then Exit Function
     
     ' Check if cell contains text
@@ -110,8 +125,45 @@ Private Function IsInput(cell As Range) As Boolean
     ' Check if cell contains a date
     If IsDate(cell.Value) Then Exit Function
     
+    ' If it's a formula, check if it's only numbers/operators or has no references
+    If cell.HasFormula Then
+        Dim formula As String
+        formula = cell.Formula
+        
+        ' Check for cell references
+        Dim regEx As Object
+        Set regEx = CreateObject("VBScript.RegExp")
+        regEx.Global = True
+        
+        ' Pattern to match any cell reference (A1 style or R1C1 style)
+        regEx.Pattern = "[$]?[A-Za-z]+[$]?[0-9]+|R[0-9]*C[0-9]*"
+        
+        ' If no cell references found, treat as input
+        If Not regEx.Test(formula) Then
+            IsInput = True
+            Exit Function
+        End If
+        
+        ' Also check if it's only numbers and operators
+        IsInput = IsOnlyNumbersAndOperators(formula)
+        Exit Function
+    End If
+    
     ' If we get here, it's a numeric input
     IsInput = True
+End Function
+
+Private Function IsOnlyNumbersAndOperators(formula As String) As Boolean
+    ' Remove the equals sign if present
+    If Left(formula, 1) = "=" Then formula = Mid(formula, 2)
+    
+    ' Create regex to match only numbers, decimals, and basic operators
+    Dim regEx As Object
+    Set regEx = CreateObject("VBScript.RegExp")
+    regEx.Global = True
+    regEx.Pattern = "^[-+*/\d\s\.,()]*$"
+    
+    IsOnlyNumbersAndOperators = regEx.Test(formula)
 End Function
 
 Private Function IsPartialInput(cell As Range) As Boolean
@@ -122,6 +174,11 @@ Private Function IsPartialInput(cell As Range) As Boolean
     
     Dim formula As String
     formula = cell.Formula
+    
+    ' If formula only contains numbers and basic operators, treat as input
+    If IsOnlyNumbersAndOperators(formula) Then
+        Exit Function
+    End If
     
     ' Look for numbers in the formula (excluding cell references and function names)
     If Left(formula, 1) = "=" Then formula = Mid(formula, 2)
@@ -134,13 +191,17 @@ Private Function IsPartialInput(cell As Range) As Boolean
         formula = Replace(formula, func, "")
     Next func
     
-    ' Remove cell references (both A1 and R1C1 style)
+    ' Remove Excel-specific symbols and cell references
     Dim regEx As Object
     Set regEx = CreateObject("VBScript.RegExp")
     regEx.Global = True
     
-    ' Remove A1 style references
-    regEx.Pattern = "[A-Za-z]+[0-9]+"
+    ' Remove Excel-specific symbols ($, %, etc.)
+    regEx.Pattern = "[$%]"
+    formula = regEx.Replace(formula, "")
+    
+    ' Remove A1 style references (including with $ signs)
+    regEx.Pattern = "[$]?[A-Za-z]+[$]?[0-9]+"
     formula = regEx.Replace(formula, "")
     
     ' Remove R1C1 style references
