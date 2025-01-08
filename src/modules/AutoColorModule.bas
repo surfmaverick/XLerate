@@ -51,14 +51,14 @@ Sub AutoColorCells(control As IRibbonControl)
     Dim cell As Range
     For Each cell In usedCells
         If HasFormula(cell) Then
-            If IsWorkbookLink(cell) Then
+            If IsPartialInput(cell) Then
+                cell.Font.Color = COLOR_PARTIAL_INPUT
+            ElseIf IsWorkbookLink(cell) Then
                 cell.Font.Color = COLOR_WORKBOOK_LINK
             ElseIf IsWorksheetLink(cell) Then
                 cell.Font.Color = COLOR_WORKSHEET_LINK
             ElseIf IsExternalReference(cell) Then
                 cell.Font.Color = COLOR_EXTERNAL
-            ElseIf IsPartialInput(cell) Then
-                cell.Font.Color = COLOR_PARTIAL_INPUT
             ElseIf IsInput(cell) Then
                 cell.Font.Color = COLOR_INPUT
             Else
@@ -92,8 +92,15 @@ End Function
 Private Function IsWorkbookLink(cell As Range) As Boolean
     If Not cell.HasFormula Then Exit Function
     
-    ' Check if formula references another workbook
-    IsWorkbookLink = (Left(cell.Formula, 1) = "[")
+    Dim formula As String
+    formula = cell.Formula
+    
+    ' Look for [workbook] pattern anywhere in the formula
+    Dim regEx As Object
+    Set regEx = CreateObject("VBScript.RegExp")
+    regEx.Pattern = "\[[^\]]+\]"  ' Matches anything in square brackets
+    
+    IsWorkbookLink = regEx.Test(formula)
 End Function
 
 Private Function IsHyperlink(cell As Range) As Boolean
@@ -183,7 +190,16 @@ Private Function IsPartialInput(cell As Range) As Boolean
     ' Look for numbers in the formula (excluding cell references and function names)
     If Left(formula, 1) = "=" Then formula = Mid(formula, 2)
     
-    ' Exclude common functions that might contain numbers (like LEFT, RIGHT, MID)
+    ' Handle sheet references by replacing them with a placeholder
+    Dim regEx As Object
+    Set regEx = CreateObject("VBScript.RegExp")
+    regEx.Global = True
+    
+    ' Replace sheet references (including workbook references) with placeholder
+    regEx.Pattern = "(\[[^\]]+\])?'?[^!]+!'?"
+    formula = regEx.Replace(formula, "SHEET_REF!")
+    
+    ' Exclude common functions that might contain numbers
     Dim commonFuncs As Variant
     commonFuncs = Array("SUM", "AVERAGE", "COUNT", "LEFT", "RIGHT", "MID", "ROUND")
     Dim func As Variant
@@ -192,10 +208,6 @@ Private Function IsPartialInput(cell As Range) As Boolean
     Next func
     
     ' Remove Excel-specific symbols and cell references
-    Dim regEx As Object
-    Set regEx = CreateObject("VBScript.RegExp")
-    regEx.Global = True
-    
     ' Remove Excel-specific symbols ($, %, etc.)
     regEx.Pattern = "[$%]"
     formula = regEx.Replace(formula, "")
