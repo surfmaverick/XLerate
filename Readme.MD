@@ -18,6 +18,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 - Settings menu allows to add/remove/modify custom formats
 
 ### Other Features
+- Auto-color inputs, (partial) formulas, worksheet links, etc.
 - Wrap cells in IFERROR statements instantly
 - Switch signs of values and formulas instantly
 - New CAGR function to quickly add compound annual growth rates
@@ -73,6 +74,11 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
 3. For faster access, the number, cell and date cycles can be accessed via shortcuts: Pressing `Ctrl + Shift + 1` repeatedly cycles through set number formats, `+ 2` through cell fromats, and `+ 3` through date fromats
 4. Click on the "Settings" button in ribbon to access the predifined styles for numbers, cells and dates and to add your own styles to the cycles, or remove or modify existing ones
+
+### Auto-coloring of Numbers 
+1. Select a cell or range of cells
+2. Click "Auto-color Numbers" in the XLerate ribbon under Formatting
+3. The function applies different font colors to inputs, (partial) formulas, worksheet and workbook links, external links, and hyperlinks within the selection
 
 ### Error Wrapping
 1. Select a cell or range of cells
