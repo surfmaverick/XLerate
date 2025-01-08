@@ -53,4 +53,8 @@ Public Sub ShowSettingsForm(control As IRibbonControl)
     ShowSettings   ' Direct call instead of Application.Run
 End Sub
 
-
+Public Sub DoAutoColorCells(control As IRibbonControl)
+    Debug.Print "DoAutoColorCells callback started"
+    AutoColorCells control
+    Debug.Print "DoAutoColorCells callback ended"
+End Sub

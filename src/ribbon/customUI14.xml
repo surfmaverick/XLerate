@@ -70,6 +70,13 @@
                             onAction="WrapWithError"
                             screentip="Create Error Wrap"
                             supertip="Wraps the selected formula with an IFERROR statement"/>
+                    <button id="autoColorBtn"
+                            label="Auto-color Numbers"
+                            size="large"
+                            imageMso="AutoFormatChange"
+                            onAction="DoAutoColorCells"
+                            screentip="Auto-color Numbers"
+                            supertip="Colors cells based on their content type (formulas, links, etc.)"/>
                 </group>
                 <group id="settingsGroup" label="Settings">
                     <button id="settingsBtn"
