@@ -21,7 +21,8 @@ Private CellsPanel As MSForms.Frame
 Private DatesPanel As MSForms.Frame
 Private numberSettings As frmNumberSettings
 Private WithEvents lstCategories As MSForms.ListBox
-Attribute lstCategories.VB_VarHelpID = -1
+Private AutoColorPanel As MSForms.Frame
+Private autoColorSettings As frmAutoColor
 
 
 Private Sub UserForm_Initialize()
@@ -95,10 +96,23 @@ Private Sub InitializePanels()
         .Visible = False
     End With
     
-    ' Initialize both settings within their respective panels
+    ' Create Auto-Color panel frame
+    Set AutoColorPanel = Me.Controls.Add("Forms.Frame.1", "AutoColorPanel")
+    With AutoColorPanel
+        .Left = 170
+        .Top = 12
+        .Width = 410
+        .Height = 450
+        .Caption = ""
+        .BackColor = RGB(255, 255, 255)
+        .Visible = False
+    End With
+    
+    ' Initialize all settings within their respective panels
     InitializeNumberSettings NumbersPanel
     InitializeCellSettings CellsPanel
     InitializeDateSettings DatesPanel
+    InitializeAutoColorSettings AutoColorPanel
 End Sub
 
 Private Sub InitializeNumberSettings(parentFrame As MSForms.Frame)
@@ -122,6 +136,13 @@ Private Sub InitializeDateSettings(parentFrame As MSForms.Frame)
     Debug.Print "Date settings initialized"
 End Sub
 
+Private Sub InitializeAutoColorSettings(parentFrame As MSForms.Frame)
+    Debug.Print "Initializing auto-color settings"
+    Set autoColorSettings = New frmAutoColor
+    autoColorSettings.InitializeInPanel parentFrame
+    Debug.Print "Auto-color settings initialized"
+End Sub
+
 ' Show the requested panel and hide others
 Private Sub ShowPanel(panelName As String)
     Debug.Print vbNewLine & "=== ShowPanel called ==="
@@ -133,6 +154,7 @@ Private Sub ShowPanel(panelName As String)
     NumbersPanel.Visible = False
     DatesPanel.Visible = False
     CellsPanel.Visible = False
+    AutoColorPanel.Visible = False
     
     Select Case panelName
         Case "Numbers"
@@ -141,6 +163,8 @@ Private Sub ShowPanel(panelName As String)
             DatesPanel.Visible = True
         Case "Cells"
             CellsPanel.Visible = True
+        Case "Auto-Color"
+            AutoColorPanel.Visible = True
     End Select
     
     DebugPanelState
@@ -152,6 +176,8 @@ Private Sub UserForm_Terminate()
     Set NumbersPanel = Nothing
     Set CellsPanel = Nothing
     Set DatesPanel = Nothing
+    Set AutoColorPanel = Nothing
+    Set autoColorSettings = Nothing
     Set lstCategories = Nothing
 End Sub
 
@@ -190,6 +216,8 @@ Private Sub lstCategories_Click()
             ShowPanel "Cells"
         Case "Dates"
             ShowPanel "Dates"
+        Case "Auto-Color"
+            ShowPanel "Auto-Color"
         Case Else
             Debug.Print "Unknown category selected"
             ShowPanel "None"
@@ -225,14 +253,13 @@ Private Sub InitializeHierarchyList()
     Debug.Print "Initializing hierarchy list"
     lstCategories.Clear
     
-    Dim i As Integer
-
     With lstCategories
         .AddItem "Formatting"
         .List(.ListCount - 1, 1) = "HEADER"
         .AddItem "Numbers"
         .AddItem "Dates"
         .AddItem "Cells"
+        .AddItem "Auto-Color"
         .ListIndex = 1
     End With
     

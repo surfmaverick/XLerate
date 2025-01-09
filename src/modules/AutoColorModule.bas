@@ -1,19 +1,34 @@
 Option Explicit
 
-' Color constants - using direct color values instead of RGB function
-Private Const COLOR_INPUT As Long = 16711680         ' Blue (RGB 0, 0, 255)
-Private Const COLOR_FORMULA As Long = 0              ' Black (RGB 0, 0, 0)
-Private Const COLOR_WORKSHEET_LINK As Long = 32768   ' Green (RGB 0, 128, 0)
-Private Const COLOR_WORKBOOK_LINK As Long = 16751052 ' Light Purple (RGB 204, 153, 255)
-Private Const COLOR_EXTERNAL As Long = 15773696      ' Light Blue (RGB 0, 176, 240)
-Private Const COLOR_HYPERLINK As Long = 33023        ' Orange (RGB 255, 128, 0)
-Private Const COLOR_PARTIAL_INPUT As Long = 128      ' Purple (RGB 128, 0, 128)
+Private Const NAME_PREFIX As String = "AutoColor_"
 Private Const MAX_CELLS As Long = 50000  ' Maximum number of cells to process in one go
+
+' Function to get color from saved settings or return default
+Private Function GetSavedColor(colorName As String, defaultColor As Long) As Long
+    On Error Resume Next
+    Dim colorValue As String
+    colorValue = ThisWorkbook.Names(NAME_PREFIX & colorName).RefersTo
+    If Err.Number = 0 And colorValue <> "" Then
+        GetSavedColor = CLng(Mid(colorValue, 2)) ' Remove the = sign
+    Else
+        GetSavedColor = defaultColor
+    End If
+    On Error GoTo 0
+End Function
 
 Sub AutoColorCells(control As IRibbonControl)
     Debug.Print "AutoColorCells started"
     
     Application.ScreenUpdating = False
+    
+    ' Get saved colors or use defaults
+    Dim colorInput As Long: colorInput = GetSavedColor("Input", 16711680)         ' Default: Blue
+    Dim colorFormula As Long: colorFormula = GetSavedColor("Formula", 0)          ' Default: Black
+    Dim colorWorksheetLink As Long: colorWorksheetLink = GetSavedColor("WorksheetLink", 32768)   ' Default: Green
+    Dim colorWorkbookLink As Long: colorWorkbookLink = GetSavedColor("WorkbookLink", 16751052)  ' Default: Light Purple
+    Dim colorExternal As Long: colorExternal = GetSavedColor("External", 15773696)      ' Default: Light Blue
+    Dim colorHyperlink As Long: colorHyperlink = GetSavedColor("Hyperlink", 33023)      ' Default: Orange
+    Dim colorPartialInput As Long: colorPartialInput = GetSavedColor("PartialInput", 128)     ' Default: Purple
     
     Dim rng As Range
     If TypeName(Selection) <> "Range" Then Exit Sub
@@ -52,22 +67,22 @@ Sub AutoColorCells(control As IRibbonControl)
     For Each cell In usedCells
         If HasFormula(cell) Then
             If IsPartialInput(cell) Then
-                cell.Font.Color = COLOR_PARTIAL_INPUT
+                cell.Font.Color = colorPartialInput
             ElseIf IsWorkbookLink(cell) Then
-                cell.Font.Color = COLOR_WORKBOOK_LINK
+                cell.Font.Color = colorWorkbookLink
             ElseIf IsWorksheetLink(cell) Then
-                cell.Font.Color = COLOR_WORKSHEET_LINK
+                cell.Font.Color = colorWorksheetLink
             ElseIf IsExternalReference(cell) Then
-                cell.Font.Color = COLOR_EXTERNAL
+                cell.Font.Color = colorExternal
             ElseIf IsInput(cell) Then
-                cell.Font.Color = COLOR_INPUT
+                cell.Font.Color = colorInput
             Else
-                cell.Font.Color = COLOR_FORMULA
+                cell.Font.Color = colorFormula
             End If
         ElseIf IsHyperlink(cell) Then
-            cell.Font.Color = COLOR_HYPERLINK
+            cell.Font.Color = colorHyperlink
         ElseIf IsInput(cell) Then
-            cell.Font.Color = COLOR_INPUT
+            cell.Font.Color = colorInput
         End If
     Next cell
     
