@@ -24,6 +24,13 @@
                             onAction="SwitchCellSign"
                             screentip="Switch Sign"
                             supertip="Switches the sign of numbers or formulas in the selected cells"/>
+                    <button id="smartFillRightBtn"
+                            label="Smart Fill Right"
+                            size="large"
+                            imageMso="AutoSum"
+                            onAction="SmartFillRight"
+                            screentip="Smart Fill Right"
+                            supertip="Automatically fills formulas right based on data pattern in rows above"/>
                 </group>
                 <group id="consistencyGroup" label="Auditing">
                     <button id="checkHorizFormulasBtn"

@@ -29,8 +29,12 @@ Private Sub Workbook_Open()
     Debug.Print "Shortcut Ctrl + Shift + 3 assigned to CycleDateFormat"
     
     ' Add reset shortcut
-    Application.OnKey "^+0", "ResetAllFormatsToDefaults"  ' Remove module name
+    Application.OnKey "^+0", "ResetAllFormatsToDefaults"
     Debug.Print "Shortcut Ctrl + Shift + 0 assigned to ResetAllFormatsToDefaults"
+    
+    ' Add Smart Fill Right shortcut
+    Application.OnKey "^+R", "SmartFillRight"
+    Debug.Print "Shortcut Ctrl + Shift + R assigned to SmartFillRight"
 End Sub
 
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
@@ -39,4 +43,5 @@ Private Sub Workbook_BeforeClose(Cancel As Boolean)
     Application.OnKey "^+2"
     Application.OnKey "^+3"
     Application.OnKey "^+0"
+    Application.OnKey "^+R"
 End Sub
