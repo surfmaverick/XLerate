@@ -73,17 +73,19 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 1. Select a cell or range of cells
 2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
 3. For faster access, the number, cell and date cycles can be accessed via shortcuts: Pressing `Ctrl + Shift + 1` repeatedly cycles through set number formats, `+ 2` through cell fromats, and `+ 3` through date fromats
-4. Click on the "Settings" button in ribbon to access the predifined styles for numbers, cells and dates and to add your own styles to the cycles, or remove or modify existing ones
+4. Click on the "Settings" button in ribbon and then on "Numbers", "Dates" or "Cells" to access the predifined styles and to add your own styles to the cycles, or to remove or modify existing ones
 
 ### Auto-coloring of Numbers 
 1. Select a cell or range of cells
 2. Click "Auto-color Numbers" in the XLerate ribbon under Formatting
 3. The function applies different font colors to inputs, (partial) formulas, worksheet and workbook links, external links, and hyperlinks within the selection
+4. Click on the "Settings" button in ribbon and then on "Auto-Color" to access the predifined colors, modify existing ones or reset them to defaults
 
 ### Error Wrapping
 1. Select a cell or range of cells
 2. Click "Error Wrap" in the XLerate ribbon under Formatting to add an IFERROR statement to any formulas within your selection
 3. If one of the selected cells does not contain a formula and is not affected a pop-up window will alert you to this
+4. Click on the "Settings" button in ribbon and then on "Error" to access or modify the predifined error value displayed
 
 ### Switch Sings
 1. Select a cell or range of cells
