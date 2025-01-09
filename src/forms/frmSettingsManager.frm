@@ -23,6 +23,7 @@ Private numberSettings As frmNumberSettings
 Private WithEvents lstCategories As MSForms.ListBox
 Private AutoColorPanel As MSForms.Frame
 Private autoColorSettings As frmAutoColor
+Private ErrorPanel As MSForms.Frame
 
 
 Private Sub UserForm_Initialize()
@@ -108,11 +109,24 @@ Private Sub InitializePanels()
         .Visible = False
     End With
     
+    ' Create Error panel frame
+    Set ErrorPanel = Me.Controls.Add("Forms.Frame.1", "ErrorPanel")
+    With ErrorPanel
+        .Left = 170
+        .Top = 12
+        .Width = 410
+        .Height = 450
+        .Caption = ""
+        .BackColor = RGB(255, 255, 255)
+        .Visible = False
+    End With
+    
     ' Initialize all settings within their respective panels
     InitializeNumberSettings NumbersPanel
     InitializeCellSettings CellsPanel
     InitializeDateSettings DatesPanel
     InitializeAutoColorSettings AutoColorPanel
+    InitializeErrorSettings ErrorPanel
 End Sub
 
 Private Sub InitializeNumberSettings(parentFrame As MSForms.Frame)
@@ -143,6 +157,11 @@ Private Sub InitializeAutoColorSettings(parentFrame As MSForms.Frame)
     Debug.Print "Auto-color settings initialized"
 End Sub
 
+Private Sub InitializeErrorSettings(parentFrame As MSForms.Frame)
+    Dim errorSettings As New frmErrorSettings
+    errorSettings.InitializeInPanel parentFrame
+End Sub
+
 ' Show the requested panel and hide others
 Private Sub ShowPanel(panelName As String)
     Debug.Print vbNewLine & "=== ShowPanel called ==="
@@ -155,6 +174,7 @@ Private Sub ShowPanel(panelName As String)
     DatesPanel.Visible = False
     CellsPanel.Visible = False
     AutoColorPanel.Visible = False
+    ErrorPanel.Visible = False
     
     Select Case panelName
         Case "Numbers"
@@ -165,6 +185,8 @@ Private Sub ShowPanel(panelName As String)
             CellsPanel.Visible = True
         Case "Auto-Color"
             AutoColorPanel.Visible = True
+        Case "Error"
+            ErrorPanel.Visible = True
     End Select
     
     DebugPanelState
@@ -218,6 +240,8 @@ Private Sub lstCategories_Click()
             ShowPanel "Dates"
         Case "Auto-Color"
             ShowPanel "Auto-Color"
+        Case "Error"
+            ShowPanel "Error"
         Case Else
             Debug.Print "Unknown category selected"
             ShowPanel "None"
@@ -260,6 +284,7 @@ Private Sub InitializeHierarchyList()
         .AddItem "Dates"
         .AddItem "Cells"
         .AddItem "Auto-Color"
+        .AddItem "Error"
         .ListIndex = 1
     End With
     

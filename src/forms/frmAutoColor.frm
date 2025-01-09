@@ -26,6 +26,7 @@ Private WithEvents btnExternalColor As MSForms.CommandButton
 Private WithEvents btnHyperlinkColor As MSForms.CommandButton
 Private WithEvents btnPartialInputColor As MSForms.CommandButton
 Private WithEvents btnResetDefaults As MSForms.CommandButton
+Private WithEvents btnSave As MSForms.CommandButton
 
 Public Sub InitializeInPanel(parentFrame As MSForms.Frame)
     ' Create labels and color buttons
@@ -84,6 +85,16 @@ Private Sub CreateControls(parentFrame As MSForms.Frame)
         .Width = 120
         .Height = height
         .Caption = "Reset to Defaults"
+    End With
+    
+    ' Add Save button next to Reset Defaults
+    Set btnSave = parentFrame.Controls.Add("Forms.CommandButton.1", "btnSave")
+    With btnSave
+        .Left = 140  ' Position it next to Reset Defaults
+        .Top = btnResetDefaults.Top
+        .Width = 120
+        .Height = btnResetDefaults.Height
+        .Caption = "Save Changes"
     End With
 End Sub
 
@@ -165,7 +176,6 @@ Private Sub btnInputColor_Click()
     newColor = ShowColorDialog
     If newColor <> -1 Then
         btnInputColor.BackColor = newColor
-        SaveColor "Input", newColor
     End If
 End Sub
 
@@ -174,7 +184,6 @@ Private Sub btnFormulaColor_Click()
     newColor = ShowColorDialog
     If newColor <> -1 Then
         btnFormulaColor.BackColor = newColor
-        SaveColor "Formula", newColor
     End If
 End Sub
 
@@ -183,7 +192,6 @@ Private Sub btnWorksheetLinkColor_Click()
     newColor = ShowColorDialog
     If newColor <> -1 Then
         btnWorksheetLinkColor.BackColor = newColor
-        SaveColor "WorksheetLink", newColor
     End If
 End Sub
 
@@ -192,7 +200,6 @@ Private Sub btnWorkbookLinkColor_Click()
     newColor = ShowColorDialog
     If newColor <> -1 Then
         btnWorkbookLinkColor.BackColor = newColor
-        SaveColor "WorkbookLink", newColor
     End If
 End Sub
 
@@ -201,7 +208,6 @@ Private Sub btnExternalColor_Click()
     newColor = ShowColorDialog
     If newColor <> -1 Then
         btnExternalColor.BackColor = newColor
-        SaveColor "External", newColor
     End If
 End Sub
 
@@ -210,7 +216,6 @@ Private Sub btnHyperlinkColor_Click()
     newColor = ShowColorDialog
     If newColor <> -1 Then
         btnHyperlinkColor.BackColor = newColor
-        SaveColor "Hyperlink", newColor
     End If
 End Sub
 
@@ -219,7 +224,6 @@ Private Sub btnPartialInputColor_Click()
     newColor = ShowColorDialog
     If newColor <> -1 Then
         btnPartialInputColor.BackColor = newColor
-        SaveColor "PartialInput", newColor
     End If
 End Sub
 
@@ -237,15 +241,23 @@ Private Sub btnResetDefaults_Click()
         btnHyperlinkColor.BackColor = 33023       ' Orange
         btnPartialInputColor.BackColor = 128      ' Purple
         
-        ' Save default colors
-        SaveColor "Input", 16711680
-        SaveColor "Formula", 0
-        SaveColor "WorksheetLink", 32768
-        SaveColor "WorkbookLink", 16751052
-        SaveColor "External", 15773696
-        SaveColor "Hyperlink", 33023
-        SaveColor "PartialInput", 128
-        
-        MsgBox "Colors have been reset to defaults.", vbInformation
+        MsgBox "Colors have been reset to defaults. Click 'Save Changes' to persist these changes.", vbInformation
     End If
+End Sub
+
+' Add save button click handler
+Private Sub btnSave_Click()
+    ' Save all current colors
+    SaveColor "Input", btnInputColor.BackColor
+    SaveColor "Formula", btnFormulaColor.BackColor
+    SaveColor "WorksheetLink", btnWorksheetLinkColor.BackColor
+    SaveColor "WorkbookLink", btnWorkbookLinkColor.BackColor
+    SaveColor "External", btnExternalColor.BackColor
+    SaveColor "Hyperlink", btnHyperlinkColor.BackColor
+    SaveColor "PartialInput", btnPartialInputColor.BackColor
+    
+    ' Save the workbook to persist the changes
+    ThisWorkbook.Save
+    
+    MsgBox "Colors saved successfully!", vbInformation
 End Sub 

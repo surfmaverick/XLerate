@@ -6,6 +6,15 @@ Sub WrapWithError(control As IRibbonControl)
     Dim selectedCell As Range
     Dim cellCount As Long
     Dim errorCount As Long
+    Dim errorValue As String
+    
+    ' Get the saved error value or use default
+    On Error Resume Next
+    errorValue = ThisWorkbook.CustomDocumentProperties("ErrorValue")
+    If Err.Number <> 0 Or errorValue = "" Then
+        errorValue = "NA()"
+    End If
+    On Error GoTo 0
     
     cellCount = 0
     errorCount = 0
@@ -14,8 +23,8 @@ Sub WrapWithError(control As IRibbonControl)
     For Each selectedCell In Selection
         ' Check if the cell contains a formula
         If selectedCell.HasFormula Then
-            ' Wrap the formula with IFERROR
-            selectedCell.formula = "=IFERROR(" & Mid(selectedCell.formula, 2) & ", NA())"
+            ' Wrap the formula with IFERROR using the saved error value
+            selectedCell.Formula = "=IFERROR(" & Mid(selectedCell.Formula, 2) & ", " & errorValue & ")"
             cellCount = cellCount + 1
         Else
             errorCount = errorCount + 1
