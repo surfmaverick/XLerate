@@ -107,6 +107,8 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 
 We **highly recommend** adding individual functions you use often to Excel's quick access toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:", dropdown select "XLerate Tab" and add any function as needed.
 
+NOTE: The above functions mainly rely on Excel macros and, as part of Excel's design, executing a macro empties the user's Undo chain. This means that after executing a function your Undo steps will be reset (`Ctrl+Z` will have no effect right after executing a macro and the Undo chain starts again). Therefore, save your work frequently (the best standard procedure for financial analysis in Excel) to retain your ability to step back to an earlier version if need be at any time.
+
 ## 🛠️ Contributing
 
 We love your input! We want to make contributing to XLerate as easy and transparent as possible, whether it's:
