@@ -17,6 +17,10 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 - Cycling through set number, cell and date formats with shortcuts `Ctrl + Shift + 1-3`
 - Settings menu allows to add/remove/modify custom formats
 
+### Smart Fill Function
+- Smart-fill formulas using `Ctrl + Shift + R`
+- Automatically fills formulas to the right based on the pattern in the rows above
+
 ### Other Features
 - Auto-color inputs, (partial) formulas, worksheet links, etc.
 - Wrap cells in IFERROR statements instantly
@@ -80,6 +84,12 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 2. Click "Auto-color Numbers" in the XLerate ribbon under Formatting
 3. The function applies different font colors to inputs, (partial) formulas, worksheet and workbook links, external links, and hyperlinks within the selection
 4. Click on the "Settings" button in ribbon and then on "Auto-Color" to access the predifined colors, modify existing ones or reset them to defaults
+
+### Smart Fill Right
+1. Select a cell containing a formula which has a range of values in any of the 3 rows above it
+2. Click "Smart Fill Right" in the XLerate ribbon under Formulas to apply the smart fill function
+3. For faster access, use the `Ctrl + Shift + R` shortcut
+4. The smart fill function applies if there is a pattern of values within 1-3 rows above the reference cell
 
 ### Error Wrapping
 1. Select a cell or range of cells
