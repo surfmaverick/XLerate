@@ -76,7 +76,7 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 ### Number, Cell, Date and Text Formatting Cycles
 1. Select a cell or range of cells
 2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
-3. For faster access, the number, cell and date cycles can be accessed via shortcuts: Pressing `Ctrl + Shift + 1` repeatedly cycles through set number formats, `+ 2` through cell fromats, `+ 3` through date fromats, and `+ 4` through text fromats
+3. For faster access, the number, cell and date cycles can be accessed via shortcuts: Pressing `Ctrl + Shift + 1` repeatedly cycles through set number formats, `+ 2` through cell formats, `+ 3` through date formats, and `+ 4` through text formats
 4. Click on the "Settings" button in ribbon and then on "Numbers", "Dates", "Cells" or "Text Styles" to access the predifined styles and to add your own styles to the cycles, or to remove or modify existing ones
 
 ### Auto-coloring of Numbers 
