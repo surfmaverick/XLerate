@@ -35,6 +35,10 @@ Private Sub Workbook_Open()
     ' Add Smart Fill Right shortcut
     Application.OnKey "^+R", "SmartFillRight"
     Debug.Print "Shortcut Ctrl + Shift + R assigned to SmartFillRight"
+    
+    ' Add Text Style cycling shortcut
+    Application.OnKey "^+4", "ModTextStyle.CycleTextStyle"
+    Debug.Print "Shortcut Ctrl + Shift + 4 assigned to CycleTextStyle"
 End Sub
 
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
@@ -44,4 +48,5 @@ Private Sub Workbook_BeforeClose(Cancel As Boolean)
     Application.OnKey "^+3"
     Application.OnKey "^+0"
     Application.OnKey "^+R"
+    Application.OnKey "^+4"
 End Sub

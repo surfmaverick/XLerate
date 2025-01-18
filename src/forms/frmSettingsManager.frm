@@ -24,6 +24,8 @@ Private WithEvents lstCategories As MSForms.ListBox
 Private AutoColorPanel As MSForms.Frame
 Private autoColorSettings As frmAutoColor
 Private ErrorPanel As MSForms.Frame
+Private TextStylesPanel As MSForms.Frame
+Private textStyleSettings As frmTextStyle
 
 
 Private Sub UserForm_Initialize()
@@ -121,12 +123,27 @@ Private Sub InitializePanels()
         .Visible = False
     End With
     
+    ' Create Text Styles panel frame
+    Set TextStylesPanel = Me.Controls.Add("Forms.Frame.1", "TextStylesPanel")
+    With TextStylesPanel
+        .Left = 170
+        .Top = 12
+        .Width = 410
+        .Height = 450
+        .Caption = ""
+        .BackColor = RGB(255, 255, 255)
+        .Visible = False
+    End With
+    
     ' Initialize all settings within their respective panels
+    Debug.Print "Initializing all panels..."
     InitializeNumberSettings NumbersPanel
     InitializeCellSettings CellsPanel
     InitializeDateSettings DatesPanel
     InitializeAutoColorSettings AutoColorPanel
     InitializeErrorSettings ErrorPanel
+    InitializeTextStyleSettings TextStylesPanel
+    Debug.Print "All panels initialized"
 End Sub
 
 Private Sub InitializeNumberSettings(parentFrame As MSForms.Frame)
@@ -162,12 +179,38 @@ Private Sub InitializeErrorSettings(parentFrame As MSForms.Frame)
     errorSettings.InitializeInPanel parentFrame
 End Sub
 
+Private Sub InitializeTextStyleSettings(parentFrame As MSForms.Frame)
+    On Error GoTo ErrorHandler
+    
+    Debug.Print vbNewLine & "=== InitializeTextStyleSettings START ==="
+    Debug.Print "Creating new frmTextStyle instance"
+    Set textStyleSettings = New frmTextStyle
+    
+    Debug.Print "Initializing text style settings in panel"
+    Debug.Print "Parent frame is Nothing: " & (parentFrame Is Nothing)
+    If Not parentFrame Is Nothing Then
+        Debug.Print "Parent frame name: " & parentFrame.Name
+    End If
+    
+    textStyleSettings.InitializeInPanel parentFrame
+    Debug.Print "=== InitializeTextStyleSettings END ==="
+    Exit Sub
+
+ErrorHandler:
+    Debug.Print "Error in InitializeTextStyleSettings: " & Err.Description & " (Error " & Err.Number & ")"
+    Resume Next
+End Sub
+
 ' Show the requested panel and hide others
 Private Sub ShowPanel(panelName As String)
     Debug.Print vbNewLine & "=== ShowPanel called ==="
     Debug.Print "panelName: '" & panelName & "'"
     
-    DebugPanelState
+    ' Debug panel objects
+    Debug.Print "TextStylesPanel Is Nothing: " & (TextStylesPanel Is Nothing)
+    If Not TextStylesPanel Is Nothing Then
+        Debug.Print "TextStylesPanel.Name: " & TextStylesPanel.Name
+    End If
     
     ' Hide all panels first
     NumbersPanel.Visible = False
@@ -175,18 +218,27 @@ Private Sub ShowPanel(panelName As String)
     CellsPanel.Visible = False
     AutoColorPanel.Visible = False
     ErrorPanel.Visible = False
+    TextStylesPanel.Visible = False
     
     Select Case panelName
         Case "Numbers"
             NumbersPanel.Visible = True
+            Debug.Print "Showing Numbers panel"
         Case "Dates"
             DatesPanel.Visible = True
+            Debug.Print "Showing Dates panel"
         Case "Cells"
             CellsPanel.Visible = True
+            Debug.Print "Showing Cells panel"
         Case "Auto-Color"
             AutoColorPanel.Visible = True
+            Debug.Print "Showing Auto-Color panel"
         Case "Error"
             ErrorPanel.Visible = True
+            Debug.Print "Showing Error panel"
+        Case "Text Styles"
+            TextStylesPanel.Visible = True
+            Debug.Print "Showing Text Styles panel"
     End Select
     
     DebugPanelState
@@ -200,6 +252,9 @@ Private Sub UserForm_Terminate()
     Set DatesPanel = Nothing
     Set AutoColorPanel = Nothing
     Set autoColorSettings = Nothing
+    Set ErrorPanel = Nothing
+    Set TextStylesPanel = Nothing
+    Set textStyleSettings = Nothing
     Set lstCategories = Nothing
 End Sub
 
@@ -242,6 +297,8 @@ Private Sub lstCategories_Click()
             ShowPanel "Auto-Color"
         Case "Error"
             ShowPanel "Error"
+        Case "Text Styles"
+            ShowPanel "Text Styles"
         Case Else
             Debug.Print "Unknown category selected"
             ShowPanel "None"
@@ -284,6 +341,7 @@ Private Sub InitializeHierarchyList()
         .AddItem "Dates"
         .AddItem "Cells"
         .AddItem "Auto-Color"
+        .AddItem "Text Styles"
         .AddItem "Error"
         .ListIndex = 1
     End With
