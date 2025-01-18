@@ -14,7 +14,7 @@ XLerate is an open-source Excel add-in for Windows and Mac designed to speed up 
 - Visual highlighting of formula pattern breaks to help prevent common modelling errors
 
 ### Cell Format Cycling
-- Cycling through set number, cell and date formats with shortcuts `Ctrl + Shift + 1-3`
+- Cycling through set number, cell, date and text formats with shortcuts `Ctrl + Shift + 1-4`
 - Settings menu allows to add/remove/modify custom formats
 
 ### Smart Fill Function
@@ -73,11 +73,11 @@ After installation, you'll find the XLerate tab in your Excel ribbon:
 2. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
 3. Click "Horizontal Consistency" again to remove the formatting   
 
-### Number, Cell and Date Formatting Cycles
+### Number, Cell, Date and Text Formatting Cycles
 1. Select a cell or range of cells
 2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
-3. For faster access, the number, cell and date cycles can be accessed via shortcuts: Pressing `Ctrl + Shift + 1` repeatedly cycles through set number formats, `+ 2` through cell fromats, and `+ 3` through date fromats
-4. Click on the "Settings" button in ribbon and then on "Numbers", "Dates" or "Cells" to access the predifined styles and to add your own styles to the cycles, or to remove or modify existing ones
+3. For faster access, the number, cell and date cycles can be accessed via shortcuts: Pressing `Ctrl + Shift + 1` repeatedly cycles through set number formats, `+ 2` through cell fromats, `+ 3` through date fromats, and `+ 4` through text fromats
+4. Click on the "Settings" button in ribbon and then on "Numbers", "Dates", "Cells" or "Text Styles" to access the predifined styles and to add your own styles to the cycles, or to remove or modify existing ones
 
 ### Auto-coloring of Numbers 
 1. Select a cell or range of cells
