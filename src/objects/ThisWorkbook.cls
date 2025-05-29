@@ -39,6 +39,12 @@ Private Sub Workbook_Open()
     ' Add Text Style cycling shortcut
     Application.OnKey "^+4", "ModTextStyle.CycleTextStyle"
     Debug.Print "Shortcut Ctrl + Shift + 4 assigned to CycleTextStyle"
+
+    ' Add Text Style Short for Trace Precendents
+    Application.OnKey "^+[", "ShowTracePrecedents"
+    Debug.Print "Shortcut Ctrl + [ assigned to ShowTracePrecedents"
+
+
 End Sub
 
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
@@ -49,4 +55,5 @@ Private Sub Workbook_BeforeClose(Cancel As Boolean)
     Application.OnKey "^+0"
     Application.OnKey "^+R"
     Application.OnKey "^+4"
+    Application.OnKey "^+["
 End Sub
