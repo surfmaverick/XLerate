@@ -55,5 +55,4 @@ Private Sub Workbook_BeforeClose(Cancel As Boolean)
     Application.OnKey "^+0"
     Application.OnKey "^+R"
     Application.OnKey "^+4"
-    Application.OnKey "^+["
 End Sub
