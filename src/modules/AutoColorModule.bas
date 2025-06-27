@@ -1,3 +1,13 @@
+' =============================================================================
+' File: AutoColorModule.bas
+' Version: 2.0.0
+' Description: Enhanced auto-color functions with sheet and workbook support
+' Author: XLerate Development Team
+' Created: Enhanced for Macabacus compatibility
+' Last Modified: 2025-06-27
+' =============================================================================
+
+Attribute VB_Name = "AutoColorModule"
 Option Explicit
 
 Private Const NAME_PREFIX As String = "AutoColor_"
@@ -16,7 +26,9 @@ Private Function GetSavedColor(colorName As String, defaultColor As Long) As Lon
     On Error GoTo 0
 End Function
 
-Sub AutoColorCells(control As IRibbonControl)
+' === MAIN AUTO-COLOR FUNCTIONS (Macabacus-style) ===
+
+Sub AutoColorCells(Optional control As IRibbonControl)
     Debug.Print "AutoColorCells started"
     
     Application.ScreenUpdating = False
@@ -33,6 +45,87 @@ Sub AutoColorCells(control As IRibbonControl)
     Dim rng As Range
     If TypeName(Selection) <> "Range" Then Exit Sub
     Set rng = Selection
+    
+    ProcessRangeAutoColor rng, colorInput, colorFormula, colorWorksheetLink, colorWorkbookLink, colorExternal, colorHyperlink, colorPartialInput
+    
+    Application.ScreenUpdating = True
+    Debug.Print "AutoColorCells ended"
+End Sub
+
+Sub AutoColorSheet(Optional control As IRibbonControl)
+    Debug.Print "AutoColorSheet started"
+    
+    Application.ScreenUpdating = False
+    Application.StatusBar = "Auto-coloring sheet... Please wait."
+    
+    ' Get saved colors
+    Dim colorInput As Long: colorInput = GetSavedColor("Input", 16711680)
+    Dim colorFormula As Long: colorFormula = GetSavedColor("Formula", 0)
+    Dim colorWorksheetLink As Long: colorWorksheetLink = GetSavedColor("WorksheetLink", 32768)
+    Dim colorWorkbookLink As Long: colorWorkbookLink = GetSavedColor("WorkbookLink", 16751052)
+    Dim colorExternal As Long: colorExternal = GetSavedColor("External", 15773696)
+    Dim colorHyperlink As Long: colorHyperlink = GetSavedColor("Hyperlink", 33023)
+    Dim colorPartialInput As Long: colorPartialInput = GetSavedColor("PartialInput", 128)
+    
+    ' Process the entire used range of the active sheet
+    Dim ws As Worksheet
+    Set ws = ActiveSheet
+    
+    If Not ws.UsedRange Is Nothing Then
+        ProcessRangeAutoColor ws.UsedRange, colorInput, colorFormula, colorWorksheetLink, colorWorkbookLink, colorExternal, colorHyperlink, colorPartialInput
+    End If
+    
+    Application.StatusBar = False
+    Application.ScreenUpdating = True
+    Debug.Print "AutoColorSheet ended"
+    
+    MsgBox "Auto-coloring completed for worksheet: " & ws.Name, vbInformation
+End Sub
+
+Sub AutoColorWorkbook(Optional control As IRibbonControl)
+    Debug.Print "AutoColorWorkbook started"
+    
+    Application.ScreenUpdating = False
+    Application.StatusBar = "Auto-coloring workbook... Please wait."
+    
+    ' Get saved colors
+    Dim colorInput As Long: colorInput = GetSavedColor("Input", 16711680)
+    Dim colorFormula As Long: colorFormula = GetSavedColor("Formula", 0)
+    Dim colorWorksheetLink As Long: colorWorksheetLink = GetSavedColor("WorksheetLink", 32768)
+    Dim colorWorkbookLink As Long: colorWorkbookLink = GetSavedColor("WorkbookLink", 16751052)
+    Dim colorExternal As Long: colorExternal = GetSavedColor("External", 15773696)
+    Dim colorHyperlink As Long: colorHyperlink = GetSavedColor("Hyperlink", 33023)
+    Dim colorPartialInput As Long: colorPartialInput = GetSavedColor("PartialInput", 128)
+    
+    Dim ws As Worksheet
+    Dim totalSheets As Integer
+    Dim currentSheet As Integer
+    
+    totalSheets = ActiveWorkbook.Worksheets.Count
+    currentSheet = 0
+    
+    ' Process all worksheets in the workbook
+    For Each ws In ActiveWorkbook.Worksheets
+        currentSheet = currentSheet + 1
+        Application.StatusBar = "Auto-coloring workbook... Sheet " & currentSheet & " of " & totalSheets & " (" & ws.Name & ")"
+        
+        If Not ws.UsedRange Is Nothing Then
+            ProcessRangeAutoColor ws.UsedRange, colorInput, colorFormula, colorWorksheetLink, colorWorkbookLink, colorExternal, colorHyperlink, colorPartialInput
+        End If
+    Next ws
+    
+    Application.StatusBar = False
+    Application.ScreenUpdating = True
+    Debug.Print "AutoColorWorkbook ended"
+    
+    MsgBox "Auto-coloring completed for entire workbook (" & totalSheets & " sheets processed).", vbInformation
+End Sub
+
+' === CORE PROCESSING FUNCTION ===
+
+Private Sub ProcessRangeAutoColor(rng As Range, colorInput As Long, colorFormula As Long, _
+                                 colorWorksheetLink As Long, colorWorkbookLink As Long, _
+                                 colorExternal As Long, colorHyperlink As Long, colorPartialInput As Long)
     
     On Error Resume Next
     
@@ -57,14 +150,22 @@ Sub AutoColorCells(control As IRibbonControl)
     On Error GoTo 0
     
     ' If no cells with content found, exit
-    If usedCells Is Nothing Then
-        Application.ScreenUpdating = True
-        Exit Sub
-    End If
+    If usedCells Is Nothing Then Exit Sub
+    
+    ' Process cells in batches to avoid performance issues
+    Dim cellCount As Long
+    cellCount = 0
     
     ' Process only the cells that contain something
     Dim cell As Range
     For Each cell In usedCells
+        cellCount = cellCount + 1
+        
+        ' Update status bar every 1000 cells
+        If cellCount Mod 1000 = 0 Then
+            Application.StatusBar = "Processing cell " & cellCount & "..."
+        End If
+        
         If HasFormula(cell) Then
             If IsPartialInput(cell) Then
                 cell.Font.Color = colorPartialInput
@@ -84,11 +185,109 @@ Sub AutoColorCells(control As IRibbonControl)
         ElseIf IsInput(cell) Then
             cell.Font.Color = colorInput
         End If
+        
+        ' Break if processing too many cells at once
+        If cellCount > MAX_CELLS Then
+            Debug.Print "Reached maximum cell limit for single operation: " & MAX_CELLS
+            Exit For
+        End If
     Next cell
     
-    Application.ScreenUpdating = True
-    Debug.Print "AutoColorCells ended"
+    Debug.Print "Processed " & cellCount & " cells"
 End Sub
+
+' === ENHANCED COLOR CYCLING FUNCTIONS ===
+
+Public Sub CycleFontColor(Optional control As IRibbonControl)
+    If Selection Is Nothing Then Exit Sub
+    
+    ' Define color cycle (Macabacus-style)
+    Dim colors As Variant
+    colors = Array(RGB(0, 0, 0), RGB(255, 0, 0), RGB(0, 0, 255), RGB(0, 128, 0), RGB(128, 0, 128), RGB(255, 165, 0))
+    
+    CycleColorProperty colors, "Font"
+End Sub
+
+Public Sub CycleFillColor(Optional control As IRibbonControl)
+    If Selection Is Nothing Then Exit Sub
+    
+    ' Define fill color cycle
+    Dim colors As Variant
+    colors = Array(RGB(255, 255, 255), RGB(255, 255, 0), RGB(192, 192, 192), RGB(255, 192, 203), RGB(173, 216, 230), RGB(144, 238, 144))
+    
+    CycleColorProperty colors, "Fill"
+End Sub
+
+Public Sub CycleBorderColor(Optional control As IRibbonControl)
+    If Selection Is Nothing Then Exit Sub
+    
+    ' Define border color cycle
+    Dim colors As Variant
+    colors = Array(RGB(0, 0, 0), RGB(128, 128, 128), RGB(255, 0, 0), RGB(0, 0, 255), RGB(0, 128, 0))
+    
+    CycleColorProperty colors, "Border"
+End Sub
+
+Public Sub CycleBlueBlack(Optional control As IRibbonControl)
+    If Selection Is Nothing Then Exit Sub
+    
+    On Error Resume Next
+    Dim currentColor As Long
+    currentColor = Selection.Font.Color
+    
+    If currentColor = RGB(0, 0, 255) Then  ' Blue
+        Selection.Font.Color = RGB(0, 0, 0)        ' Black
+    Else
+        Selection.Font.Color = RGB(0, 0, 255)      ' Blue
+    End If
+    On Error GoTo 0
+End Sub
+
+Private Sub CycleColorProperty(colors As Variant, propertyType As String)
+    On Error Resume Next
+    
+    Dim currentColor As Long
+    Dim nextColorIndex As Integer
+    Dim i As Integer
+    
+    ' Get current color based on property type
+    Select Case propertyType
+        Case "Font"
+            currentColor = Selection.Font.Color
+        Case "Fill"
+            currentColor = Selection.Interior.Color
+        Case "Border"
+            currentColor = Selection.Borders(xlEdgeTop).Color
+    End Select
+    
+    ' Find current color in array and get next one
+    nextColorIndex = 0  ' Default to first color
+    For i = LBound(colors) To UBound(colors)
+        If colors(i) = currentColor Then
+            nextColorIndex = IIf(i < UBound(colors), i + 1, LBound(colors))
+            Exit For
+        End If
+    Next i
+    
+    ' Apply the next color
+    Select Case propertyType
+        Case "Font"
+            Selection.Font.Color = colors(nextColorIndex)
+        Case "Fill"
+            Selection.Interior.Color = colors(nextColorIndex)
+        Case "Border"
+            Dim edges As Variant
+            edges = Array(xlEdgeTop, xlEdgeBottom, xlEdgeLeft, xlEdgeRight)
+            Dim edge As Variant
+            For Each edge In edges
+                Selection.Borders(edge).Color = colors(nextColorIndex)
+            Next edge
+    End Select
+    
+    On Error GoTo 0
+End Sub
+
+' === EXISTING HELPER FUNCTIONS (Unchanged) ===
 
 Private Function HasFormula(cell As Range) As Boolean
     HasFormula = cell.HasFormula
@@ -238,4 +437,4 @@ Private Function IsPartialInput(cell As Range) As Boolean
     ' Now look for remaining numbers
     regEx.Pattern = "[0-9]+"
     IsPartialInput = regEx.Test(formula)
-End Function 
+End Function

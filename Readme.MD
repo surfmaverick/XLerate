@@ -1,151 +1,296 @@
-# ⚡XLerate
-XLerate is an open-source Excel add-in for Windows and Mac designed to speed up financial modelling tasks and spot potential errors with ease, incl. advanced auditing and formula consistency tools.
+⚡XLerate - Enhanced with Macabacus-style Shortcuts
+XLerate is an open-source Excel add-in for Windows and Mac designed to speed up financial modelling tasks and spot potential errors with ease, featuring advanced auditing and formula consistency tools with Macabacus-compatible keyboard shortcuts.
 
 <img src="/XLerate.png" alt="XLerate Add-in" width="800" height="auto"/>
 
-## 🚀 Features
+🚀 Enhanced Features
 
-### Advanced Formula Tracer
-- Trace all precedents and dependents of a cell in a single operation
-- Quick navigation through formula chains
+Advanced Formula Tracer
 
-### Formula Consistency Checker
-- Instantly identify inconsistencies in adjacent formulas
-- Visual highlighting of formula pattern breaks to help prevent common modelling errors
+Pro Precedents (Ctrl+Alt+Shift+[): Enhanced precedent tracing with navigation
 
-### Cell Format Cycling
-- Cycling through set number, cell, date and text formats with shortcuts `Ctrl + Shift + 1-4`
-- Settings menu allows to add/remove/modify custom formats
+Pro Dependents (Ctrl+Alt+Shift+]): Enhanced dependent tracing with navigation
 
-### Smart Fill Function
-- Smart-fill formulas using `Ctrl + Shift + R`
-- Automatically fills formulas to the right based on the pattern in the rows above
+Show All Precedents (Ctrl+Alt+Shift+F): Display all precedent relationships
 
-### Other Features
-- Auto-color inputs, (partial) formulas, worksheet links, etc.
-- Wrap cells in IFERROR statements instantly
-- Switch signs of values and formulas instantly
-- New CAGR function to quickly add compound annual growth rates
-- Currently in development (see below how to contribute)
+Show All Dependents (Ctrl+Alt+Shift+J): Display all dependent relationships
 
-## 💾 Installation
+Clear Arrows (Ctrl+Alt+Shift+N): Remove all tracing arrows
 
-### Windows 🪟
-1. Download the latest release (`XLerate.xlam`) from the `dist` folder
-2. Place the file in your Excel add-ins folder (typically `C:\Users\[Username]\AppData\Roaming\Microsoft\AddIns`)
-3. Enable the add-in in Excel:
-   - File → Options → Add-ins
-   - Manage: Excel Add-ins → Go
-   - Check "XLerate" and click OK
+Enhanced Formula Consistency & Auditing
+Horizontal Consistency: Visual highlighting of formula pattern breaks
+Uniformulas (Ctrl+Alt+Shift+Q): Make formulas uniform across ranges
+Formula Analysis: Complexity analysis and optimization suggestions
+Formula Validation: Automatic error detection and warnings
+Macabacus-style Format Cycling
+General Number Cycle (Ctrl+Alt+Shift+1): Cycle through general number formats
+Date Cycle (Ctrl+Alt+Shift+2): Cycle through date formats
+Local Currency Cycle (Ctrl+Alt+Shift+3): Cycle through local currency formats
+Foreign Currency Cycle (Ctrl+Alt+Shift+4): Cycle through foreign currency formats
+Percent Cycle (Ctrl+Alt+Shift+5): Cycle through percentage formats
+Multiple Cycle (Ctrl+Alt+Shift+8): Cycle through multiple/ratio formats
+Binary Cycle (Ctrl+Alt+Shift+Y): Cycle through Yes/No, True/False formats
+Increase/Decrease Decimals (Ctrl+Alt+Shift+] / Ctrl+Alt+Shift+[)
+Advanced Color Functions
+Blue-Black Toggle (Ctrl+Alt+Shift+9): Toggle between blue and black font
+Font Color Cycle (Ctrl+Alt+Shift+C): Cycle through font colors
+Fill Color Cycle (Ctrl+Alt+Shift+K): Cycle through background colors
+Border Color Cycle (Ctrl+Alt+Shift+'): Cycle through border colors
+AutoColor Selection (Ctrl+Alt+Shift+A): Auto-color selected cells
+AutoColor Sheet (Ctrl+Alt+Shift+S): Auto-color entire sheet
+AutoColor Workbook (Ctrl+Alt+Shift+Q): Auto-color entire workbook
+Smart Modeling Functions
+Fast Fill Right (Ctrl+Alt+Shift+R): Smart-fill formulas right based on patterns
+Fast Fill Down (Ctrl+Alt+Shift+D): Smart-fill formulas down
+Error Wrap (Ctrl+Alt+Shift+E): Wrap formulas with IFERROR statements
+Simplify Formula (Ctrl+Alt+Shift+V): Simplify complex formulas
+Switch Sign (Ctrl+Alt+Shift+~): Change signs of values/formulas
+Alignment & Layout
+Center Cycle (Ctrl+Alt+Shift+C): Cycle through center alignments
+Horizontal Cycle (Ctrl+Alt+Shift+H): Cycle through horizontal alignments
+Left Indent Cycle (Ctrl+Alt+Shift+I): Cycle through indent levels
+Row Height Cycle (Ctrl+Alt+Shift+PgUp): Cycle through standard row heights
+Column Width Cycle (Ctrl+Alt+Shift+PgDn): Cycle through standard column widths
+Border Management
+Bottom Border Cycle (Ctrl+Alt+Shift+Down): Cycle bottom border styles
+Left Border Cycle (Ctrl+Alt+Shift+Left): Cycle left border styles
+Right Border Cycle (Ctrl+Alt+Shift+Right): Cycle right border styles
+Outside Border Cycle (Ctrl+Alt+Shift+7): Cycle outside border styles
+No Border (Ctrl+Alt+Shift+-): Remove all borders
+View & Display
+Zoom In/Out (Ctrl+Alt+Shift+= / Ctrl+Alt+Shift+-): Adjust zoom levels
+Toggle Gridlines (Ctrl+Alt+Shift+G): Show/hide gridlines
+Hide Page Breaks (Ctrl+Alt+Shift+B): Hide page break lines
+Cycle View Mode: Switch between Normal, Page Break, and Page Layout views
+Toggle Freeze Panes: Freeze/unfreeze panes at selection
+Font Functions
+Increase/Decrease Font (Ctrl+Alt+Shift+F / Ctrl+Alt+Shift+G): Adjust font size
+Underline Cycle (Ctrl+Alt+Shift+U): Cycle through underline styles
+Wrap Text (Ctrl+Alt+Shift+W): Toggle text wrapping
+Utilities
+Quick Save (Ctrl+Alt+Shift+S): Save current workbook
+Quick Save All: Save all open workbooks
+Reset All Formats (Ctrl+Alt+Shift+0): Reset all customizations to defaults
+📖 Usage
+After installation, XLerate provides over 50 Macabacus-compatible keyboard shortcuts for maximum productivity:
 
-**Note:** Due to Windows security settings, you might have to unblock the add-in: 
-1. Right-click the `XLerate.xlam` file and select Properties 
-2. On the General tab under Security tick the "Unblock" box
+Most Used Shortcuts (Macabacus-style)
+MODELING
+Ctrl+Alt+Shift+R    Fast Fill Right
+Ctrl+Alt+Shift+E    Error Wrap
+Ctrl+Alt+Shift+~    Switch Sign
 
-### Mac 🍎
-1. Download the latest release (`XLerate.xlam`) from the `dist` folder
-2. Place the file in your Excel add-ins folder:
-   - Modern Office 365 (Big Sur and newer): `/Users/<username>/Library/Containers/com.microsoft.Excel/Data/Library/Application Support/Microsoft/Office/Add-ins`
-   - Legacy versions: `/Users/<username>/Library/Group Containers/UBF8T346G9.Office/User Content/Add-ins`
-   - If not available search for "Add-ins" folder
-3. Enable the add-in in Excel:
-   - Excel → Tools → Excel Add-ins
-   - Click "Browse" if XLerate isn't listed
-   - Locate and select `XLerate.xlam`
-   - Check "XLerate" and click OK
+AUDITING  
+Ctrl+Alt+Shift+[    Pro Precedents
+Ctrl+Alt+Shift+]    Pro Dependents
+Ctrl+Alt+Shift+N    Clear Arrows
 
-**Note:** On Mac, if you receive a security warning, you may need to:
-1. Open System Preferences → Security & Privacy
-2. Click "Open Anyway" for `XLerate.xlam`
+NUMBERS
+Ctrl+Alt+Shift+1    General Number Cycle
+Ctrl+Alt+Shift+2    Date Cycle
+Ctrl+Alt+Shift+3    Local Currency Cycle
+Ctrl+Alt+Shift+4    Foreign Currency Cycle
+Ctrl+Alt+Shift+5    Percent Cycle
 
-## 📖 Usage
+COLORS
+Ctrl+Alt+Shift+9    Blue-Black Toggle
+Ctrl+Alt+Shift+A    AutoColor Selection
+Ctrl+Alt+Shift+K    Fill Color Cycle
 
-After installation, you'll find the XLerate tab in your Excel ribbon:
+ALIGNMENT
+Ctrl+Alt+Shift+C    Center Cycle
+Ctrl+Alt+Shift+H    Horizontal Cycle
+Ctrl+Alt+Shift+W    Wrap Text
+Enhanced Formula Tracer
+Select a cell with a formula
+Press Ctrl+Alt+Shift+[ for Pro Precedents or Ctrl+Alt+Shift+] for Pro Dependents
+Navigate through dependencies using arrow keys in the interactive dialog
+Press Esc to close the dialog
+Consistency Checker
+Select your worksheet data
+Press Ctrl+Alt+Shift+F or click "Horizontal Consistency" in the XLerate ribbon
+Review highlighted inconsistencies (red) and consistent form
 
-### Formula Tracer
-1. Select a cell with a formula
-2. Click "Trace Precedents" or "Trace Dependents" in the XLerate ribbon
-3. Navigate through dependencies using the arrow keys in the interactive dialog box
-4. To quickly close the dialog window hit `Esc`
 
-### Consistency Checker
-1. With an open sheet click "Horizontal Consistency" in the XLerate ribbon under Auditing   
-2. Review highlighted inconsistencies in the selection (red) and check which formulas are consistent (green)
-3. Click "Horizontal Consistency" again to remove the formatting   
 
-### Number, Cell, Date and Text Formatting Cycles
-1. Select a cell or range of cells
-2. Click "Format" in the XLerate ribbon under Formatting and select one of the options repeatedly to cycle through the different preset formats
-3. For faster access, the number, cell and date cycles can be accessed via shortcuts: Pressing `Ctrl + Shift + 1` repeatedly cycles through set number formats, `+ 2` through cell formats, `+ 3` through date formats, and `+ 4` through text formats
-4. Click on the "Settings" button in ribbon and then on "Numbers", "Dates", "Cells" or "Text Styles" to access the predifined styles and to add your own styles to the cycles, or to remove or modify existing ones
+XLerate Compilation Guide: Building the XLAM File
+Prerequisites
 
-### Auto-coloring of Numbers 
-1. Select a cell or range of cells
-2. Click "Auto-color Numbers" in the XLerate ribbon under Formatting
-3. The function applies different font colors to inputs, (partial) formulas, worksheet and workbook links, external links, and hyperlinks within the selection
-4. Click on the "Settings" button in ribbon and then on "Auto-Color" to access the predifined colors, modify existing ones or reset them to defaults
+Microsoft Excel (2016 or newer)
+Developer Tab enabled
+VBA Editor access (Alt + F11)
+Trust settings configured for VBA macros
 
-### Smart Fill Right
-1. Select a cell containing a formula which has a range of values in any of the 3 rows above it
-2. Click "Smart Fill Right" in the XLerate ribbon under Formulas to apply the smart fill function
-3. For faster access, use the `Ctrl + Shift + R` shortcut
-4. The smart fill function applies if there is a pattern of values within 1-3 rows above the reference cell
+Method 1: Manual Import Method (Recommended)
+Step 1: Create Base XLAM File
 
-### Error Wrapping
-1. Select a cell or range of cells
-2. Click "Error Wrap" in the XLerate ribbon under Formatting to add an IFERROR statement to any formulas within your selection
-3. If one of the selected cells does not contain a formula and is not affected a pop-up window will alert you to this
-4. Click on the "Settings" button in ribbon and then on "Error" to access or modify the predifined error value displayed
+Open Excel
+Press Alt + F11 to open VBA Editor
+In VBA Editor: File → New → Microsoft Excel Add-In
+Save as XLerate.xlam in your working directory
 
-### Switch Sings
-1. Select a cell or range of cells
-2. Click "Switch Sign" in the XLerate ribbon under Formulas to change the sign of a cell or formula from positive to negative or vice versa
+Step 2: Import All Source Files
+Import the following files in this order:
+Class Modules (Import via VBA Editor → File → Import File)
 
-### CAGR Function
-1. Type `+CAGR` and select a range of cells with numbers
-2. The formula will calculate an annual CAGR based on the first and last number in the selection and the number of values (years)
+clsFormatType.cls
+clsCellFormatType.cls
+clsTextStyleType.cls
+clsUISettings.cls
+clsListBoxHandler.cls
+clsDynamicButtonHandler.cls
 
-We **highly recommend** adding individual functions you use often to Excel's quick access toolbar (Excel → File → Options → Quick Access Toolbar). In the "Chose commands from:", dropdown select "XLerate Tab" and add any function as needed.
+Standard Modules
 
-**NOTE:** The above functions mainly rely on Excel macros and, as part of Excel's design, executing a macro empties the user's Undo chain. This means that, after executing an XLerate functionality, your Undo steps will be reset (`Ctrl+Z` will have no effect right after executing a macro and the Undo chain starts again). Therefore, save your work frequently (the best standard procedure for financial analysis in Excel) to retain your ability to step back to an earlier version if need be at any time.
+ModNumberFormat.bas
+ModCellFormat.bas
+ModDateFormat.bas
+ModTextStyle.bas
+AutoColorModule.bas
+ModAuditing.bas (new)
+ModAlignment.bas (new)
+ModView.bas (new)
+ModErrorWrap.bas
+ModSwitchSign.bas
+ModSmartFillRight.bas
+ModCAGR.bas
+ModFormatReset.bas
+ModSettings.bas
+ModGlobalSettings.bas
+FormulaConsistency.bas
+TraceUtils.bas
+RibbonCallbacks.bas
 
-## 🛠️ Contributing
+Forms (UserForms)
 
-We love your input! We want to make contributing to XLerate as easy and transparent as possible, whether it's:
+frmNumberSettings.frm
+frmCellSettings.frm
+frmDateSettings.frm
+frmTextStyle.frm
+frmAutoColor.frm
+frmErrorSettings.frm
+frmSettingsManager.frm
+frmPrecedents.frm
+frmDependents.frm
 
-- Reporting a bug
-- Discussing the current state of the code
-- Submitting a fix
-- Proposing new features
-- Becoming a maintainer
+Objects
 
-### Development Process
+Replace ThisWorkbook.cls content with the updated version
 
-1. Fork the repo and create your branch from `master`
-2. If you've added code that should be tested, add tests
-3. Ensure the test suite passes
-4. Make sure your code follows the existing style
-5. Issue that pull request!
+Step 3: Add Ribbon Customization
 
-### Development Environment Setup
+Close the XLAM file in Excel
+Rename the file from XLerate.xlam to XLerate.zip
+Extract the ZIP file
+Navigate to the customUI folder (create if it doesn't exist)
+Add the file customUI14.xml with the updated ribbon content
+Re-zip the folder and rename back to XLerate.xlam
 
-1. Enable "Trust access to the VBA project object model" in Excel's Trust Center
-2. Clone the repository
-3. Open the XLAM file in Excel Developer mode
-4. Use the provided export utility to export changes
+Step 4: Test and Validate
 
-### Any contributions you make will be under the MIT Software License
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
+Open Excel
+File → Options → Add-ins → Manage Excel Add-ins → Go
+Browse and select your XLerate.xlam file
+Check the XLerate checkbox and click OK
+Verify the XLerate tab appears in the ribbon
+Test some keyboard shortcuts:
 
-## 📄 License
+Ctrl + Alt + Shift + R (Fast Fill Right)
+Ctrl + Alt + Shift + 1 (Cycle Number Formats)
+Ctrl + Alt + Shift + A (Auto Color)
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 💪 Support
 
-- Report bugs via [GitHub Issues](https://github.com/[your-username]/XLerate/issues)
-- Request features through our [Feature Request](https://github.com/[your-username]/XLerate/issues/new?template=feature_request.md) template
+Method 2: Automated VBA Build Script
+Create this VBA script in a separate workbook to automate the build:
+vbSub BuildXLerate()
+    Dim sourcePath As String
+    Dim targetPath As String
+    
+    sourcePath = "C:\path\to\xlerate\src\"  ' Update this path
+    targetPath = "C:\path\to\xlerate\dist\XLerate.xlam"
+    
+    ' Create new add-in
+    Dim newAddin As Workbook
+    Set newAddin = Workbooks.Add(xlWBATemplate)
+    
+    ' Import all modules and classes
+    ImportAllModules sourcePath, newAddin
+    
+    ' Save as XLAM
+    newAddin.SaveAs targetPath, xlAddIn
+    newAddin.Close
+    
+    MsgBox "XLerate build complete: " & targetPath
+End Sub
 
-## 🙏 Acknowledgments
+Private Sub ImportAllModules(sourcePath As String, targetWB As Workbook)
+    ' Import class modules
+    targetWB.VBProject.VBComponents.Import sourcePath & "class modules\clsFormatType.cls"
+    targetWB.VBProject.VBComponents.Import sourcePath & "class modules\clsCellFormatType.cls"
+    ' ... (add all other imports)
+End Sub
+Key Updated Features (Macabacus-style)
+Enhanced Keyboard Shortcuts
 
-Built with 💖 for financial analysts by financial analysts.
+Modeling: Ctrl+Alt+Shift+R (Fast Fill Right), Ctrl+Alt+Shift+E (Error Wrap)
+Auditing: Ctrl+Alt+Shift+[ (Pro Precedents), Ctrl+Alt+Shift+] (Pro Dependents)
+Numbers: Ctrl+Alt+Shift+1-8 (Various number format cycles)
+Colors: Ctrl+Alt+Shift+9 (Blue-Black Toggle), Ctrl+Alt+Shift+A (Auto Color)
+Alignment: Ctrl+Alt+Shift+C (Center Cycle), Ctrl+Alt+Shift+H (Horizontal Cycle)
+View: Ctrl+Alt+Shift+= (Zoom In), Ctrl+Alt+Shift+G (Toggle Gridlines)
+
+New Functions Added
+
+Multiple Number Format Types: Local Currency, Foreign Currency, Percent, Multiple, Binary
+Enhanced Auto-Color: Sheet and Workbook level coloring
+Advanced Auditing: Show All Precedents/Dependents, Uniformulas, Formula Analysis
+Alignment Functions: Center Cycle, Indent Cycle, Text Orientation
+View Management: Zoom controls, Freeze Panes, View Mode cycling
+
+File Structure Summary
+XLerate/
+├── src/
+│   ├── class modules/
+│   │   ├── clsFormatType.cls
+│   │   ├── clsCellFormatType.cls
+│   │   ├── clsTextStyleType.cls
+│   │   ├── clsUISettings.cls
+│   │   ├── clsListBoxHandler.cls
+│   │   └── clsDynamicButtonHandler.cls
+│   ├── modules/
+│   │   ├── ModNumberFormat.bas (enhanced)
+│   │   ├── ModCellFormat.bas
+│   │   ├── ModDateFormat.bas
+│   │   ├── ModTextStyle.bas
+│   │   ├── AutoColorModule.bas (enhanced)
+│   │   ├── ModAuditing.bas (new)
+│   │   ├── ModAlignment.bas (new)
+│   │   ├── ModView.bas (new)
+│   │   ├── ModErrorWrap.bas
+│   │   ├── ModSwitchSign.bas
+│   │   ├── ModSmartFillRight.bas
+│   │   ├── ModCAGR.bas
+│   │   ├── ModFormatReset.bas
+│   │   ├── ModSettings.bas
+│   │   ├── ModGlobalSettings.bas
+│   │   ├── FormulaConsistency.bas
+│   │   ├── TraceUtils.bas
+│   │   └── RibbonCallbacks.bas (enhanced)
+│   ├── forms/
+│   │   ├── frmNumberSettings.frm
+│   │   ├── frmCellSettings.frm
+│   │   ├── frmDateSettings.frm
+│   │   ├── frmTextStyle.frm
+│   │   ├── frmAutoColor.frm
+│   │   ├── frmErrorSettings.frm
+│   │   ├── frmSettingsManager.frm
+│   │   ├── frmPrecedents.frm
+│   │   └── frmDependents.frm
+│   ├── objects/
+│   │   └── ThisWorkbook.cls (updated)
+│   └── ribbon/
+│       └── customUI14.xml (enhanced)
+├── dist/
+│   └── XLerate.xlam (compiled output)
+└── README.md
