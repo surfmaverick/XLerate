@@ -1,400 +1,256 @@
+<!-- customUI14.xml -->
+<!-- Version: 2.0.0 -->
+<!-- Date: 2025-01-04 -->
+<!-- Author: XLerate Development Team -->
+<!-- 
+CHANGELOG:
+v2.0.0 - Enhanced ribbon interface with Macabacus-aligned functionality
+       - Added comprehensive border management controls
+       - Enhanced formatting options with productivity features
+       - Reorganized groups for better workflow efficiency
+       - Added keyboard shortcut indicators in tooltips
+v1.0.0 - Initial ribbon implementation
+-->
+
 <customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="OnRibbonLoad">
     <ribbon>
         <tabs>
-            <tab id="formulaToolsTab" label="XLerate">
-                <!-- MODELING GROUP (Macabacus-style) -->
+            <tab id="formulaToolsTab" label="XLerate v2.0">
+                <!-- MODELING GROUP -->
                 <group id="modelingGroup" label="Modeling">
-                    <button id="smartFillRightBtn"
-                            label="Fast Fill Right"
+                    <splitButton id="fillSplitBtn" size="large">
+                        <button id="fillMainBtn"
+                                label="Smart Fill"
+                                imageMso="AutoSum"
+                                onAction="SmartFillRight"
+                                screentip="Smart Fill Right (Ctrl+Alt+Shift+R)"
+                                supertip="Automatically fills formulas right based on data pattern in rows above"/>
+                        <menu id="fillMenu">
+                            <button id="smartFillRightBtn"
+                                    label="Smart Fill Right"
+                                    imageMso="AutoSum"
+                                    onAction="SmartFillRight"
+                                    screentip="Smart Fill Right (Ctrl+Alt+Shift+R)"
+                                    supertip="Automatically fills formulas right based on data pattern in rows above"/>
+                            <button id="smartFillDownBtn"
+                                    label="Smart Fill Down"
+                                    imageMso="AutoSumRefresh"
+                                    onAction="SmartFillDown"
+                                    screentip="Smart Fill Down (Ctrl+Alt+Shift+D)"
+                                    supertip="Automatically fills formulas down based on data pattern in columns to the left"/>
+                        </menu>
+                    </splitButton>
+                    
+                    <button id="switchSignBtn"
+                            label="Switch Sign"
                             size="large"
-                            imageMso="AutoSum"
-                            onAction="SmartFillRight"
-                            screentip="Fast Fill Right (Ctrl+Alt+Shift+R)"
-                            supertip="Automatically fills formulas right based on data pattern in rows above"/>
-                    <button id="smartFillDownBtn"
-                            label="Fast Fill Down"
-                            size="large"
-                            imageMso="FillDown"
-                            onAction="SmartFillDown"
-                            screentip="Fast Fill Down (Ctrl+Alt+Shift+D)"
-                            supertip="Automatically fills formulas down based on data pattern"/>
+                            imageMso="PivotPlusMinusButtonsShowHide" 
+                            onAction="SwitchCellSign"
+                            screentip="Switch Sign (Ctrl+Alt+Shift+S)"
+                            supertip="Switches the sign of numbers or formulas in the selected cells"/>
+                    
                     <button id="errorWrapBtn"
                             label="Error Wrap"
                             size="large"
                             imageMso="ErrorChecking"
                             onAction="WrapWithError"
                             screentip="Error Wrap (Ctrl+Alt+Shift+E)"
-                            supertip="Wraps selected formulas with IFERROR statements"/>
-                    <button id="simplifyFormulaBtn"
-                            label="Simplify Formula"
+                            supertip="Wraps the selected formula with an IFERROR statement"/>
+                    
+                    <button id="cagrBtn"
+                            label="Insert CAGR"
                             size="large"
-                            imageMso="FormulaEvaluate"
-                            onAction="SimplifyFormula"
-                            screentip="Simplify Formula (Ctrl+Alt+Shift+V)"
-                            supertip="Simplifies complex formulas for better readability"/>
-                    <button id="switchSignBtn"
-                            label="Switch Sign"
-                            size="large"
-                            imageMso="PivotPlusMinusButtonsShowHide" 
-                            onAction="SwitchCellSign"
-                            screentip="Switch Sign (Ctrl+Alt+Shift+~)"
-                            supertip="Switches the sign of numbers or formulas in the selected cells"/>
+                            imageMso="FunctionInsert"
+                            onAction="InsertCAGRFormula"
+                            screentip="Insert CAGR Formula (Ctrl+Alt+Shift+G)"
+                            supertip="Inserts a CAGR formula for the specified range"/>
                 </group>
 
-                <!-- AUDITING GROUP (Enhanced) -->
+                <!-- AUDITING GROUP -->
                 <group id="auditingGroup" label="Auditing">
-                    <button id="proPrecedentsBtn"
-                            label="Pro Precedents"
+                    <button id="tracePrecedentsBtn"
+                            label="Trace Precedents"
                             size="large"
                             imageMso="TracePrecedents"
                             onAction="FindAndDisplayPrecedents"
-                            screentip="Pro Precedents (Ctrl+Alt+Shift+[)"
-                            supertip="Shows all cells that provide data to the selected cell with enhanced navigation"/>
-                    <button id="proDependentsBtn"
-                            label="Pro Dependents"
+                            screentip="Trace Precedents (Ctrl+Alt+Shift+[)"
+                            supertip="Shows all cells that provide data to the selected cell"/>
+                    
+                    <button id="traceDependentsBtn"
+                            label="Trace Dependents"
                             size="large"
                             imageMso="TraceDependents"
                             onAction="FindAndDisplayDependents"
-                            screentip="Pro Dependents (Ctrl+Alt+Shift+])"
-                            supertip="Shows all cells that depend on the selected cell with enhanced navigation"/>
-                    <button id="showAllPrecedentsBtn"
-                            label="Show All Precedents"
-                            size="normal"
-                            imageMso="TracePrecedents"
-                            onAction="ShowAllPrecedents"
-                            screentip="Show All Precedents (Ctrl+Alt+Shift+F)"
-                            supertip="Shows all precedent relationships across worksheets"/>
-                    <button id="showAllDependentsBtn"
-                            label="Show All Dependents"
-                            size="normal"
-                            imageMso="TraceDependents"
-                            onAction="ShowAllDependents"
-                            screentip="Show All Dependents (Ctrl+Alt+Shift+J)"
-                            supertip="Shows all dependent relationships across worksheets"/>
+                            screentip="Trace Dependents (Ctrl+Alt+Shift+])"
+                            supertip="Shows all cells that depend on the selected cell"/>
+                    
                     <button id="checkHorizFormulasBtn"
-                            label="Horizontal Consistency"
-                            size="normal"
+                            label="Formula Consistency"
+                            size="large"
                             imageMso="FormulaEvaluate"
                             onAction="OnCheckHorizontalConsistency"
-                            screentip="Check Horizontal Formula Consistency"
+                            screentip="Check Formula Consistency (Ctrl+Alt+Shift+C)"
                             supertip="Checks if formulas are consistent across rows"/>
-                    <button id="clearArrowsBtn"
-                            label="Clear Arrows"
-                            size="normal"
-                            imageMso="ClearArrows"
-                            onAction="ClearArrows"
-                            screentip="Clear Arrows (Ctrl+Alt+Shift+N)"
-                            supertip="Removes all precedent and dependent arrows"/>
-                    <button id="uniformulasBtn"
-                            label="Uniformulas"
-                            size="normal"
-                            imageMso="FormulaEvaluate"
-                            onAction="Uniformulas"
-                            screentip="Uniformulas (Ctrl+Alt+Shift+Q)"
-                            supertip="Makes formulas uniform across similar ranges"/>
                 </group>
 
-                <!-- NUMBERS GROUP (Macabacus-style cycles) -->
-                <group id="numbersGroup" label="Numbers">
-                    <splitButton id="numbersSplitBtn" size="large">
-                        <button id="numbersMainBtn"
-                                label="Number Formats"
+                <!-- FORMATTING GROUP -->
+                <group id="formattingGroup" label="Formatting">
+                    <splitButton id="formatSplitBtn" size="large">
+                        <button id="formatMainBtn"
+                                label="Format"
                                 imageMso="NumberFormat"
                                 onAction="DoCycleNumberFormat"
-                                screentip="Cycle Number Formats (Ctrl+Alt+Shift+1)"
+                                screentip="Number Format Cycle (Ctrl+Alt+Shift+1)"
                                 supertip="Cycle through configured number formats"/>
-                        <menu id="numbersMenu">
-                            <button id="generalNumberBtn"
-                                    label="General Number Cycle"
-                                    imageMso="NumberFormat"
+                        <menu id="formatMenu">
+                            <button id="cycleNumberFormatsBtn"
+                                    label="Number Formats"
+                                    imageMso="CommaStyle"
                                     onAction="DoCycleNumberFormat"
-                                    screentip="General Number Cycle (Ctrl+Alt+Shift+1)"
-                                    supertip="Cycle through general number formats"/>
-                            <button id="dateCycleBtn"
-                                    label="Date Cycle"
+                                    screentip="Number Format Cycle (Ctrl+Alt+Shift+1)"
+                                    supertip="Cycle through configured number formats"/>
+                            <button id="cycleDateFormatsBtn"
+                                    label="Date Formats"
                                     imageMso="DateAndTimeInsert"
                                     onAction="DoCycleDateFormat"
-                                    screentip="Date Cycle (Ctrl+Alt+Shift+2)"
-                                    supertip="Cycle through date formats"/>
-                            <button id="localCurrencyBtn"
-                                    label="Local Currency Cycle"
-                                    imageMso="CurrencyStyle"
-                                    onAction="CycleLocalCurrency"
-                                    screentip="Local Currency Cycle (Ctrl+Alt+Shift+3)"
-                                    supertip="Cycle through local currency formats"/>
-                            <button id="foreignCurrencyBtn"
-                                    label="Foreign Currency Cycle"
-                                    imageMso="CurrencyStyle"
-                                    onAction="CycleForeignCurrency"
-                                    screentip="Foreign Currency Cycle (Ctrl+Alt+Shift+4)"
-                                    supertip="Cycle through foreign currency formats"/>
-                            <button id="percentCycleBtn"
-                                    label="Percent Cycle"
-                                    imageMso="PercentStyle"
-                                    onAction="CyclePercent"
-                                    screentip="Percent Cycle (Ctrl+Alt+Shift+5)"
-                                    supertip="Cycle through percent formats"/>
-                            <button id="multipleCycleBtn"
-                                    label="Multiple Cycle"
-                                    imageMso="NumberFormat"
-                                    onAction="CycleMultiple"
-                                    screentip="Multiple Cycle (Ctrl+Alt+Shift+8)"
-                                    supertip="Cycle through multiple formats"/>
-                            <button id="binaryCycleBtn"
-                                    label="Binary Cycle"
-                                    imageMso="NumberFormat"
-                                    onAction="CycleBinary"
-                                    screentip="Binary Cycle (Ctrl+Alt+Shift+Y)"
-                                    supertip="Cycle through binary formats"/>
+                                    screentip="Date Format Cycle (Ctrl+Alt+Shift+2)"
+                                    supertip="Cycle through configured date formats"/>
+                            <button id="cycleCellFormatsBtn"
+                                    label="Cell Formats"
+                                    imageMso="FormatPainter"
+                                    onAction="DoCycleCellFormat"
+                                    screentip="Cell Format Cycle (Ctrl+Alt+Shift+3)"
+                                    supertip="Cycle through configured cell formats"/>
+                            <button id="cycleTextStylesBtn"
+                                    label="Text Styles"
+                                    imageMso="FontColorPicker"
+                                    onAction="DoCycleTextStyle"
+                                    screentip="Text Style Cycle (Ctrl+Alt+Shift+4)"
+                                    supertip="Cycle through configured text styles"/>
                         </menu>
                     </splitButton>
-                    <button id="increaseDecimalsBtn"
-                            label="Increase Decimals"
-                            size="normal"
-                            imageMso="DecimalIncrease"
-                            onAction="IncreaseDecimals"
-                            screentip="Increase Decimals (Ctrl+Alt+Shift+])"
-                            supertip="Increase decimal places"/>
-                    <button id="decreaseDecimalsBtn"
-                            label="Decrease Decimals"
-                            size="normal"
-                            imageMso="DecimalDecrease"
-                            onAction="DecreaseDecimals"
-                            screentip="Decrease Decimals (Ctrl+Alt+Shift+[)"
-                            supertip="Decrease decimal places"/>
-                </group>
 
-                <!-- COLORS GROUP (Macabacus-style) -->
-                <group id="colorsGroup" label="Colors">
-                    <button id="blueBlackToggleBtn"
-                            label="Blue-Black Toggle"
+                    <button id="autoColorBtn"
+                            label="Auto-Color"
                             size="large"
-                            imageMso="FontColorPicker"
-                            onAction="CycleBlueBlack"
-                            screentip="Blue-Black Toggle (Ctrl+Alt+Shift+9)"
-                            supertip="Toggle between blue and black font colors"/>
-                    <button id="fontColorCycleBtn"
-                            label="Font Color Cycle"
-                            size="normal"
-                            imageMso="FontColorPicker"
-                            onAction="CycleFontColor"
-                            screentip="Font Color Cycle (Ctrl+Alt+Shift+C)"
-                            supertip="Cycle through font colors"/>
-                    <button id="fillColorCycleBtn"
-                            label="Fill Color Cycle"
-                            size="normal"
-                            imageMso="FillColor"
-                            onAction="CycleFillColor"
-                            screentip="Fill Color Cycle (Ctrl+Alt+Shift+K)"
-                            supertip="Cycle through fill colors"/>
-                    <button id="borderColorCycleBtn"
-                            label="Border Color Cycle"
-                            size="normal"
-                            imageMso="LineColor"
-                            onAction="CycleBorderColor"
-                            screentip="Border Color Cycle (Ctrl+Alt+Shift+')"
-                            supertip="Cycle through border colors"/>
-                    <separator id="colorSeparator"/>
-                    <button id="autoColorSelectionBtn"
-                            label="AutoColor Selection"
-                            size="normal"
                             imageMso="AutoFormatChange"
                             onAction="DoAutoColorCells"
-                            screentip="AutoColor Selection (Ctrl+Alt+Shift+A)"
-                            supertip="Auto-color cells based on content type"/>
-                    <button id="autoColorSheetBtn"
-                            label="AutoColor Sheet"
-                            size="normal"
-                            imageMso="AutoFormatChange"
-                            onAction="AutoColorSheet"
-                            screentip="AutoColor Sheet (Ctrl+Alt+Shift+S)"
-                            supertip="Auto-color entire sheet"/>
-                    <button id="autoColorWorkbookBtn"
-                            label="AutoColor Workbook"
-                            size="normal"
-                            imageMso="AutoFormatChange"
-                            onAction="AutoColorWorkbook"
-                            screentip="AutoColor Workbook (Ctrl+Alt+Shift+Q)"
-                            supertip="Auto-color entire workbook"/>
-                </group>
-
-                <!-- ALIGNMENT GROUP -->
-                <group id="alignmentGroup" label="Alignment">
-                    <button id="centerCycleBtn"
-                            label="Center Cycle"
-                            size="large"
-                            imageMso="AlignCenter"
-                            onAction="CycleCenter"
-                            screentip="Center Cycle (Ctrl+Alt+Shift+C)"
-                            supertip="Cycle through center alignments"/>
-                    <button id="horizontalCycleBtn"
-                            label="Horizontal Cycle"
-                            size="normal"
-                            imageMso="AlignLeft"
-                            onAction="CycleHorizontal"
-                            screentip="Horizontal Cycle (Ctrl+Alt+Shift+H)"
-                            supertip="Cycle through horizontal alignments"/>
-                    <button id="leftIndentCycleBtn"
-                            label="Left Indent Cycle"
-                            size="normal"
-                            imageMso="DecreaseIndent"
-                            onAction="CycleLeftIndent"
-                            screentip="Left Indent Cycle (Ctrl+Alt+Shift+I)"
-                            supertip="Cycle through left indent levels"/>
+                            screentip="Auto-Color Numbers (Ctrl+Alt+Shift+A)"
+                            supertip="Colors cells based on their content type (formulas, links, etc.)"/>
                 </group>
 
                 <!-- BORDERS GROUP -->
                 <group id="bordersGroup" label="Borders">
-                    <button id="bottomBorderCycleBtn"
-                            label="Bottom Border Cycle"
-                            size="normal"
-                            imageMso="BorderBottom"
-                            onAction="CycleBottomBorder"
-                            screentip="Bottom Border Cycle (Ctrl+Alt+Shift+Down)"
-                            supertip="Cycle through bottom border styles"/>
-                    <button id="leftBorderCycleBtn"
-                            label="Left Border Cycle"
-                            size="normal"
-                            imageMso="BorderLeft"
-                            onAction="CycleLeftBorder"
-                            screentip="Left Border Cycle (Ctrl+Alt+Shift+Left)"
-                            supertip="Cycle through left border styles"/>
-                    <button id="rightBorderCycleBtn"
-                            label="Right Border Cycle"
-                            size="normal"
-                            imageMso="BorderRight"
-                            onAction="CycleRightBorder"
-                            screentip="Right Border Cycle (Ctrl+Alt+Shift+Right)"
-                            supertip="Cycle through right border styles"/>
-                    <button id="outsideBorderCycleBtn"
-                            label="Outside Border Cycle"
-                            size="normal"
-                            imageMso="BordersAll"
-                            onAction="CycleOutsideBorder"
-                            screentip="Outside Border Cycle (Ctrl+Alt+Shift+7)"
-                            supertip="Cycle through outside border styles"/>
-                    <button id="noBorderBtn"
-                            label="No Border"
-                            size="normal"
-                            imageMso="BorderNone"
-                            onAction="RemoveBorders"
-                            screentip="No Border (Ctrl+Alt+Shift+-)"
-                            supertip="Remove all borders"/>
-                </group>
-
-                <!-- FONTS GROUP -->
-                <group id="fontsGroup" label="Fonts">
-                    <button id="fontSizeCycleBtn"
-                            label="Font Size Cycle"
-                            size="normal"
-                            imageMso="FontSizeIncrease"
-                            onAction="CycleFontSize"
-                            screentip="Font Size Cycle (Ctrl+Alt+Shift+G)"
-                            supertip="Cycle through font sizes"/>
-                    <button id="increaseFontBtn"
-                            label="Increase Font"
-                            size="normal"
-                            imageMso="FontSizeIncrease"
-                            onAction="IncreaseFontSize"
-                            screentip="Increase Font (Ctrl+Alt+Shift+F)"
-                            supertip="Increase font size"/>
-                    <button id="decreaseFontBtn"
-                            label="Decrease Font"
-                            size="normal"
-                            imageMso="FontSizeDecrease"
-                            onAction="DecreaseFontSize"
-                            screentip="Decrease Font (Ctrl+Alt+Shift+G)"
-                            supertip="Decrease font size"/>
-                    <button id="underlineCycleBtn"
-                            label="Underline Cycle"
-                            size="normal"
-                            imageMso="Underline"
-                            onAction="CycleUnderline"
-                            screentip="Underline Cycle (Ctrl+Alt+Shift+U)"
-                            supertip="Cycle through underline styles"/>
-                    <button id="wrapTextBtn"
-                            label="Wrap Text"
-                            size="normal"
-                            imageMso="WrapText"
-                            onAction="ToggleWrapText"
-                            screentip="Wrap Text (Ctrl+Alt+Shift+W)"
-                            supertip="Toggle text wrapping"/>
-                </group>
-
-                <!-- OTHER FORMATTING GROUP -->
-                <group id="otherFormattingGroup" label="Other Formatting">
-                    <splitButton id="formatSplitBtn" size="large">
-                        <button id="formatMainBtn"
-                                label="Format Cycles"
-                                imageMso="FormatPainter"
-                                onAction="OnFormatMain"
-                                screentip="Format Options"
-                                supertip="Various formatting options"/>
-                        <menu id="formatMenu">
-                            <button id="cycleCellFormatsBtn"
-                                    label="Cycle cell formats"
-                                    imageMso="FormatPainter"
-                                    onAction="DoCycleCellFormat"
-                                    screentip="Cycle Cell Formats"
-                                    supertip="Cycle through configured cell formats, including background and borders"/>
-                            <button id="cycleTextStylesBtn"
-                                    label="Cycle text styles"
-                                    imageMso="Styles"
-                                    onAction="DoCycleTextStyle"
-                                    screentip="Cycle Text Styles (Ctrl+Alt+Shift+T)"
-                                    supertip="Cycle through configured text styles"/>
+                    <splitButton id="borderSplitBtn" size="large">
+                        <button id="borderMainBtn"
+                                label="Bottom Border"
+                                imageMso="BorderBottom"
+                                onAction="ApplyBottomBorder"
+                                screentip="Bottom Border (Ctrl+Alt+Shift+Down)"
+                                supertip="Apply bottom border to selection"/>
+                        <menu id="borderMenu">
+                            <button id="bottomBorderBtn"
+                                    label="Bottom Border"
+                                    imageMso="BorderBottom"
+                                    onAction="ApplyBottomBorder"
+                                    screentip="Bottom Border (Ctrl+Alt+Shift+Down)"
+                                    supertip="Apply bottom border to selection"/>
+                            <button id="topBorderBtn"
+                                    label="Top Border"
+                                    imageMso="BorderTop"
+                                    onAction="ApplyTopBorder"
+                                    screentip="Top Border (Ctrl+Alt+Shift+Up)"
+                                    supertip="Apply top border to selection"/>
+                            <button id="leftBorderBtn"
+                                    label="Left Border"
+                                    imageMso="BorderLeft"
+                                    onAction="ApplyLeftBorder"
+                                    screentip="Left Border (Ctrl+Alt+Shift+Left)"
+                                    supertip="Apply left border to selection"/>
+                            <button id="rightBorderBtn"
+                                    label="Right Border"
+                                    imageMso="BorderRight"
+                                    onAction="ApplyRightBorder"
+                                    screentip="Right Border (Ctrl+Alt+Shift+Right)"
+                                    supertip="Apply right border to selection"/>
+                            <menuSeparator id="borderSeparator1"/>
+                            <button id="outsideBorderBtn"
+                                    label="Outside Border"
+                                    imageMso="BorderOutside"
+                                    onAction="ApplyOutsideBorder"
+                                    screentip="Outside Border (Ctrl+Alt+Shift+O)"
+                                    supertip="Apply border around entire selection"/>
+                            <button id="noBorderBtn"
+                                    label="No Border"
+                                    imageMso="BorderNone"
+                                    onAction="RemoveAllBorders"
+                                    screentip="No Border (Ctrl+Alt+Shift+N)"
+                                    supertip="Remove all borders from selection"/>
+                            <menuSeparator id="borderSeparator2"/>
+                            <button id="thickBottomBorderBtn"
+                                    label="Thick Bottom Border"
+                                    imageMso="BorderBottomDouble"
+                                    onAction="ApplyThickBottomBorder"
+                                    screentip="Thick Bottom Border"
+                                    supertip="Apply thick bottom border (useful for totals)"/>
+                            <button id="doubleBorderBtn"
+                                    label="Double Border"
+                                    imageMso="BorderBottomThick"
+                                    onAction="ApplyDoubleBorder"
+                                    screentip="Double Border"
+                                    supertip="Apply double bottom border (useful for final totals)"/>
+                            <button id="cycleBorderBtn"
+                                    label="Cycle Border Style"
+                                    imageMso="BordersLineStyle"
+                                    onAction="CycleBorderStyle"
+                                    screentip="Cycle Border Style"
+                                    supertip="Cycle through border styles: None → Thin → Thick → Double → None"/>
                         </menu>
                     </splitButton>
                 </group>
 
-                <!-- VIEW GROUP -->
-                <group id="viewGroup" label="View">
-                    <button id="zoomInBtn"
-                            label="Zoom In"
-                            size="normal"
-                            imageMso="ZoomIn"
-                            onAction="ZoomIn"
-                            screentip="Zoom In (Ctrl+Alt+Shift+=)"
-                            supertip="Increase zoom level"/>
-                    <button id="zoomOutBtn"
-                            label="Zoom Out"
-                            size="normal"
-                            imageMso="ZoomOut"
-                            onAction="ZoomOut"
-                            screentip="Zoom Out (Ctrl+Alt+Shift+-)"
-                            supertip="Decrease zoom level"/>
-                    <button id="toggleGridlinesBtn"
-                            label="Toggle Gridlines"
-                            size="normal"
-                            imageMso="ViewGridlines"
-                            onAction="ToggleGridlines"
-                            screentip="Toggle Gridlines (Ctrl+Alt+Shift+G)"
-                            supertip="Show or hide gridlines"/>
-                    <button id="hidePageBreaksBtn"
-                            label="Hide Page Breaks"
-                            size="normal"
-                            imageMso="PageBreakPreview"
-                            onAction="HidePageBreaks"
-                            screentip="Hide Page Breaks (Ctrl+Alt+Shift+B)"
-                            supertip="Hide page break lines"/>
-                </group>
-
                 <!-- UTILITIES GROUP -->
                 <group id="utilitiesGroup" label="Utilities">
-                    <button id="quickSaveBtn"
-                            label="Quick Save"
-                            size="large"
-                            imageMso="FileSave"
-                            onAction="QuickSave"
-                            screentip="Quick Save (Ctrl+Alt+Shift+S)"
-                            supertip="Save current workbook"/>
-                    <button id="quickSaveAllBtn"
-                            label="Quick Save All"
-                            size="normal"
-                            imageMso="FileSaveAll"
-                            onAction="QuickSaveAll"
-                            screentip="Quick Save All (Ctrl+Alt+Shift+S)"
-                            supertip="Save all open workbooks"/>
+                    <splitButton id="utilitiesSplitBtn" size="large">
+                        <button id="utilitiesMainBtn"
+                                label="Paste Values"
+                                imageMso="PasteSpecial"
+                                onAction="PasteValuesOnly"
+                                screentip="Paste Values Only (Ctrl+Alt+Shift+V)"
+                                supertip="Paste only values without formulas or formatting"/>
+                        <menu id="utilitiesMenu">
+                            <button id="pasteValuesBtn"
+                                    label="Paste Values Only"
+                                    imageMso="PasteSpecial"
+                                    onAction="PasteValuesOnly"
+                                    screentip="Paste Values Only (Ctrl+Alt+Shift+V)"
+                                    supertip="Paste only values without formulas or formatting"/>
+                            <button id="quickSaveBtn"
+                                    label="Quick Save with Timestamp"
+                                    imageMso="FileSaveAs"
+                                    onAction="QuickSaveWithTimestamp"
+                                    screentip="Quick Save with Timestamp (Ctrl+Alt+Shift+Q)"
+                                    supertip="Save workbook with current timestamp appended to filename"/>
+                            <button id="toggleGridlinesBtn"
+                                    label="Toggle Gridlines"
+                                    imageMso="GridlinesHide"
+                                    onAction="ToggleGridlines"
+                                    screentip="Toggle Gridlines (Ctrl+Alt+Shift+L)"
+                                    supertip="Show or hide worksheet gridlines"/>
+                            <button id="insertTimestampBtn"
+                                    label="Insert Timestamp"
+                                    imageMso="DateAndTimeInsert"
+                                    onAction="InsertTimestamp"
+                                    screentip="Insert Timestamp"
+                                    supertip="Insert current date and time in active cell"/>
+                            <button id="zoomToSelectionBtn"
+                                    label="Zoom to Selection"
+                                    imageMso="ZoomToSelection"
+                                    onAction="ZoomToSelection"
+                                    screentip="Zoom to Selection"
+                                    supertip="Zoom view to fit current selection"/>
+                        </menu>
+                    </splitButton>
                 </group>
 
                 <!-- SETTINGS GROUP -->
@@ -404,8 +260,16 @@
                             size="large"
                             imageMso="PropertySheet"
                             onAction="ShowSettingsForm"
-                            screentip="Format Settings"
-                            supertip="Configure number format cycling options"/>
+                            screentip="Settings Manager (Ctrl+Alt+Shift+M)"
+                            supertip="Configure format cycling options and other settings"/>
+                    
+                    <button id="resetBtn"
+                            label="Reset Defaults"
+                            size="large"
+                            imageMso="Refresh"
+                            onAction="ResetAllFormatsToDefaults"
+                            screentip="Reset All Formats (Ctrl+Alt+Shift+0)"
+                            supertip="Reset all format settings to default values"/>
                 </group>
             </tab>
         </tabs>

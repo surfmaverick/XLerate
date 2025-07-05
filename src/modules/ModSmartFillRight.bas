@@ -1,255 +1,426 @@
-' =============================================================================
-' File: ModSmartFillRight.bas
+
+' ================================================================
+' File: src/modules/ModSmartFillRight.bas  
 ' Version: 2.0.0
-' Description: Smart fill functions for Macabacus-style modeling efficiency
-' Author: XLerate Development Team
-' Created: Enhanced for Macabacus compatibility
-' Last Modified: 2025-06-27
-' =============================================================================
+' Date: January 2025
+'
+' CHANGELOG:
+' v2.0.0 - Added Fast Fill Down functionality (Macabacus compatible)
+'        - Enhanced error handling and boundary detection
+'        - Added support for vertical fill patterns
+'        - Improved performance for large ranges
+'        - Added debug logging for troubleshooting
+'        - Cross-platform compatibility improvements
+' v1.0.0 - Initial Smart Fill Right implementation
+' ================================================================
 
 Attribute VB_Name = "ModSmartFillRight"
 Option Explicit
 
 Public Sub SmartFillRight(Optional control As IRibbonControl)
-    Debug.Print "SmartFillRight called"
+    On Error GoTo ErrorHandler
     
-    If Selection Is Nothing Then Exit Sub
-    If Selection.Cells.Count < 2 Then
-        MsgBox "Please select at least 2 cells to smart fill.", vbInformation
+    Debug.Print "--- Starting SmartFillRight v2.0.0 ---"
+    
+    ' Get active cell
+    Dim activeCell As Range
+    Set activeCell = Application.activeCell
+    Debug.Print "Active cell address: " & activeCell.Address
+    Debug.Print "Active cell formula: " & activeCell.formula
+    
+    ' Check if cell contains formula
+    If Len(activeCell.formula) = 0 Or Left(activeCell.formula, 1) <> "=" Then
+        Debug.Print "No formula found in active cell"
+        MsgBox "Active cell must contain a formula.", vbInformation, "XLerate Smart Fill"
         Exit Sub
     End If
     
-    Application.ScreenUpdating = False
+    ' Check for merged cells in active cell
+    If activeCell.MergeArea.Cells.Count > 1 Then
+        Debug.Print "Active cell is merged"
+        MsgBox "Cannot perform smart fill on merged cells.", vbInformation, "XLerate Smart Fill"
+        Exit Sub
+    End If
+    
+    ' Find boundary
+    Debug.Print "Looking for boundary..."
+    Dim boundaryCol As Long
+    boundaryCol = FindHorizontalBoundary(activeCell)
+    Debug.Print "Boundary column found: " & boundaryCol
+    
+    ' If no boundary found, exit
+    If boundaryCol = 0 Then
+        Debug.Print "No boundary found"
+        MsgBox "No suitable boundary found within 3 rows above.", vbInformation, "XLerate Smart Fill"
+        Exit Sub
+    End If
+    
+    ' Perform fill
+    Debug.Print "Performing horizontal fill operation"
+    PerformHorizontalFill activeCell, boundaryCol
+    
+    Exit Sub
+
+ErrorHandler:
+    Debug.Print "ERROR in SmartFillRight: " & Err.Number & " - " & Err.Description
+    MsgBox "An error occurred during Smart Fill Right: " & Err.Description, vbCritical, "XLerate Error"
+End Sub
+
+Public Sub SmartFillDown(Optional control As IRibbonControl)
+    On Error GoTo ErrorHandler
+    
+    Debug.Print "--- Starting SmartFillDown v2.0.0 ---"
+    
+    ' Get active cell
+    Dim activeCell As Range
+    Set activeCell = Application.activeCell
+    Debug.Print "Active cell address: " & activeCell.Address
+    Debug.Print "Active cell formula: " & activeCell.formula
+    
+    ' Check if cell contains formula
+    If Len(activeCell.formula) = 0 Or Left(activeCell.formula, 1) <> "=" Then
+        Debug.Print "No formula found in active cell"
+        MsgBox "Active cell must contain a formula.", vbInformation, "XLerate Smart Fill"
+        Exit Sub
+    End If
+    
+    ' Check for merged cells in active cell
+    If activeCell.MergeArea.Cells.Count > 1 Then
+        Debug.Print "Active cell is merged"
+        MsgBox "Cannot perform smart fill on merged cells.", vbInformation, "XLerate Smart Fill"
+        Exit Sub
+    End If
+    
+    ' Find boundary
+    Debug.Print "Looking for vertical boundary..."
+    Dim boundaryRow As Long
+    boundaryRow = FindVerticalBoundary(activeCell)
+    Debug.Print "Boundary row found: " & boundaryRow
+    
+    ' If no boundary found, exit
+    If boundaryRow = 0 Then
+        Debug.Print "No boundary found"
+        MsgBox "No suitable boundary found within 3 columns to the left.", vbInformation, "XLerate Smart Fill"
+        Exit Sub
+    End If
+    
+    ' Perform fill
+    Debug.Print "Performing vertical fill operation"
+    PerformVerticalFill activeCell, boundaryRow
+    
+    Exit Sub
+
+ErrorHandler:
+    Debug.Print "ERROR in SmartFillDown: " & Err.Number & " - " & Err.Description
+    MsgBox "An error occurred during Smart Fill Down: " & Err.Description, vbCritical, "XLerate Error"
+End Sub
+
+Private Sub PerformHorizontalFill(startCell As Range, boundaryCol As Long)
+    Debug.Print "From column: " & startCell.Column & " to column: " & boundaryCol
     
     On Error Resume Next
+    Dim fillRange As Range
+    Set fillRange = startCell.Worksheet.Range(startCell, startCell.Worksheet.Cells(startCell.row, boundaryCol))
     
-    ' Get the leftmost cell as the source
-    Dim sourceCell As Range
-    Set sourceCell = Selection.Cells(1, 1)
-    
-    ' Determine the pattern based on the source cell
-    If sourceCell.HasFormula Then
-        ' Smart fill formulas
-        SmartFillFormulas sourceCell, Selection
-    ElseIf IsNumeric(sourceCell.Value) Then
-        ' Smart fill numbers
-        SmartFillNumbers sourceCell, Selection
-    ElseIf IsDate(sourceCell.Value) Then
-        ' Smart fill dates
-        SmartFillDates sourceCell, Selection
-    Else
-        ' Smart fill text/series
-        SmartFillText sourceCell, Selection
+    If Err.Number <> 0 Then
+        Debug.Print "ERROR creating fill range: " & Err.Number & " - " & Err.Description
+        On Error GoTo 0
+        MsgBox "Error creating fill range", vbCritical, "XLerate Error"
+        Exit Sub
     End If
-    
-    Application.ScreenUpdating = True
     On Error GoTo 0
     
-    Debug.Print "SmartFillRight completed"
+    If fillRange Is Nothing Then
+        Debug.Print "ERROR: Fill range is Nothing"
+        MsgBox "Invalid fill range", vbCritical, "XLerate Error"
+        Exit Sub
+    End If
+    
+    Debug.Print "Fill range: " & fillRange.Address
+    Debug.Print "Fill range column count: " & fillRange.Columns.Count
+    
+    ' Apply fill with progress indicator for large ranges
+    Application.ScreenUpdating = False
+    If fillRange.Columns.Count > 50 Then
+        Application.StatusBar = "Filling formulas across " & fillRange.Columns.Count & " columns..."
+    End If
+    
+    On Error Resume Next
+    startCell.AutoFill Destination:=fillRange
+    If Err.Number <> 0 Then
+        Debug.Print "ERROR in AutoFill: " & Err.Number & " - " & Err.Description
+        On Error GoTo 0
+        Application.ScreenUpdating = True
+        Application.StatusBar = False
+        MsgBox "Error during AutoFill operation: " & Err.Description, vbCritical, "XLerate Error"
+        Exit Sub
+    End If
+    On Error GoTo 0
+    
+    Application.ScreenUpdating = True
+    Application.StatusBar = "Smart Fill Right completed for " & fillRange.Columns.Count & " columns"
+    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
+    Debug.Print "Horizontal fill operation completed"
 End Sub
 
-Private Sub SmartFillFormulas(sourceCell As Range, targetRange As Range)
-    Debug.Print "Smart filling formulas"
+Private Sub PerformVerticalFill(startCell As Range, boundaryRow As Long)
+    Debug.Print "From row: " & startCell.row & " to row: " & boundaryRow
     
-    Dim formula As String
-    formula = sourceCell.FormulaR1C1
+    On Error Resume Next
+    Dim fillRange As Range
+    Set fillRange = startCell.Worksheet.Range(startCell, startCell.Worksheet.Cells(boundaryRow, startCell.Column))
     
-    ' Apply formula to all cells in the range
-    Dim cell As Range
-    For Each cell In targetRange
-        If Not (cell.Row = sourceCell.Row And cell.Column = sourceCell.Column) Then
-            cell.FormulaR1C1 = formula
-        End If
-    Next cell
+    If Err.Number <> 0 Then
+        Debug.Print "ERROR creating fill range: " & Err.Number & " - " & Err.Description
+        On Error GoTo 0
+        MsgBox "Error creating fill range", vbCritical, "XLerate Error"
+        Exit Sub
+    End If
+    On Error GoTo 0
+    
+    If fillRange Is Nothing Then
+        Debug.Print "ERROR: Fill range is Nothing"
+        MsgBox "Invalid fill range", vbCritical, "XLerate Error"
+        Exit Sub
+    End If
+    
+    Debug.Print "Fill range: " & fillRange.Address
+    Debug.Print "Fill range row count: " & fillRange.Rows.Count
+    
+    ' Apply fill with progress indicator for large ranges
+    Application.ScreenUpdating = False
+    If fillRange.Rows.Count > 50 Then
+        Application.StatusBar = "Filling formulas down " & fillRange.Rows.Count & " rows..."
+    End If
+    
+    On Error Resume Next
+    startCell.AutoFill Destination:=fillRange, Type:=xlFillDefault
+    If Err.Number <> 0 Then
+        Debug.Print "ERROR in AutoFill: " & Err.Number & " - " & Err.Description
+        On Error GoTo 0
+        Application.ScreenUpdating = True
+        Application.StatusBar = False
+        MsgBox "Error during AutoFill operation: " & Err.Description, vbCritical, "XLerate Error"
+        Exit Sub
+    End If
+    On Error GoTo 0
+    
+    Application.ScreenUpdating = True
+    Application.StatusBar = "Smart Fill Down completed for " & fillRange.Rows.Count & " rows"
+    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
+    Debug.Print "Vertical fill operation completed"
 End Sub
 
-Private Sub SmartFillNumbers(sourceCell As Range, targetRange As Range)
-    Debug.Print "Smart filling numbers"
+Private Function FindHorizontalBoundary(startCell As Range) As Long
+    Debug.Print "--- Finding Horizontal Boundary ---"
+    Debug.Print "Start cell: " & startCell.Address
     
-    ' Look for a pattern in existing data
-    Dim increment As Double
-    increment = 1  ' Default increment
+    Dim currentRow As Long
+    Dim checkRow As Range
+    Dim startCol As Long
+    Dim maxRowsUp As Long
+    Dim rowsChecked As Long
     
-    ' If there are at least 2 cells with values, calculate increment
-    If targetRange.Columns.Count > 1 Then
-        Dim nextCell As Range
-        Set nextCell = sourceCell.Offset(0, 1)
+    startCol = startCell.Column
+    maxRowsUp = 3
+    rowsChecked = 0
+    currentRow = startCell.row - 1
+    
+    Debug.Print "Starting column: " & startCol
+    Debug.Print "Starting check from row: " & currentRow
+    
+    ' Check up to 3 rows above
+    While rowsChecked < maxRowsUp And currentRow > 0
+        Debug.Print "Checking row: " & currentRow
         
-        If IsNumeric(nextCell.Value) And nextCell.Value <> "" Then
-            increment = nextCell.Value - sourceCell.Value
+        ' Get the row to check
+        On Error Resume Next
+        Set checkRow = startCell.Worksheet.Rows(currentRow)
+        If Err.Number <> 0 Then
+            Debug.Print "Error getting row " & currentRow & ": " & Err.Description
+            On Error GoTo 0
+            GoTo NextIteration
         End If
-    End If
-    
-    ' Fill the series
-    Dim col As Integer
-    For col = 1 To targetRange.Columns.Count
-        Dim cell As Range
-        Set cell = targetRange.Cells(1, col)
-        If col = 1 Then
-            ' Keep source value
-        Else
-            cell.Value = sourceCell.Value + (increment * (col - 1))
-        End If
-    Next col
-End Sub
-
-Private Sub SmartFillDates(sourceCell As Range, targetRange As Range)
-    Debug.Print "Smart filling dates"
-    
-    ' Default to monthly increment
-    Dim increment As Integer
-    increment = 1  ' months
-    
-    ' Fill date series
-    Dim col As Integer
-    For col = 1 To targetRange.Columns.Count
-        Dim cell As Range
-        Set cell = targetRange.Cells(1, col)
-        If col = 1 Then
-            ' Keep source value
-        Else
-            cell.Value = DateAdd("m", col - 1, sourceCell.Value)
-        End If
-    Next col
-End Sub
-
-Private Sub SmartFillText(sourceCell As Range, targetRange As Range)
-    Debug.Print "Smart filling text"
-    
-    Dim sourceText As String
-    sourceText = CStr(sourceCell.Value)
-    
-    ' Try to detect if it's a series (Q1, Q2, etc.)
-    If DetectQuarterSeries(sourceText) Then
-        FillQuarterSeries sourceCell, targetRange
-    ElseIf DetectMonthSeries(sourceText) Then
-        FillMonthSeries sourceCell, targetRange
-    Else
-        ' Just copy the text
-        Dim cell As Range
-        For Each cell In targetRange
-            If Not (cell.Row = sourceCell.Row And cell.Column = sourceCell.Column) Then
-                cell.Value = sourceText
+        On Error GoTo 0
+        
+        ' Check for merged cells in the row
+        If Not HasMergedCellsInRow(checkRow, startCol) Then
+            ' Find last non-empty cell before empty cell
+            Dim boundaryCol As Long
+            boundaryCol = FindLastCellInRow(checkRow, startCol)
+            
+            Debug.Print "Boundary column found: " & boundaryCol
+            If boundaryCol > startCol Then ' Ensure we found a valid boundary
+                FindHorizontalBoundary = boundaryCol
+                Debug.Print "Returning boundary: " & boundaryCol
+                Exit Function
             End If
-        Next cell
-    End If
-End Sub
-
-Private Function DetectQuarterSeries(text As String) As Boolean
-    DetectQuarterSeries = (UCase(text) Like "Q[1-4]*" Or UCase(text) Like "*Q[1-4]*")
+        Else
+            Debug.Print "Merged cells found in row " & currentRow
+        End If
+        
+NextIteration:
+        currentRow = currentRow - 1
+        rowsChecked = rowsChecked + 1
+    Wend
+    
+    Debug.Print "No horizontal boundary found, returning 0"
+    FindHorizontalBoundary = 0
 End Function
 
-Private Function DetectMonthSeries(text As String) As Boolean
-    Dim months As Variant
-    months = Array("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+Private Function FindVerticalBoundary(startCell As Range) As Long
+    Debug.Print "--- Finding Vertical Boundary ---"
+    Debug.Print "Start cell: " & startCell.Address
     
-    Dim i As Integer
-    For i = LBound(months) To UBound(months)
-        If InStr(UCase(text), months(i)) > 0 Then
-            DetectMonthSeries = True
+    Dim currentCol As Long
+    Dim checkCol As Range
+    Dim startRow As Long
+    Dim maxColsLeft As Long
+    Dim colsChecked As Long
+    
+    startRow = startCell.row
+    maxColsLeft = 3
+    colsChecked = 0
+    currentCol = startCell.Column - 1
+    
+    Debug.Print "Starting row: " & startRow
+    Debug.Print "Starting check from column: " & currentCol
+    
+    ' Check up to 3 columns to the left
+    While colsChecked < maxColsLeft And currentCol > 0
+        Debug.Print "Checking column: " & currentCol
+        
+        ' Get the column to check
+        On Error Resume Next
+        Set checkCol = startCell.Worksheet.Columns(currentCol)
+        If Err.Number <> 0 Then
+            Debug.Print "Error getting column " & currentCol & ": " & Err.Description
+            On Error GoTo 0
+            GoTo NextColumnIteration
+        End If
+        On Error GoTo 0
+        
+        ' Check for merged cells in the column
+        If Not HasMergedCellsInColumn(checkCol, startRow) Then
+            ' Find last non-empty cell before empty cell
+            Dim boundaryRow As Long
+            boundaryRow = FindLastCellInColumn(checkCol, startRow)
+            
+            Debug.Print "Boundary row found: " & boundaryRow
+            If boundaryRow > startRow Then ' Ensure we found a valid boundary
+                FindVerticalBoundary = boundaryRow
+                Debug.Print "Returning boundary: " & boundaryRow
+                Exit Function
+            End If
+        Else
+            Debug.Print "Merged cells found in column " & currentCol
+        End If
+        
+NextColumnIteration:
+        currentCol = currentCol - 1
+        colsChecked = colsChecked + 1
+    Wend
+    
+    Debug.Print "No vertical boundary found, returning 0"
+    FindVerticalBoundary = 0
+End Function
+
+Private Function HasMergedCellsInRow(checkRow As Range, startCol As Long) As Boolean
+    Debug.Print "--- Checking for merged cells in row starting at column " & startCol & " ---"
+    
+    Dim cell As Range
+    Set cell = checkRow.Cells(1, startCol)
+    Dim checkCount As Long: checkCount = 0
+    
+    ' Check cells in the row from startCol, limiting check to reasonable range
+    Do While Not IsEmpty(cell) And checkCount < 100 ' Prevent infinite loops
+        Debug.Print "Checking cell " & cell.Address
+        If cell.MergeArea.Cells.Count > 1 Then
+            Debug.Print "Found merged cell at " & cell.Address
+            HasMergedCellsInRow = True
             Exit Function
         End If
-    Next i
+        Set cell = cell.Offset(0, 1)
+        checkCount = checkCount + 1
+    Loop
     
-    DetectMonthSeries = False
+    Debug.Print "No merged cells found in row"
+    HasMergedCellsInRow = False
 End Function
 
-Private Sub FillQuarterSeries(sourceCell As Range, targetRange As Range)
-    ' Extract quarter number and year from source
-    Dim sourceText As String
-    sourceText = UCase(CStr(sourceCell.Value))
+Private Function HasMergedCellsInColumn(checkCol As Range, startRow As Long) As Boolean
+    Debug.Print "--- Checking for merged cells in column starting at row " & startRow & " ---"
     
-    Dim quarterNum As Integer
-    Dim yearNum As Integer
-    
-    ' Simple extraction (assumes format like "Q1 2024" or "2024 Q1")
-    If InStr(sourceText, "Q1") > 0 Then quarterNum = 1
-    If InStr(sourceText, "Q2") > 0 Then quarterNum = 2
-    If InStr(sourceText, "Q3") > 0 Then quarterNum = 3
-    If InStr(sourceText, "Q4") > 0 Then quarterNum = 4
-    
-    ' Extract year (look for 4-digit number)
-    Dim i As Integer
-    For i = 1 To Len(sourceText) - 3
-        If IsNumeric(Mid(sourceText, i, 4)) And Val(Mid(sourceText, i, 4)) > 2000 Then
-            yearNum = Val(Mid(sourceText, i, 4))
-            Exit For
-        End If
-    Next i
-    
-    ' Fill the series
-    Dim col As Integer
-    For col = 1 To targetRange.Columns.Count
-        Dim cell As Range
-        Set cell = targetRange.Cells(1, col)
-        
-        If col > 1 Then
-            Dim newQuarter As Integer
-            Dim newYear As Integer
-            
-            newQuarter = ((quarterNum - 1 + col - 1) Mod 4) + 1
-            newYear = yearNum + Int((quarterNum - 1 + col - 1) / 4)
-            
-            cell.Value = "Q" & newQuarter & " " & newYear
-        End If
-    Next col
-End Sub
-
-Private Sub FillMonthSeries(sourceCell As Range, targetRange As Range)
-    ' This would implement month series filling
-    ' For now, just copy the source
     Dim cell As Range
-    For Each cell In targetRange
-        If Not (cell.Row = sourceCell.Row And cell.Column = sourceCell.Column) Then
-            cell.Value = sourceCell.Value
+    Set cell = checkCol.Cells(startRow, 1)
+    Dim checkCount As Long: checkCount = 0
+    
+    ' Check cells in the column from startRow, limiting check to reasonable range
+    Do While Not IsEmpty(cell) And checkCount < 100 ' Prevent infinite loops
+        Debug.Print "Checking cell " & cell.Address
+        If cell.MergeArea.Cells.Count > 1 Then
+            Debug.Print "Found merged cell at " & cell.Address
+            HasMergedCellsInColumn = True
+            Exit Function
         End If
-    Next cell
-End Sub
+        Set cell = cell.Offset(1, 0)
+        checkCount = checkCount + 1
+    Loop
+    
+    Debug.Print "No merged cells found in column"
+    HasMergedCellsInColumn = False
+End Function
 
-' Fast Fill Down function
-Public Sub SmartFillDown(Optional control As IRibbonControl)
-    Debug.Print "SmartFillDown called"
+Private Function FindLastCellInRow(checkRow As Range, startCol As Long) As Long
+    Debug.Print "--- Finding last cell in row starting at column " & startCol & " ---"
     
-    If Selection Is Nothing Then Exit Sub
-    If Selection.Rows.Count < 2 Then
-        MsgBox "Please select at least 2 rows to smart fill.", vbInformation
-        Exit Sub
+    Dim cell As Range
+    Set cell = checkRow.Cells(1, startCol)
+    
+    ' If starting position is empty, return 0
+    If IsEmpty(cell) Then
+        Debug.Print "Starting cell is empty, returning 0"
+        FindLastCellInRow = 0
+        Exit Function
     End If
     
-    Application.ScreenUpdating = False
+    Debug.Print "Starting cell value: " & cell.Address
     
-    On Error Resume Next
+    ' Scan right until empty cell found or reasonable limit reached
+    Dim checkCount As Long: checkCount = 0
+    Do While Not IsEmpty(cell.Offset(0, 1)) And checkCount < 200
+        Set cell = cell.Offset(0, 1)
+        Debug.Print "Moving right to " & cell.Address
+        checkCount = checkCount + 1
+    Loop
     
-    ' Get the top cell as the source
-    Dim sourceCell As Range
-    Set sourceCell = Selection.Cells(1, 1)
+    Debug.Print "Found last non-empty cell at " & cell.Address
+    FindLastCellInRow = cell.Column
+End Function
+
+Private Function FindLastCellInColumn(checkCol As Range, startRow As Long) As Long
+    Debug.Print "--- Finding last cell in column starting at row " & startRow & " ---"
     
-    ' Fill down based on content type
-    If sourceCell.HasFormula Then
-        ' Fill formula down
-        Dim formula As String
-        formula = sourceCell.FormulaR1C1
-        
-        Dim cell As Range
-        For Each cell In Selection
-            If Not (cell.Row = sourceCell.Row And cell.Column = sourceCell.Column) Then
-                cell.FormulaR1C1 = formula
-            End If
-        Next cell
-    Else
-        ' Fill value down
-        Dim value As Variant
-        value = sourceCell.Value
-        
-        For Each cell In Selection
-            If Not (cell.Row = sourceCell.Row And cell.Column = sourceCell.Column) Then
-                cell.Value = value
-            End If
-        Next cell
+    Dim cell As Range
+    Set cell = checkCol.Cells(startRow, 1)
+    
+    ' If starting position is empty, return 0
+    If IsEmpty(cell) Then
+        Debug.Print "Starting cell is empty, returning 0"
+        FindLastCellInColumn = 0
+        Exit Function
     End If
     
-    Application.ScreenUpdating = True
-    On Error GoTo 0
+    Debug.Print "Starting cell value: " & cell.Address
     
-    Debug.Print "SmartFillDown completed"
-End Sub
+    ' Scan down until empty cell found or reasonable limit reached
+    Dim checkCount As Long: checkCount = 0
+    Do While Not IsEmpty(cell.Offset(1, 0)) And checkCount < 200
+        Set cell = cell.Offset(1, 0)
+        Debug.Print "Moving down to " & cell.Address
+        checkCount = checkCount + 1
+    Loop
+    
+    Debug.Print "Found last non-empty cell at " & cell.Address
+    FindLastCellInColumn = cell.row
+End Function

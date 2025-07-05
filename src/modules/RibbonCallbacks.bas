@@ -1,393 +1,359 @@
+' RibbonCallbacks.bas
+' Version: 2.0.0
+' Date: 2025-01-04
+' Author: XLerate Development Team
+' 
+' CHANGELOG:
+' v2.0.0 - Enhanced ribbon callbacks for comprehensive functionality
+'        - Added border management callbacks
+'        - Added productivity utility callbacks
+'        - Enhanced error handling and debugging
+'        - Aligned with Macabacus workflow patterns
+' v1.0.0 - Initial ribbon callback implementation
+'
+' DESCRIPTION:
+' Comprehensive ribbon callback functions for XLerate add-in
+' Provides interface between ribbon controls and core functionality
+
 Attribute VB_Name = "RibbonCallbacks"
 Option Explicit
 
-'Callback for customUI.onLoad
+' Callback for customUI.onLoad
 Public myRibbon As IRibbonUI
 
-'Store ribbon reference
+' Store ribbon reference
 Public Sub OnRibbonLoad(ribbon As IRibbonUI)
     Set myRibbon = ribbon
+    Debug.Print "XLerate v2.0.0 - Ribbon loaded successfully"
 End Sub
 
-'Callback for Trace Precedents button
+' === AUDITING CALLBACKS ===
+
 Public Sub FindAndDisplayPrecedents(control As IRibbonControl)
-    On Error Resume Next
+    ' Callback for Trace Precedents button
+    On Error GoTo ErrorHandler
     Application.Run "ShowTracePrecedents"
-    On Error GoTo 0
+    Debug.Print "Trace Precedents executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in FindAndDisplayPrecedents: " & Err.Description
 End Sub
 
-'Callback for Trace Dependents button
 Public Sub FindAndDisplayDependents(control As IRibbonControl)
-    On Error Resume Next
+    ' Callback for Trace Dependents button
+    On Error GoTo ErrorHandler
     Application.Run "ShowTraceDependents"
-    On Error GoTo 0
+    Debug.Print "Trace Dependents executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in FindAndDisplayDependents: " & Err.Description
 End Sub
 
-'Callback for Horizontal Formula Consistency button
 Public Sub OnCheckHorizontalConsistency(control As IRibbonControl)
-    On Error Resume Next
+    ' Callback for Horizontal Formula Consistency button
+    On Error GoTo ErrorHandler
     Application.Run "CheckHorizontalConsistency"
-    On Error GoTo 0
+    Debug.Print "Formula Consistency check executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in OnCheckHorizontalConsistency: " & Err.Description
 End Sub
 
-' Switch Sign callback
-Public Sub SwitchCellSign(control As IRibbonControl)
-    On Error Resume Next
-    Application.Run "ModSwitchSign.SwitchCellSign", control
-    On Error GoTo 0
-End Sub
-
-' Smart Fill Right callback
-Public Sub SmartFillRight(control As IRibbonControl)
-    On Error Resume Next
-    Application.Run "ModSmartFillRight.SmartFillRight", control
-    On Error GoTo 0
-End Sub
-
-' Error Wrap callback
-Public Sub WrapWithError(control As IRibbonControl)
-    On Error Resume Next
-    Application.Run "ModErrorWrap.WrapWithError", control
-    On Error GoTo 0
-End Sub
-
-' Format callbacks
-Public Sub OnFormatMain(control As IRibbonControl)
-    ' Main format button action - cycle through number formats
-    DoCycleNumberFormat control
-End Sub
+' === FORMAT CYCLING CALLBACKS ===
 
 Public Sub DoCycleNumberFormat(control As IRibbonControl)
-    On Error Resume Next
+    ' Callback for Number Format Cycling
+    On Error GoTo ErrorHandler
     Application.Run "ModNumberFormat.CycleNumberFormat"
-    On Error GoTo 0
+    Debug.Print "Number format cycle executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in DoCycleNumberFormat: " & Err.Description
 End Sub
 
 Public Sub DoCycleCellFormat(control As IRibbonControl)
-    On Error Resume Next
+    ' Callback for Cell Format Cycling
+    On Error GoTo ErrorHandler
     Application.Run "ModCellFormat.CycleCellFormat"
-    On Error GoTo 0
+    Debug.Print "Cell format cycle executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in DoCycleCellFormat: " & Err.Description
 End Sub
 
 Public Sub DoCycleDateFormat(control As IRibbonControl)
-    On Error Resume Next
+    ' Callback for Date Format Cycling
+    On Error GoTo ErrorHandler
     Application.Run "ModDateFormat.CycleDateFormat"
-    On Error GoTo 0
+    Debug.Print "Date format cycle executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in DoCycleDateFormat: " & Err.Description
 End Sub
 
 Public Sub DoCycleTextStyle(control As IRibbonControl)
-    On Error Resume Next
+    ' Callback for Text Style Cycling
+    On Error GoTo ErrorHandler
     Application.Run "ModTextStyle.CycleTextStyle"
-    On Error GoTo 0
+    Debug.Print "Text style cycle executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in DoCycleTextStyle: " & Err.Description
 End Sub
 
+' === MODELING CALLBACKS ===
+
+Public Sub SmartFillRight(control As IRibbonControl)
+    ' Callback for Smart Fill Right
+    On Error GoTo ErrorHandler
+    Application.Run "SmartFillRight"
+    Debug.Print "Smart Fill Right executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in SmartFillRight: " & Err.Description
+End Sub
+
+Public Sub SmartFillDown(control As IRibbonControl)
+    ' Callback for Smart Fill Down
+    On Error GoTo ErrorHandler
+    Application.Run "SmartFillDown"
+    Debug.Print "Smart Fill Down executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in SmartFillDown: " & Err.Description
+End Sub
+
+Public Sub SwitchCellSign(control As IRibbonControl)
+    ' Callback for Switch Sign
+    On Error GoTo ErrorHandler
+    Application.Run "SwitchCellSign", control
+    Debug.Print "Switch Sign executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in SwitchCellSign: " & Err.Description
+End Sub
+
+Public Sub WrapWithError(control As IRibbonControl)
+    ' Callback for Error Wrap
+    On Error GoTo ErrorHandler
+    Application.Run "WrapWithError", control
+    Debug.Print "Error Wrap executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in WrapWithError: " & Err.Description
+End Sub
+
+Public Sub InsertCAGRFormula(control As IRibbonControl)
+    ' Callback for Insert CAGR Formula
+    On Error GoTo ErrorHandler
+    Application.Run "InsertCAGRFormula"
+    Debug.Print "Insert CAGR Formula executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in InsertCAGRFormula: " & Err.Description
+End Sub
+
+' === BORDER CALLBACKS ===
+
+Public Sub ApplyBottomBorder(control As IRibbonControl)
+    ' Callback for Bottom Border
+    On Error GoTo ErrorHandler
+    Application.Run "ApplyBottomBorder"
+    Debug.Print "Bottom Border applied via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ApplyBottomBorder: " & Err.Description
+End Sub
+
+Public Sub ApplyTopBorder(control As IRibbonControl)
+    ' Callback for Top Border
+    On Error GoTo ErrorHandler
+    Application.Run "ApplyTopBorder"
+    Debug.Print "Top Border applied via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ApplyTopBorder: " & Err.Description
+End Sub
+
+Public Sub ApplyLeftBorder(control As IRibbonControl)
+    ' Callback for Left Border
+    On Error GoTo ErrorHandler
+    Application.Run "ApplyLeftBorder"
+    Debug.Print "Left Border applied via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ApplyLeftBorder: " & Err.Description
+End Sub
+
+Public Sub ApplyRightBorder(control As IRibbonControl)
+    ' Callback for Right Border
+    On Error GoTo ErrorHandler
+    Application.Run "ApplyRightBorder"
+    Debug.Print "Right Border applied via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ApplyRightBorder: " & Err.Description
+End Sub
+
+Public Sub ApplyOutsideBorder(control As IRibbonControl)
+    ' Callback for Outside Border
+    On Error GoTo ErrorHandler
+    Application.Run "ApplyOutsideBorder"
+    Debug.Print "Outside Border applied via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ApplyOutsideBorder: " & Err.Description
+End Sub
+
+Public Sub RemoveAllBorders(control As IRibbonControl)
+    ' Callback for No Border
+    On Error GoTo ErrorHandler
+    Application.Run "RemoveAllBorders"
+    Debug.Print "All borders removed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in RemoveAllBorders: " & Err.Description
+End Sub
+
+Public Sub ApplyThickBottomBorder(control As IRibbonControl)
+    ' Callback for Thick Bottom Border
+    On Error GoTo ErrorHandler
+    Application.Run "ApplyThickBottomBorder"
+    Debug.Print "Thick Bottom Border applied via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ApplyThickBottomBorder: " & Err.Description
+End Sub
+
+Public Sub ApplyDoubleBorder(control As IRibbonControl)
+    ' Callback for Double Border
+    On Error GoTo ErrorHandler
+    Application.Run "ApplyDoubleBorder"
+    Debug.Print "Double Border applied via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ApplyDoubleBorder: " & Err.Description
+End Sub
+
+Public Sub CycleBorderStyle(control As IRibbonControl)
+    ' Callback for Border Style Cycling
+    On Error GoTo ErrorHandler
+    Application.Run "CycleBorderStyle"
+    Debug.Print "Border Style cycled via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in CycleBorderStyle: " & Err.Description
+End Sub
+
+' === UTILITY CALLBACKS ===
+
+Public Sub PasteValuesOnly(control As IRibbonControl)
+    ' Callback for Paste Values Only
+    On Error GoTo ErrorHandler
+    Application.Run "PasteValuesOnly"
+    Debug.Print "Paste Values Only executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in PasteValuesOnly: " & Err.Description
+End Sub
+
+Public Sub QuickSaveWithTimestamp(control As IRibbonControl)
+    ' Callback for Quick Save with Timestamp
+    On Error GoTo ErrorHandler
+    Application.Run "QuickSaveWithTimestamp"
+    Debug.Print "Quick Save with Timestamp executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in QuickSaveWithTimestamp: " & Err.Description
+End Sub
+
+Public Sub ToggleGridlines(control As IRibbonControl)
+    ' Callback for Toggle Gridlines
+    On Error GoTo ErrorHandler
+    Application.Run "ToggleGridlines"
+    Debug.Print "Toggle Gridlines executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ToggleGridlines: " & Err.Description
+End Sub
+
+Public Sub InsertTimestamp(control As IRibbonControl)
+    ' Callback for Insert Timestamp
+    On Error GoTo ErrorHandler
+    Application.Run "InsertTimestamp"
+    Debug.Print "Insert Timestamp executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in InsertTimestamp: " & Err.Description
+End Sub
+
+Public Sub ZoomToSelection(control As IRibbonControl)
+    ' Callback for Zoom to Selection
+    On Error GoTo ErrorHandler
+    Application.Run "ZoomToSelection"
+    Debug.Print "Zoom to Selection executed via ribbon"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ZoomToSelection: " & Err.Description
+End Sub
+
+' === SETTINGS AND MANAGEMENT CALLBACKS ===
+
 Public Sub ShowSettingsForm(control As IRibbonControl)
-    Debug.Print "ShowSettingsForm callback was triggered"
-    ShowSettings   ' Direct call instead of Application.Run
+    ' Callback for Settings Manager
+    On Error GoTo ErrorHandler
+    Debug.Print "ShowSettingsForm callback triggered via ribbon"
+    ShowSettings
+    Debug.Print "Settings form displayed successfully"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ShowSettingsForm: " & Err.Description
+End Sub
+
+Public Sub ResetAllFormatsToDefaults(control As IRibbonControl)
+    ' Callback for Reset All Formats
+    On Error GoTo ErrorHandler
+    Debug.Print "ResetAllFormatsToDefaults callback triggered via ribbon"
+    Application.Run "ResetAllFormatsToDefaults"
+    Debug.Print "Format reset completed successfully"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in ResetAllFormatsToDefaults: " & Err.Description
 End Sub
 
 Public Sub DoAutoColorCells(control As IRibbonControl)
-    Debug.Print "DoAutoColorCells callback started"
-    AutoColorModule.AutoColorCells control
-    Debug.Print "DoAutoColorCells callback ended"
+    ' Callback for Auto Color Cells
+    On Error GoTo ErrorHandler
+    Debug.Print "DoAutoColorCells callback started via ribbon"
+    AutoColorCells control
+    Debug.Print "Auto Color Cells completed successfully"
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error in DoAutoColorCells: " & Err.Description
 End Sub
 
-' === NEW MACABACUS-STYLE CALLBACKS ===
+' === RIBBON MANAGEMENT ===
 
-' Number Format Cycles
-Public Sub CycleLocalCurrency(Optional control As IRibbonControl)
-    ' Implement local currency cycle
-    Debug.Print "Cycle Local Currency called"
-End Sub
-
-Public Sub CycleForeignCurrency(Optional control As IRibbonControl)
-    ' Implement foreign currency cycle  
-    Debug.Print "Cycle Foreign Currency called"
-End Sub
-
-Public Sub CyclePercent(Optional control As IRibbonControl)
-    ' Implement percent cycle
-    Debug.Print "Cycle Percent called"
-End Sub
-
-Public Sub CycleMultiple(Optional control As IRibbonControl)
-    ' Implement multiple cycle
-    Debug.Print "Cycle Multiple called"
-End Sub
-
-Public Sub CycleBinary(Optional control As IRibbonControl)
-    ' Implement binary cycle
-    Debug.Print "Cycle Binary called"
-End Sub
-
-Public Sub IncreaseDecimals(Optional control As IRibbonControl)
-    ' Increase decimal places
-    On Error Resume Next
-    Selection.NumberFormat = Selection.Cells(1).NumberFormat & "0"
-    On Error GoTo 0
-End Sub
-
-Public Sub DecreaseDecimals(Optional control As IRibbonControl)
-    ' Decrease decimal places
-    On Error Resume Next
-    Dim currentFormat As String
-    currentFormat = Selection.Cells(1).NumberFormat
-    If Right(currentFormat, 1) = "0" Then
-        Selection.NumberFormat = Left(currentFormat, Len(currentFormat) - 1)
+Public Sub RefreshRibbon()
+    ' Refresh the entire ribbon - useful after settings changes
+    On Error GoTo ErrorHandler
+    If Not myRibbon Is Nothing Then
+        myRibbon.Invalidate
+        Debug.Print "Ribbon refreshed successfully"
     End If
-    On Error GoTo 0
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error refreshing ribbon: " & Err.Description
 End Sub
 
-' Color Cycles
-Public Sub CycleBlueBlack(Optional control As IRibbonControl)
-    ' Toggle between blue and black font colors
-    On Error Resume Next
-    If Selection.Font.Color = RGB(0, 0, 255) Then  ' Blue
-        Selection.Font.Color = RGB(0, 0, 0)        ' Black
-    Else
-        Selection.Font.Color = RGB(0, 0, 255)      ' Blue
+Public Sub InvalidateControl(controlId As String)
+    ' Invalidate a specific control - useful for dynamic updates
+    On Error GoTo ErrorHandler
+    If Not myRibbon Is Nothing Then
+        myRibbon.InvalidateControl controlId
+        Debug.Print "Control invalidated: " & controlId
     End If
-    On Error GoTo 0
-End Sub
-
-Public Sub CycleFontColor(Optional control As IRibbonControl)
-    ' Cycle through font colors
-    Debug.Print "Cycle Font Color called"
-End Sub
-
-Public Sub CycleFillColor(Optional control As IRibbonControl)
-    ' Cycle through fill colors
-    Debug.Print "Cycle Fill Color called"
-End Sub
-
-Public Sub CycleBorderColor(Optional control As IRibbonControl)
-    ' Cycle through border colors
-    Debug.Print "Cycle Border Color called"
-End Sub
-
-Public Sub AutoColorSheet(Optional control As IRibbonControl)
-    ' Auto color entire sheet
-    Dim ws As Worksheet
-    Set ws = ActiveSheet
-    ws.UsedRange.Select
-    DoAutoColorCells control
-End Sub
-
-Public Sub AutoColorWorkbook(Optional control As IRibbonControl)
-    ' Auto color entire workbook
-    Dim ws As Worksheet
-    For Each ws In ActiveWorkbook.Worksheets
-        ws.Activate
-        ws.UsedRange.Select
-        DoAutoColorCells control
-    Next ws
-End Sub
-
-' Alignment Cycles
-Public Sub CycleCenter(Optional control As IRibbonControl)
-    ' Cycle through center alignments
-    On Error Resume Next
-    Select Case Selection.HorizontalAlignment
-        Case xlLeft
-            Selection.HorizontalAlignment = xlCenter
-        Case xlCenter
-            Selection.HorizontalAlignment = xlRight
-        Case xlRight
-            Selection.HorizontalAlignment = xlLeft
-        Case Else
-            Selection.HorizontalAlignment = xlCenter
-    End Select
-    On Error GoTo 0
-End Sub
-
-Public Sub CycleHorizontal(Optional control As IRibbonControl)
-    ' Cycle through horizontal alignments
-    CycleCenter control
-End Sub
-
-Public Sub CycleLeftIndent(Optional control As IRibbonControl)
-    ' Cycle through left indent levels
-    On Error Resume Next
-    Selection.IndentLevel = (Selection.IndentLevel + 1) Mod 4
-    On Error GoTo 0
-End Sub
-
-' Border Cycles
-Public Sub CycleBottomBorder(Optional control As IRibbonControl)
-    ' Cycle bottom border styles
-    On Error Resume Next
-    With Selection.Borders(xlEdgeBottom)
-        Select Case .LineStyle
-            Case xlNone
-                .LineStyle = xlContinuous
-                .Weight = xlThin
-            Case xlContinuous
-                .Weight = xlMedium
-            Case xlMedium
-                .Weight = xlThick
-            Case Else
-                .LineStyle = xlNone
-        End Select
-    End With
-    On Error GoTo 0
-End Sub
-
-Public Sub CycleLeftBorder(Optional control As IRibbonControl)
-    ' Cycle left border styles
-    On Error Resume Next
-    With Selection.Borders(xlEdgeLeft)
-        Select Case .LineStyle
-            Case xlNone
-                .LineStyle = xlContinuous
-                .Weight = xlThin
-            Case xlContinuous
-                .Weight = xlMedium
-            Case xlMedium
-                .Weight = xlThick
-            Case Else
-                .LineStyle = xlNone
-        End Select
-    End With
-    On Error GoTo 0
-End Sub
-
-Public Sub CycleRightBorder(Optional control As IRibbonControl)
-    ' Cycle right border styles
-    On Error Resume Next
-    With Selection.Borders(xlEdgeRight)
-        Select Case .LineStyle
-            Case xlNone
-                .LineStyle = xlContinuous
-                .Weight = xlThin
-            Case xlContinuous
-                .Weight = xlMedium
-            Case xlMedium
-                .Weight = xlThick
-            Case Else
-                .LineStyle = xlNone
-        End Select
-    End With
-    On Error GoTo 0
-End Sub
-
-Public Sub CycleOutsideBorder(Optional control As IRibbonControl)
-    ' Cycle outside border styles
-    On Error Resume Next
-    Dim edges As Variant
-    edges = Array(xlEdgeTop, xlEdgeBottom, xlEdgeLeft, xlEdgeRight)
-    
-    Dim currentStyle As XlLineStyle
-    currentStyle = Selection.Borders(xlEdgeTop).LineStyle
-    
-    Dim edge As Variant
-    For Each edge In edges
-        With Selection.Borders(edge)
-            Select Case currentStyle
-                Case xlNone
-                    .LineStyle = xlContinuous
-                    .Weight = xlThin
-                Case xlContinuous
-                    .Weight = xlMedium
-                Case xlMedium
-                    .Weight = xlThick
-                Case Else
-                    .LineStyle = xlNone
-            End Select
-        End With
-    Next edge
-    On Error GoTo 0
-End Sub
-
-Public Sub RemoveBorders(Optional control As IRibbonControl)
-    ' Remove all borders
-    On Error Resume Next
-    Selection.Borders.LineStyle = xlNone
-    On Error GoTo 0
-End Sub
-
-' Font Functions
-Public Sub IncreaseFontSize(Optional control As IRibbonControl)
-    ' Increase font size
-    On Error Resume Next
-    Selection.Font.Size = Selection.Font.Size + 1
-    On Error GoTo 0
-End Sub
-
-Public Sub DecreaseFontSize(Optional control As IRibbonControl)
-    ' Decrease font size
-    On Error Resume Next
-    If Selection.Font.Size > 6 Then
-        Selection.Font.Size = Selection.Font.Size - 1
-    End If
-    On Error GoTo 0
-End Sub
-
-Public Sub CycleUnderline(Optional control As IRibbonControl)
-    ' Cycle underline styles
-    On Error Resume Next
-    Select Case Selection.Font.Underline
-        Case xlUnderlineStyleNone
-            Selection.Font.Underline = xlUnderlineStyleSingle
-        Case xlUnderlineStyleSingle
-            Selection.Font.Underline = xlUnderlineStyleDouble
-        Case xlUnderlineStyleDouble
-            Selection.Font.Underline = xlUnderlineStyleNone
-    End Select
-    On Error GoTo 0
-End Sub
-
-Public Sub ToggleWrapText(Optional control As IRibbonControl)
-    ' Toggle wrap text
-    On Error Resume Next
-    Selection.WrapText = Not Selection.WrapText
-    On Error GoTo 0
-End Sub
-
-' View Functions
-Public Sub ZoomIn(Optional control As IRibbonControl)
-    ' Zoom in
-    On Error Resume Next
-    ActiveWindow.Zoom = ActiveWindow.Zoom + 10
-    On Error GoTo 0
-End Sub
-
-Public Sub ZoomOut(Optional control As IRibbonControl)
-    ' Zoom out
-    On Error Resume Next
-    If ActiveWindow.Zoom > 10 Then
-        ActiveWindow.Zoom = ActiveWindow.Zoom - 10
-    End If
-    On Error GoTo 0
-End Sub
-
-Public Sub ToggleGridlines(Optional control As IRibbonControl)
-    ' Toggle gridlines
-    On Error Resume Next
-    ActiveWindow.DisplayGridlines = Not ActiveWindow.DisplayGridlines
-    On Error GoTo 0
-End Sub
-
-Public Sub HidePageBreaks(Optional control As IRibbonControl)
-    ' Hide page breaks
-    On Error Resume Next
-    ActiveSheet.DisplayPageBreaks = False
-    On Error GoTo 0
-End Sub
-
-' Quick Save Functions
-Public Sub QuickSave(Optional control As IRibbonControl)
-    ' Quick save
-    On Error Resume Next
-    ActiveWorkbook.Save
-    On Error GoTo 0
-End Sub
-
-Public Sub QuickSaveAll(Optional control As IRibbonControl)
-    ' Quick save all open workbooks
-    On Error Resume Next
-    Dim wb As Workbook
-    For Each wb In Application.Workbooks
-        wb.Save
-    Next wb
-    On Error GoTo 0
+    Exit Sub
+ErrorHandler:
+    Debug.Print "Error invalidating control " & controlId & ": " & Err.Description
 End Sub
