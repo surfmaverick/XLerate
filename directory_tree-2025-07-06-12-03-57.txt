@@ -1,0 +1,68 @@
+.
+./XLerate v2.0 - Compilation & Installation Guide.md
+./directory_tree-2025-07-06-12-03-57.txt
+./.DS_Store
+./list_directory_structure.sh
+./LICENSE
+./ Macabacus to XLerate Transition Guide.md
+./dist
+./dist/XLerate.xlam
+./XLerate Project Plan.md
+./XLerate v2.0.0.md
+./Readme.MD
+./.gitignore
+./XLerate Keyboard Map.md
+./XLerate.png
+./src
+./src/.DS_Store
+./src/forms
+./src/forms/frmNumberSettings.frm
+./src/forms/frmDateSettings.frm
+./src/forms/frmCellSettings.frm
+./src/forms/frmTextStyle.frm
+./src/forms/frmErrorSettings.frm
+./src/forms/frmPrecedents.frm
+./src/forms/frmDependents.frm
+./src/forms/frmAutoColor.frm
+./src/forms/frmSettingsManager.frm
+./src/objects
+./src/objects/ThisWorkbook.cls
+./src/class modules
+./src/class modules/clsDynamicButtonHandler.cls
+./src/class modules/clsFormatType.cls
+./src/class modules/clsTextStyleType.cls
+./src/class modules/clsListBoxHandler.cls
+./src/class modules/clsCellFormatType.cls
+./src/class modules/clsUISettings.cls
+./src/ribbon
+./src/ribbon/customUI14.xml
+./src/modules
+./src/modules/ModSwitchSign.bas
+./src/modules/ModFormatReset.bas
+./src/modules/ModUtilityShortcuts.bas
+./src/modules/ModAdvancedPaste.bas
+./src/modules/ModNumberFormat.bas
+./src/modules/ModModelValidation.bas
+./src/modules/ModProductivityUtilities.bas
+./src/modules/ModCAGR.bas
+./src/modules/AutoColorModule.bas
+./src/modules/ModCurrencyFormatting.bas
+./src/modules/ModUtilityHelpers.bas
+./src/modules/ModGlobalSettings.bas
+./src/modules/ModErrorWrap.bas
+./src/modules/ModSmartFillRight.bas
+./src/modules/ModSettings.bas
+./src/modules/RibbonCallbacks.bas
+./src/modules/ModAdvancedAuditing.bas
+./src/modules/ModCellFormat.bas
+./src/modules/ModDateFormat.bas
+./src/modules/modAlignment.bas
+./src/modules/ModVersionInfo.bas
+./src/modules/BuildXLerate_Enhanced.bas
+./src/modules/ModBorderUtilities.bas
+./src/modules/ModTextStyle.bas
+./src/modules/modAuditing.bas
+./src/modules/ModFinancialFunctions.bas
+./src/modules/TraceUtils.bas
+./src/modules/FormulaConsistency.bas
+./src/modules/ModView.bas

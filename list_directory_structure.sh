@@ -1,0 +1,1 @@
+find . \( -type d -name _Old -o -type d -name .git -o -type d -name venv \) -prune -o -print > "directory_tree-$(date +%Y-%m-%d-%H-%M-%S).txt"
