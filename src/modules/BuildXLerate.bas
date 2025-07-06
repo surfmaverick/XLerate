@@ -1,28 +1,13 @@
-' ================================================================
-' File: BuildXLerate.bas
-' Version: 2.1.0
-' Date: January 2025
-'
-' CHANGELOG:
-' v2.1.0 - Complete Macabacus-aligned build system
-'        - Enhanced module detection and import
-'        - Added comprehensive error handling
-'        - Added validation and testing functions
-'        - Cross-platform compatibility
-' ================================================================
-
 Option Explicit
 
 Private Const XLERATE_VERSION As String = "2.1.0"
 Private Const BUILD_CODENAME As String = "Macabacus Professional"
 
 Public Sub BuildXLerate()
-    ' Main build function for XLerate v2.1.0 with Macabacus compatibility
     Debug.Print "=== XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ") Build Started ==="
     
     On Error GoTo BuildError
     
-    ' Build configuration
     Dim sourcePath As String
     Dim outputPath As String
     
@@ -34,13 +19,11 @@ Public Sub BuildXLerate()
     Debug.Print "Platform: Windows + macOS Compatible"
     Debug.Print ""
     
-    ' Validate environment
     If Not ValidateEnvironment() Then
         MsgBox "Environment validation failed. Check Immediate Window for details.", vbCritical
         Exit Sub
     End If
     
-    ' Validate source structure
     If Not ValidateSourceStructure(sourcePath) Then
         MsgBox "Source validation failed. Check Immediate Window for details.", vbCritical
         Exit Sub
@@ -66,7 +49,6 @@ Public Sub BuildXLerate()
     Debug.Print "Saving add-in..."
     SaveAddin newAddin, outputPath
     
-    ' Cleanup
     newAddin.Close False
     Application.DisplayAlerts = True
     Application.ScreenUpdating = True
@@ -74,16 +56,15 @@ Public Sub BuildXLerate()
     
     Debug.Print "=== Build Complete! ==="
     
-    ' Success message
     MsgBox "XLerate v" & XLERATE_VERSION & " build completed successfully!" & vbNewLine & vbNewLine & _
-           "📁 Saved to: " & outputPath & vbNewLine & vbNewLine & _
-           "🚀 Next steps:" & vbNewLine & _
+           "Saved to: " & outputPath & vbNewLine & vbNewLine & _
+           "Next steps:" & vbNewLine & _
            "1. Install the add-in in Excel" & vbNewLine & _
            "2. Enable macros and VBA access" & vbNewLine & _
            "3. Try Ctrl+Alt+Shift+R for Fast Fill Right!" & vbNewLine & _
            "4. Try Ctrl+Alt+Shift+D for Fast Fill Down!" & vbNewLine & _
            "5. Try Ctrl+Alt+Shift+A for AutoColor!" & vbNewLine & vbNewLine & _
-           "🎯 All Macabacus-compatible shortcuts are active!", _
+           "All Macabacus-compatible shortcuts are active!", _
            vbInformation, "XLerate v" & XLERATE_VERSION & " Build Complete"
     
     Exit Sub
@@ -101,12 +82,10 @@ BuildError:
 End Sub
 
 Private Function ValidateEnvironment() As Boolean
-    ' Comprehensive environment validation
     Debug.Print "Validating build environment..."
     
     On Error GoTo EnvironmentError
     
-    ' Check Excel version
     Dim excelVersion As Double
     excelVersion = CDbl(Application.Version)
     If excelVersion < 15.0 Then
@@ -116,7 +95,6 @@ Private Function ValidateEnvironment() As Boolean
     End If
     Debug.Print "  SUCCESS: Excel version: " & Application.Version
     
-    ' Check VBA project access
     On Error Resume Next
     Dim testAccess As Long
     testAccess = ThisWorkbook.VBProject.VBComponents.Count
@@ -130,17 +108,6 @@ Private Function ValidateEnvironment() As Boolean
     On Error GoTo EnvironmentError
     Debug.Print "  SUCCESS: VBA project access enabled"
     
-    ' Check available memory (simplified)
-    On Error Resume Next
-    Dim memoryInfo As String
-    memoryInfo = Format(Application.MemoryUsed, "#,##0")
-    If Err.Number = 0 Then
-        Debug.Print "  SUCCESS: Memory check passed"
-    Else
-        Debug.Print "  Warning: Memory check skipped"
-    End If
-    On Error GoTo EnvironmentError
-    
     ValidateEnvironment = True
     Debug.Print "Environment validation passed"
     Exit Function
@@ -151,7 +118,6 @@ EnvironmentError:
 End Function
 
 Private Function ValidateSourceStructure(sourcePath As String) As Boolean
-    ' Validate source directory structure
     Debug.Print "Validating source structure: " & sourcePath
     
     If Not FolderExists(sourcePath) Then
@@ -161,7 +127,6 @@ Private Function ValidateSourceStructure(sourcePath As String) As Boolean
     End If
     Debug.Print "  SUCCESS: Source directory found"
     
-    ' Check required directories
     Dim requiredDirs As Variant
     requiredDirs = Array("modules", "class modules", "objects", "forms")
     
@@ -180,7 +145,6 @@ Private Function ValidateSourceStructure(sourcePath As String) As Boolean
         End If
     Next dir
     
-    ' Check critical files
     If FileExists(sourcePath & "objects\ThisWorkbook.cls") Then
         Debug.Print "  SUCCESS: Found ThisWorkbook.cls"
     Else
@@ -194,15 +158,12 @@ Private Function ValidateSourceStructure(sourcePath As String) As Boolean
 End Function
 
 Private Function CreateAddinWorkbook() As Workbook
-    ' Create and configure the add-in workbook
     Set CreateAddinWorkbook = Workbooks.Add
     
-    ' Remove extra sheets
     Do While CreateAddinWorkbook.Worksheets.Count > 1
         CreateAddinWorkbook.Worksheets(CreateAddinWorkbook.Worksheets.Count).Delete
     Loop
     
-    ' Configure info sheet
     CreateAddinWorkbook.Worksheets(1).Name = "XLerate_Info"
     With CreateAddinWorkbook.Worksheets(1)
         .Cells(1, 1) = "XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ")"
@@ -210,23 +171,22 @@ Private Function CreateAddinWorkbook() As Workbook
         .Cells(3, 1) = "Built: " & Now
         .Cells(4, 1) = "Platform: Windows + macOS"
         .Cells(5, 1) = ""
-        .Cells(6, 1) = "🚀 Quick Start Shortcuts:"
-        .Cells(7, 1) = "• Fast Fill Right: Ctrl+Alt+Shift+R"
-        .Cells(8, 1) = "• Fast Fill Down: Ctrl+Alt+Shift+D (NEW!)"
-        .Cells(9, 1) = "• Error Wrap: Ctrl+Alt+Shift+E"
-        .Cells(10, 1) = "• Pro Precedents: Ctrl+Alt+Shift+["
-        .Cells(11, 1) = "• Pro Dependents: Ctrl+Alt+Shift+]"
-        .Cells(12, 1) = "• Number Cycle: Ctrl+Alt+Shift+1"
-        .Cells(13, 1) = "• Date Cycle: Ctrl+Alt+Shift+2"
-        .Cells(14, 1) = "• Local Currency: Ctrl+Alt+Shift+3 (NEW!)"
-        .Cells(15, 1) = "• Foreign Currency: Ctrl+Alt+Shift+4 (NEW!)"
-        .Cells(16, 1) = "• AutoColor: Ctrl+Alt+Shift+A"
-        .Cells(17, 1) = "• Settings: Ctrl+Alt+Shift+M"
+        .Cells(6, 1) = "Quick Start Shortcuts:"
+        .Cells(7, 1) = "Fast Fill Right: Ctrl+Alt+Shift+R"
+        .Cells(8, 1) = "Fast Fill Down: Ctrl+Alt+Shift+D (NEW!)"
+        .Cells(9, 1) = "Error Wrap: Ctrl+Alt+Shift+E"
+        .Cells(10, 1) = "Pro Precedents: Ctrl+Alt+Shift+["
+        .Cells(11, 1) = "Pro Dependents: Ctrl+Alt+Shift+]"
+        .Cells(12, 1) = "Number Cycle: Ctrl+Alt+Shift+1"
+        .Cells(13, 1) = "Date Cycle: Ctrl+Alt+Shift+2"
+        .Cells(14, 1) = "Local Currency: Ctrl+Alt+Shift+3 (NEW!)"
+        .Cells(15, 1) = "Foreign Currency: Ctrl+Alt+Shift+4 (NEW!)"
+        .Cells(16, 1) = "AutoColor: Ctrl+Alt+Shift+A"
+        .Cells(17, 1) = "Settings: Ctrl+Alt+Shift+M"
         .Cells(18, 1) = ""
-        .Cells(19, 1) = "🎯 100% Macabacus-Compatible Shortcuts"
+        .Cells(19, 1) = "100% Macabacus-Compatible Shortcuts"
         .Cells(20, 1) = "Enhanced with Fast Fill Down, Currency Cycling, and Border Utilities"
         
-        ' Format the sheet
         .Cells(1, 1).Font.Bold = True
         .Cells(1, 1).Font.Size = 16
         .Cells(1, 1).Font.Color = RGB(0, 100, 200)
@@ -237,111 +197,7 @@ Private Function CreateAddinWorkbook() As Workbook
     End With
 End Function
 
-Private Sub ConfigureMacabacusCompatibility(targetWB As Workbook)
-    ' Configure Macabacus compatibility flags
-    On Error Resume Next
-    
-    ' Add compatibility markers
-    targetWB.CustomDocumentProperties("Macabacus_Compatible").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Macabacus_Compatible", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeBoolean, _
-        Value:=True
-    
-    targetWB.CustomDocumentProperties("Shortcut_Pattern").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Shortcut_Pattern", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeString, _
-        Value:="Ctrl+Alt+Shift"
-    
-    ' Feature flags for new modules
-    targetWB.CustomDocumentProperties("Features_FastFillDown").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Features_FastFillDown", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeBoolean, _
-        Value:=True
-    
-    targetWB.CustomDocumentProperties("Features_CurrencyCycling").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Features_CurrencyCycling", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeBoolean, _
-        Value:=True
-    
-    targetWB.CustomDocumentProperties("Features_BorderUtilities").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Features_BorderUtilities", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeBoolean, _
-        Value:=True
-    
-    On Error GoTo 0
-    Debug.Print "  ✓ Macabacus compatibility configured"
-End Sub
-
-Private Sub SetAddinProperties(targetWB As Workbook)
-    ' Set comprehensive add-in properties
-    On Error Resume Next
-    With targetWB
-        .Title = "XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ")"
-        .Subject = "Macabacus-Compatible Excel Add-in with Enhanced Features"
-        .Author = "XLerate Development Team"
-        .Comments = "Enhanced with Fast Fill Down, Currency Cycling, Border Utilities, and 100% Macabacus-compatible shortcuts"
-        .Keywords = "Excel, Add-in, Financial, Modeling, Macabacus, XLerate, Shortcuts, VBA, Productivity"
-        .IsAddin = True
-    End With
-    
-    ' Add build information
-    targetWB.CustomDocumentProperties("Build_Version").Delete
-    targetWB.CustomDocumentProperties("Build_Date").Delete
-    targetWB.CustomDocumentProperties("Build_Codename").Delete
-    
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Build_Version", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeString, _
-        Value:=XLERATE_VERSION
-    
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Build_Date", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeDate, _
-        Value:=Now
-    
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Build_Codename", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeString, _
-        Value:=BUILD_CODENAME
-    
-    On Error GoTo 0
-    Debug.Print "  ✓ Add-in properties configured"
-End Sub
-
-Private Sub SaveAddin(targetWB As Workbook, outputPath As String)
-    ' Save the add-in with verification
-    If FileExists(outputPath) Then
-        Kill outputPath
-        Debug.Print "  ✓ Deleted existing file"
-    End If
-    
-    targetWB.SaveAs outputPath, xlAddIn
-    
-    If FileExists(outputPath) Then
-        Dim fileSize As Long
-        fileSize = FileLen(outputPath)
-        Debug.Print "  ✓ Add-in saved successfully"
-        Debug.Print "  ✓ File size: " & Format(fileSize, "#,##0") & " bytes"
-    Else
-        Debug.Print "  ✗ File was not created"
-    End If
-End Sub
-
 Private Sub ImportAllModules(sourcePath As String, targetWB As Workbook)
-    ' Import all modules with comprehensive module list
     Debug.Print "Importing all modules..."
     
     Debug.Print "  Importing standard modules..."
@@ -356,37 +212,10 @@ Private Sub ImportAllModules(sourcePath As String, targetWB As Workbook)
     Debug.Print "  Updating ThisWorkbook..."
     UpdateThisWorkbook sourcePath & "objects\ThisWorkbook.cls", targetWB
     
-    ' Verify critical modules were imported
     VerifyCriticalModules targetWB
 End Sub
 
-Private Sub VerifyCriticalModules(targetWB As Workbook)
-    ' Verify that critical modules were imported successfully
-    Debug.Print "Verifying critical modules..."
-    
-    Dim criticalModules As Variant
-    criticalModules = Array( _
-        "ModNumberFormat", "ModCellFormat", "ModDateFormat", _
-        "ModFastFillDown", "ModCurrencyCycling", "ModBorderUtilities", _
-        "ModSmartFillRight", "ModErrorWrap", "AutoColorModule", _
-        "RibbonCallbacks", "TraceUtils", "FormulaConsistency" _
-    )
-    
-    Dim moduleName As Variant
-    For Each moduleName In criticalModules
-        On Error Resume Next
-        Dim testModule As Object
-        Set testModule = targetWB.VBProject.VBComponents(CStr(moduleName))
-        If Err.Number = 0 Then
-            Debug.Print "    ✓ " & moduleName
-        Else
-            Debug.Print "    ⚠ Missing: " & moduleName
-        End If
-        On Error GoTo 0
-    Next moduleName
-End Sub
 Private Sub ImportModulesFromFolder(folderPath As String, targetWB As Workbook, filePattern As String)
-    ' Import all files matching pattern from folder with detailed logging
     If Not FolderExists(folderPath) Then
         Debug.Print "    Warning: Folder not found: " & folderPath
         Exit Sub
@@ -420,7 +249,6 @@ Private Sub ImportModulesFromFolder(folderPath As String, targetWB As Workbook, 
 End Sub
 
 Private Sub UpdateThisWorkbook(filePath As String, targetWB As Workbook)
-    ' Update ThisWorkbook with enhanced version
     If Not FileExists(filePath) Then
         Debug.Print "    Warning: ThisWorkbook.cls not found"
         Exit Sub
@@ -442,7 +270,98 @@ Private Sub UpdateThisWorkbook(filePath As String, targetWB As Workbook)
     On Error GoTo 0
 End Sub
 
-' === UTILITY FUNCTIONS ===
+Private Sub VerifyCriticalModules(targetWB As Workbook)
+    Debug.Print "Verifying critical modules..."
+    
+    Dim criticalModules As Variant
+    criticalModules = Array( _
+        "ModNumberFormat", "ModCellFormat", "ModDateFormat", _
+        "ModFastFillDown", "ModCurrencyCycling", "ModBorderUtilities", _
+        "ModSmartFillRight", "ModErrorWrap", "AutoColorModule", _
+        "RibbonCallbacks", "TraceUtils", "FormulaConsistency" _
+    )
+    
+    Dim moduleName As Variant
+    For Each moduleName In criticalModules
+        On Error Resume Next
+        Dim testModule As Object
+        Set testModule = targetWB.VBProject.VBComponents(CStr(moduleName))
+        If Err.Number = 0 Then
+            Debug.Print "    SUCCESS: " & moduleName
+        Else
+            Debug.Print "    Warning: Missing: " & moduleName
+        End If
+        On Error GoTo 0
+    Next moduleName
+End Sub
+
+Private Sub ConfigureMacabacusCompatibility(targetWB As Workbook)
+    On Error Resume Next
+    
+    targetWB.CustomDocumentProperties("Macabacus_Compatible").Delete
+    targetWB.CustomDocumentProperties.Add _
+        Name:="Macabacus_Compatible", _
+        LinkToContent:=False, _
+        Type:=msoPropertyTypeBoolean, _
+        Value:=True
+    
+    targetWB.CustomDocumentProperties("Features_FastFillDown").Delete
+    targetWB.CustomDocumentProperties.Add _
+        Name:="Features_FastFillDown", _
+        LinkToContent:=False, _
+        Type:=msoPropertyTypeBoolean, _
+        Value:=True
+    
+    targetWB.CustomDocumentProperties("Features_CurrencyCycling").Delete
+    targetWB.CustomDocumentProperties.Add _
+        Name:="Features_CurrencyCycling", _
+        LinkToContent:=False, _
+        Type:=msoPropertyTypeBoolean, _
+        Value:=True
+    
+    On Error GoTo 0
+    Debug.Print "  SUCCESS: Macabacus compatibility configured"
+End Sub
+
+Private Sub SetAddinProperties(targetWB As Workbook)
+    On Error Resume Next
+    With targetWB
+        .Title = "XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ")"
+        .Subject = "Macabacus-Compatible Excel Add-in with Enhanced Features"
+        .Author = "XLerate Development Team"
+        .Comments = "Enhanced with Fast Fill Down, Currency Cycling, Border Utilities, and 100% Macabacus-compatible shortcuts"
+        .Keywords = "Excel, Add-in, Financial, Modeling, Macabacus, XLerate, Shortcuts, VBA, Productivity"
+        .IsAddin = True
+    End With
+    
+    targetWB.CustomDocumentProperties("Build_Version").Delete
+    targetWB.CustomDocumentProperties.Add _
+        Name:="Build_Version", _
+        LinkToContent:=False, _
+        Type:=msoPropertyTypeString, _
+        Value:=XLERATE_VERSION
+    
+    On Error GoTo 0
+    Debug.Print "  SUCCESS: Add-in properties configured"
+End Sub
+
+Private Sub SaveAddin(targetWB As Workbook, outputPath As String)
+    If FileExists(outputPath) Then
+        Kill outputPath
+        Debug.Print "  SUCCESS: Deleted existing file"
+    End If
+    
+    targetWB.SaveAs outputPath, xlAddIn
+    
+    If FileExists(outputPath) Then
+        Dim fileSize As Long
+        fileSize = FileLen(outputPath)
+        Debug.Print "  SUCCESS: Add-in saved successfully"
+        Debug.Print "  SUCCESS: File size: " & Format(fileSize, "#,##0") & " bytes"
+    Else
+        Debug.Print "  ERROR: File was not created"
+    End If
+End Sub
 
 Private Function FolderExists(folderPath As String) As Boolean
     On Error Resume Next
@@ -472,10 +391,7 @@ ReadError:
     If fileNum > 0 Then Close #fileNum
 End Function
 
-' === TESTING AND VALIDATION FUNCTIONS ===
-
 Public Sub QuickTest()
-    ' Quick test of paths and file existence
     Dim sourcePath As String
     sourcePath = "C:\Mac\Home\Documents\Coding\GitHub\XLerate\src\"
     
@@ -496,46 +412,7 @@ Public Sub QuickTest()
     Debug.Print "=== Test Complete ==="
 End Sub
 
-Public Sub ListAllModules()
-    ' List all modules that will be imported
-    Dim sourcePath As String
-    sourcePath = "C:\Mac\Home\Documents\Coding\GitHub\XLerate\src\"
-    
-    Debug.Print "=== XLerate Module Inventory ==="
-    
-    Debug.Print "Standard Modules (.bas):"
-    ListFilesInFolder sourcePath & "modules\", "*.bas"
-    
-    Debug.Print "Class Modules (.cls):"
-    ListFilesInFolder sourcePath & "class modules\", "*.cls"
-    
-    Debug.Print "Forms (.frm):"
-    ListFilesInFolder sourcePath & "forms\", "*.frm"
-    
-    Debug.Print "=== Inventory Complete ==="
-End Sub
-
-Private Sub ListFilesInFolder(folderPath As String, filePattern As String)
-    If Not FolderExists(folderPath) Then
-        Debug.Print "  Folder not found: " & folderPath
-        Exit Sub
-    End If
-    
-    Dim fileName As String
-    Dim count As Long
-    fileName = Dir(folderPath & filePattern)
-    
-    Do While fileName <> ""
-        Debug.Print "  " & fileName
-        count = count + 1
-        fileName = Dir()
-    Loop
-    
-    Debug.Print "  Total: " & count & " files"
-End Sub
-
 Public Sub ValidateCurrentBuild()
-    ' Validate the current XLerate installation
     Debug.Print "=== XLerate Installation Validation ==="
     
     Dim requiredModules As Variant
@@ -556,10 +433,10 @@ Public Sub ValidateCurrentBuild()
         Dim testModule As Object
         Set testModule = ThisWorkbook.VBProject.VBComponents(CStr(moduleName))
         If Err.Number = 0 Then
-            Debug.Print "✓ " & moduleName
+            Debug.Print "SUCCESS: " & moduleName
             foundModules = foundModules + 1
         Else
-            Debug.Print "✗ " & moduleName & " (missing)"
+            Debug.Print "MISSING: " & moduleName
         End If
         On Error GoTo 0
     Next moduleName
@@ -570,35 +447,15 @@ Public Sub ValidateCurrentBuild()
     Debug.Print "Success Rate: " & Format((foundModules / totalModules) * 100, "0.0") & "%"
     
     If foundModules = totalModules Then
-        Debug.Print "✓ Installation validation PASSED"
+        Debug.Print "SUCCESS: Installation validation PASSED"
         MsgBox "XLerate installation validation passed!" & vbNewLine & _
                "All " & totalModules & " required modules are present.", _
                vbInformation, "Validation Success"
     Else
-        Debug.Print "✗ Installation validation FAILED"
+        Debug.Print "ERROR: Installation validation FAILED"
         MsgBox "XLerate installation validation failed!" & vbNewLine & _
                "Found " & foundModules & " of " & totalModules & " required modules." & vbNewLine & _
                "Run BuildXLerate() to rebuild the add-in.", _
                vbExclamation, "Validation Failed"
     End If
-End Sub
-
-Public Sub ShowBuildInfo()
-    ' Display comprehensive build information
-    Dim msg As String
-    msg = "XLerate Build Information" & vbNewLine & vbNewLine
-    msg = msg & "Version: " & XLERATE_VERSION & vbNewLine
-    msg = msg & "Codename: " & BUILD_CODENAME & vbNewLine
-    msg = msg & "Platform: Windows + macOS" & vbNewLine
-    msg = msg & "Excel Compatibility: 2013+" & vbNewLine & vbNewLine
-    msg = msg & "Enhanced Features:" & vbNewLine
-    msg = msg & "• Fast Fill Down (NEW)" & vbNewLine
-    msg = msg & "• Currency Cycling (NEW)" & vbNewLine
-    msg = msg & "• Border Utilities (NEW)" & vbNewLine
-    msg = msg & "• 100% Macabacus-Compatible Shortcuts" & vbNewLine
-    msg = msg & "• Cross-Platform Support" & vbNewLine & vbNewLine
-    msg = msg & "Current Excel: " & Application.Version & vbNewLine
-    msg = msg & "Operating System: " & Application.OperatingSystem
-    
-    MsgBox msg, vbInformation, "XLerate v" & XLERATE_VERSION & " Build Info"
 End Sub

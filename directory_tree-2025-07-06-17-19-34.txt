@@ -13,6 +13,7 @@
 ./.gitignore
 ./XLerate Keyboard Map.md
 ./XLerate.png
+./directory_tree-2025-07-06-17-19-34.txt
 ./src
 ./src/.DS_Store
 ./src/forms
@@ -40,8 +41,10 @@
 ./src/modules/ModSwitchSign.bas
 ./src/modules/ModFormatReset.bas
 ./src/modules/ModUtilityShortcuts.bas
+./src/modules/SimpleBuildXLerate.bas
 ./src/modules/ModAdvancedPaste.bas
 ./src/modules/ModNumberFormat.bas
+./src/modules/BuildXLerate.bas
 ./src/modules/ModModelValidation.bas
 ./src/modules/ModProductivityUtilities.bas
 ./src/modules/ModCAGR.bas
@@ -49,20 +52,23 @@
 ./src/modules/ModCurrencyFormatting.bas
 ./src/modules/ModUtilityHelpers.bas
 ./src/modules/ModGlobalSettings.bas
+./src/modules/XLerate_Enhanced.bas
 ./src/modules/ModErrorWrap.bas
 ./src/modules/ModSmartFillRight.bas
 ./src/modules/ModSettings.bas
 ./src/modules/RibbonCallbacks.bas
 ./src/modules/ModAdvancedAuditing.bas
 ./src/modules/ModCellFormat.bas
+./src/modules/XLerate_Core.bas
 ./src/modules/ModDateFormat.bas
 ./src/modules/modAlignment.bas
 ./src/modules/ModVersionInfo.bas
-./src/modules/BuildXLerate_Enhanced.bas
+./src/modules/ModFastFillDown.bas
 ./src/modules/ModBorderUtilities.bas
 ./src/modules/ModTextStyle.bas
 ./src/modules/modAuditing.bas
 ./src/modules/ModFinancialFunctions.bas
 ./src/modules/TraceUtils.bas
+./src/modules/ModCurrencyCycling.bas
 ./src/modules/FormulaConsistency.bas
 ./src/modules/ModView.bas
