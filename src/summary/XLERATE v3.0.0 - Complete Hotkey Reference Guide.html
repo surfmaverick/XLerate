@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XLERATE v3.0.0 - Complete Hotkey Reference Guide</title>
+    <style>
+        @media print {
+            body { margin: 0.5in; font-size: 10pt; }
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
+            margin: 20px;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.95;
+        }
+        
+        .version-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .section {
+            background: white;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+            border-bottom: 2px solid #388e3c;
+        }
+        
+        .section-content {
+            padding: 20px;
+        }
+        
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 3fr;
+            gap: 1px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .grid-header {
+            background: #37474f;
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .grid-cell {
+            background: white;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .shortcut {
+            background: #263238;
+            color: #00e676;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: inline-block;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .function-name {
+            font-weight: 600;
+            color: #1976d2;
+        }
+        
+        .description {
+            color: #555;
+            font-size: 0.95em;
+        }
+        
+        .compatibility-badge {
+            background: #4caf50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+        
+        .legacy-badge {
+            background: #ff9800;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+        
+        .workflow-section {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        
+        .workflow-title {
+            color: #e65100;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .tips {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: #37474f;
+            color: white;
+            border-radius: 8px;
+        }
+        
+        @media screen {
+            .print-button {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #2196f3;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 16px;
+                box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+                z-index: 1000;
+            }
+            
+            .print-button:hover {
+                background: #1976d2;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">🖨️ Print Guide</button>
+    
+    <div class="header">
+        <h1>XLERATE v3.0.0</h1>
+        <div class="subtitle">Complete Hotkey Reference Guide - 100% Macabacus Compatible</div>
+    </div>
+    
+    <div class="version-info">
+        <strong>Version:</strong> 3.0.0 | <strong>Date:</strong> July 2025 | <strong>Compatibility:</strong> 100% Macabacus Aligned | <strong>Platform:</strong> Windows & macOS
+    </div>
+    
+    <!-- CORE MODELING SECTION -->
+    <div class="section">
+        <div class="section-header">🚀 Core Modeling Functions</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+R</span></div>
+                <div class="grid-cell"><span class="function-name">Fast Fill Right</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Intelligently fills formulas horizontally with smart relative/absolute reference handling</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+D</span></div>
+                <div class="grid-cell"><span class="function-name">Fast Fill Down</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Intelligently fills formulas vertically with smart relative/absolute reference handling</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+E</span></div>
+                <div class="grid-cell"><span class="function-name">Error Wrap</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Wraps selected formulas with IFERROR() to handle potential calculation errors</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+V</span></div>
+                <div class="grid-cell"><span class="function-name">Simplify Formula</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Simplifies complex formulas and removes unnecessary nested functions</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AUDITING SECTION -->
+    <div class="section">
+        <div class="section-header">🔍 Auditing & Formula Analysis</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+[</span></div>
+                <div class="grid-cell"><span class="function-name">Pro Precedents</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Interactive precedent tracing with advanced navigation and highlighting</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+]</span></div>
+                <div class="grid-cell"><span class="function-name">Pro Dependents</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Interactive dependent tracing with advanced navigation and highlighting</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+F</span></div>
+                <div class="grid-cell"><span class="function-name">Show All Precedents</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Display all precedent relationships for selected cells</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+J</span></div>
+                <div class="grid-cell"><span class="function-name">Show All Dependents</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Display all dependent relationships for selected cells</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+N</span></div>
+                <div class="grid-cell"><span class="function-name">Clear Arrows</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Remove all precedent and dependent trace arrows from worksheet</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+Q</span></div>
+                <div class="grid-cell"><span class="function-name">Uniformulas</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Check for formula consistency and highlight inconsistencies</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NUMBER FORMATTING SECTION -->
+    <div class="section">
+        <div class="section-header">🔢 Number Format Cycles</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+1</span></div>
+                <div class="grid-cell"><span class="function-name">General Number Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycles: General → #,##0 → #,##0.0 → #,##0.00 → 0 → 0.0 → 0.00 → General</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+2</span></div>
+                <div class="grid-cell"><span class="function-name">Date Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycles: m/d/yyyy → mm/dd/yyyy → m/d/yy → mm/dd/yy → mmm-yy → mmmm-yy → mmm dd, yyyy → mmmm dd, yyyy</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+3</span></div>
+                <div class="grid-cell"><span class="function-name">Local Currency Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycles through USD currency formats: $#,##0 → $#,##0.00 → ($#,##0) → ($#,##0.00) → with red negatives</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+4</span></div>
+                <div class="grid-cell"><span class="function-name">Foreign Currency Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycles through international currency formats (EUR, GBP, JPY, etc.)</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+5</span></div>
+                <div class="grid-cell"><span class="function-name">Percent Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycles: 0% → 0.0% → 0.00% → 0.000% → #,##0% → #,##0.0% → #,##0.00%</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+8</span></div>
+                <div class="grid-cell"><span class="function-name">Multiple Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycles through multiplier formats: 000s, 000,000s, etc.</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+Y</span></div>
+                <div class="grid-cell"><span class="function-name">Binary Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycles through binary, octal, and hexadecimal number formats</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+,</span></div>
+                <div class="grid-cell"><span class="function-name">Increase Decimals</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Increase decimal places in current number format</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+.</span></div>
+                <div class="grid-cell"><span class="function-name">Decrease Decimals</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Decrease decimal places in current number format</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- COLOR & STYLING SECTION -->
+    <div class="section">
+        <div class="section-header">🎨 Colors & AutoColor Functions</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+A</span></div>
+                <div class="grid-cell"><span class="function-name">AutoColor Selection</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Automatically colors cells based on content: inputs (yellow), formulas (blue), externals (green), hardcoded (red)</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+S</span></div>
+                <div class="grid-cell"><span class="function-name">AutoColor Sheet</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Apply AutoColor to entire active worksheet</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+Q</span></div>
+                <div class="grid-cell"><span class="function-name">AutoColor Workbook</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Apply AutoColor to entire workbook (all worksheets)</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+9</span></div>
+                <div class="grid-cell"><span class="function-name">Blue-Black Toggle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Toggle font color between blue and black for selected cells</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+;</span></div>
+                <div class="grid-cell"><span class="function-name">Font Color Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through professional font colors: black, blue, red, green</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+K</span></div>
+                <div class="grid-cell"><span class="function-name">Fill Color Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through cell background colors for highlighting and organization</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+'</span></div>
+                <div class="grid-cell"><span class="function-name">Border Color Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through border colors for professional table formatting</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE BREAK FOR PRINTING -->
+    <div class="page-break"></div>
+    
+    <!-- ALIGNMENT & BORDERS SECTION -->
+    <div class="section">
+        <div class="section-header">📐 Alignment & Borders</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+C</span></div>
+                <div class="grid-cell"><span class="function-name">Center Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through center alignment options: center, center across selection</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+H</span></div>
+                <div class="grid-cell"><span class="function-name">Horizontal Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through horizontal alignments: left, center, right, justify</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+I</span></div>
+                <div class="grid-cell"><span class="function-name">Left Indent Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through left indent levels for hierarchical formatting</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+↓</span></div>
+                <div class="grid-cell"><span class="function-name">Bottom Border Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through bottom border styles: none, thin, medium, thick, double</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+←</span></div>
+                <div class="grid-cell"><span class="function-name">Left Border Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through left border styles</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+→</span></div>
+                <div class="grid-cell"><span class="function-name">Right Border Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through right border styles</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+7</span></div>
+                <div class="grid-cell"><span class="function-name">Outside Border Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through outside border combinations for selection</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+-</span></div>
+                <div class="grid-cell"><span class="function-name">No Border</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Remove all borders from selected cells</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FONTS & TEXT SECTION -->
+    <div class="section">
+        <div class="section-header">📝 Fonts & Text Formatting</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+G</span></div>
+                <div class="grid-cell"><span class="function-name">Font Size Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through common font sizes: 8, 9, 10, 11, 12, 14, 16, 18</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+F</span></div>
+                <div class="grid-cell"><span class="function-name">Increase Font</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Increase font size by 1 point</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+G</span></div>
+                <div class="grid-cell"><span class="function-name">Decrease Font</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Decrease font size by 1 point</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+U</span></div>
+                <div class="grid-cell"><span class="function-name">Underline Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle: none → single → double → accounting single → accounting double</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+L</span></div>
+                <div class="grid-cell"><span class="function-name">List Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through list formatting options with bullets and numbering</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+W</span></div>
+                <div class="grid-cell"><span class="function-name">Wrap Text</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Toggle text wrapping in selected cells</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- VIEW CONTROLS SECTION -->
+    <div class="section">
+        <div class="section-header">👁️ View Controls & Navigation</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+=</span></div>
+                <div class="grid-cell"><span class="function-name">Zoom In</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Increase zoom level by 10% increments (max 400%)</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+-</span></div>
+                <div class="grid-cell"><span class="function-name">Zoom Out</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Decrease zoom level by 10% increments (min 10%)</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+G</span></div>
+                <div class="grid-cell"><span class="function-name">Toggle Gridlines</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Show/hide worksheet gridlines for cleaner presentation</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+B</span></div>
+                <div class="grid-cell"><span class="function-name">Hide Page Breaks</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Toggle page break preview and manual page breaks</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ROWS & COLUMNS SECTION -->
+    <div class="section">
+        <div class="section-header">📊 Rows & Columns Management</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+PgUp</span></div>
+                <div class="grid-cell"><span class="function-name">Row Height Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through standard row heights: auto, 15, 18, 21, 24, 30</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+PgDn</span></div>
+                <div class="grid-cell"><span class="function-name">Column Width Cycle</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Cycle through standard column widths: auto, 8.43, 10, 12, 15, 20</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+→</span></div>
+                <div class="grid-cell"><span class="function-name">Group Row</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Group selected rows for collapsible sections</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+↓</span></div>
+                <div class="grid-cell"><span class="function-name">Group Column</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Group selected columns for collapsible sections</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+←</span></div>
+                <div class="grid-cell"><span class="function-name">Ungroup Row</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Ungroup selected rows</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+↑</span></div>
+                <div class="grid-cell"><span class="function-name">Ungroup Column</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Ungroup selected columns</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- UTILITIES SECTION -->
+    <div class="section">
+        <div class="section-header">🛠️ Utilities & File Operations</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+S</span></div>
+                <div class="grid-cell"><span class="function-name">Quick Save</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Save current workbook with progress confirmation</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+S</span></div>
+                <div class="grid-cell"><span class="function-name">Quick Save All</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Save all open workbooks simultaneously</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+F12</span></div>
+                <div class="grid-cell"><span class="function-name">Quick Save As</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Open Save As dialog with intelligent file naming</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+F12</span></div>
+                <div class="grid-cell"><span class="function-name">Quick Save Up</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Save to parent directory with version increment</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Alt+Shift+D</span></div>
+                <div class="grid-cell"><span class="function-name">Delete Comments & Notes</span><span class="compatibility-badge">Macabacus</span></div>
+                <div class="grid-cell"><span class="description">Remove all comments and notes from selected range or worksheet</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- LEGACY COMPATIBILITY SECTION -->
+    <div class="section">
+        <div class="section-header">🔄 Legacy Compatibility (Backward Support)</div>
+        <div class="section-content">
+            <div class="shortcut-grid">
+                <div class="grid-header">Shortcut</div>
+                <div class="grid-header">Function</div>
+                <div class="grid-header">Description</div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Shift+1</span></div>
+                <div class="grid-cell"><span class="function-name">Legacy Number Cycle</span><span class="legacy-badge">Legacy</span></div>
+                <div class="grid-cell"><span class="description">Original XLerate number cycling (redirects to new system)</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Shift+2</span></div>
+                <div class="grid-cell"><span class="function-name">Legacy Cell Format Cycle</span><span class="legacy-badge">Legacy</span></div>
+                <div class="grid-cell"><span class="description">Original XLerate cell formatting cycle</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Shift+3</span></div>
+                <div class="grid-cell"><span class="function-name">Legacy Date Cycle</span><span class="legacy-badge">Legacy</span></div>
+                <div class="grid-cell"><span class="description">Original XLerate date cycling (redirects to new system)</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Shift+4</span></div>
+                <div class="grid-cell"><span class="function-name">Legacy Text Style Cycle</span><span class="legacy-badge">Legacy</span></div>
+                <div class="grid-cell"><span class="description">Original XLerate text formatting cycle</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Shift+R</span></div>
+                <div class="grid-cell"><span class="function-name">Legacy Smart Fill Right</span><span class="legacy-badge">Legacy</span></div>
+                <div class="grid-cell"><span class="description">Original XLerate horizontal fill function</span></div>
+                
+                <div class="grid-cell"><span class="shortcut">Ctrl+Shift+0</span></div>
+                <div class="grid-cell"><span class="function-name">Reset All Formats</span><span class="legacy-badge">Legacy</span></div>
+                <div class="grid-cell"><span class="description">Clear all formatting and return to Excel defaults</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- WORKFLOW EXAMPLES -->
+    <div class="workflow-section">
+        <div class="workflow-title">📋 Common Workflow Examples</div>
+        
+        <strong>Financial Model Setup Workflow:</strong><br>
+        1. <span class="shortcut">Ctrl+Alt+Shift+A</span> - AutoColor inputs and formulas<br>
+        2. <span class="shortcut">Ctrl+Alt+Shift+1</span> - Format numbers consistently<br>
+        3. <span class="shortcut">Ctrl+Alt+Shift+R</span> - Fill formulas horizontally<br>
+        4. <span class="shortcut">Ctrl+Alt+Shift+[</span> - Check precedents for accuracy<br>
+        5. <span class="shortcut">Ctrl+Alt+Shift+E</span> - Add error handling<br><br>
+        
+        <strong>Presentation Cleanup Workflow:</strong><br>
+        1. <span class="shortcut">Ctrl+Alt+Shift+G</span> - Hide gridlines<br>
+        2. <span class="shortcut">Ctrl+Alt+Shift+7</span> - Add professional borders<br>
+        3. <span class="shortcut">Ctrl+Alt+Shift+C</span> - Center align headers<br>
+        4. <span class="shortcut">Ctrl+Alt+Shift+F</span> - Adjust font sizes<br>
+        5. <span class="shortcut">Ctrl+Alt+Shift+S</span> - Save final version<br>
+    </div>
+    
+    <!-- TIPS SECTION -->
+    <div class="tips">
+        <strong>💡 Pro Tips for Maximum Productivity:</strong><br>
+        • Learn the "Big 5" shortcuts first: Fast Fill (R/D), Auditing ([/]), Number Format (1), AutoColor (A), Gridlines (G)<br>
+        • Use AutoColor early and often to maintain clean model organization<br>
+        • All shortcuts work identically on Windows and macOS<br>
+        • Customize format cycles in settings (coming soon) for organization-specific needs<br>
+        • Use precedent/dependent tracing before making formula changes<br>
+        • Combine shortcuts for powerful workflows (e.g., AutoColor → Format → Fill → Error Wrap)
+    </div>
+    
+    <div class="footer">
+        <strong>XLERATE v3.0.0</strong> - Complete Macabacus Compatibility<br>
+        100+ Keyboard Shortcuts | Cross-Platform Support | Open Source | Free Forever<br>
+        <em>Making Excel faster, one shortcut at a time ⚡</em>
+    </div>
+</body>
+</html>

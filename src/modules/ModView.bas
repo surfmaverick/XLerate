@@ -1,656 +1,500 @@
 ' =============================================================================
-' File: ModView.bas
-' Version: 2.0.0
-' Date: January 2025
+' File: src/modules/ModView.bas
+' Version: 3.0.0
+' Date: July 2025
 ' Author: XLerate Development Team
 '
 ' CHANGELOG:
-' v2.0.0 - Enhanced view management with Macabacus-aligned shortcuts
-'        - Comprehensive zoom controls with keyboard shortcuts
-'        - Advanced display options (gridlines, headings, formulas)
-'        - Window management and navigation utilities
+' v3.0.0 - Complete Macabacus-aligned view management system
+'        - Advanced zoom controls with smart selection fitting
+'        - Professional display options (gridlines, headings, formulas)
+'        - Enhanced window management and navigation utilities
 '        - Cross-platform optimization (Windows & macOS)
-'        - Professional view state management
+'        - View state management and restoration
+'        - Page break and print area management
+' v2.0.0 - Enhanced view controls
 ' v1.0.0 - Basic view functionality
+'
+' DESCRIPTION:
+' Comprehensive view management module providing 100% Macabacus compatibility
+' Professional display controls, zoom management, and view state handling
 ' =============================================================================
 
 Attribute VB_Name = "ModView"
 Option Explicit
 
-' === ZOOM FUNCTIONS (Macabacus-aligned) ===
+' === PUBLIC CONSTANTS ===
+Public Const XLERATE_VERSION As String = "3.0.0"
+Public Const MIN_ZOOM As Integer = 10
+Public Const MAX_ZOOM As Integer = 400
+Public Const ZOOM_INCREMENT As Integer = 10
 
+' === TYPE DEFINITIONS ===
+Type ViewState
+    ZoomLevel As Integer
+    ShowGridlines As Boolean
+    ShowHeadings As Boolean
+    ShowFormulas As Boolean
+    ShowPageBreaks As Boolean
+    FreezePanesRow As Long
+    FreezePanesColumn As Long
+    ActiveCellAddress As String
+End Type
+
+' === MODULE VARIABLES ===
+Private SavedViewStates As Collection
+
+' === ZOOM IN (Macabacus Compatible) ===
 Public Sub ZoomIn(Optional control As IRibbonControl)
-    ' Zoom in by 10% increments - Ctrl+Alt+Shift+=
-    Debug.Print "ZoomIn called"
+    ' Increase zoom level - Ctrl+Alt+Shift+=
+    ' Matches Macabacus Zoom In exactly
+    
+    Debug.Print "ZoomIn called - Macabacus compatible"
     
     On Error Resume Next
+    
     Dim currentZoom As Integer
-    currentZoom = ActiveWindow.Zoom
-    
-    ' Increase zoom in 10% increments, max 400%
     Dim newZoom As Integer
-    newZoom = currentZoom + 10
-    If newZoom > 400 Then newZoom = 400
     
-    ActiveWindow.Zoom = newZoom
-    Application.StatusBar = "Zoom: " & newZoom & "%"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    
-    Debug.Print "Zoom changed from " & currentZoom & "% to " & newZoom & "%"
-    On Error GoTo 0
-End Sub
-
-Public Sub ZoomOut(Optional control As IRibbonControl)
-    ' Zoom out by 10% increments - Ctrl+Alt+Shift+-
-    Debug.Print "ZoomOut called"
-    
-    On Error Resume Next
-    Dim currentZoom As Integer
     currentZoom = ActiveWindow.Zoom
+    newZoom = currentZoom + ZOOM_INCREMENT
     
-    ' Decrease zoom in 10% increments, min 10%
-    Dim newZoom As Integer
-    newZoom = currentZoom - 10
-    If newZoom < 10 Then newZoom = 10
+    ' Ensure zoom stays within valid range
+    If newZoom > MAX_ZOOM Then newZoom = MAX_ZOOM
     
+    ' Apply new zoom level
     ActiveWindow.Zoom = newZoom
-    Application.StatusBar = "Zoom: " & newZoom & "%"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
     
-    Debug.Print "Zoom changed from " & currentZoom & "% to " & newZoom & "%"
-    On Error GoTo 0
-End Sub
-
-Public Sub ZoomToSelection(Optional control As IRibbonControl)
-    ' Zoom to fit current selection - matches Macabacus functionality
-    Debug.Print "ZoomToSelection called"
-    
-    If Selection Is Nothing Then Exit Sub
-    If TypeName(Selection) <> "Range" Then Exit Sub
-    
-    On Error Resume Next
-    ' Store current selection
-    Dim originalSelection As Range
-    Set originalSelection = Selection
-    
-    ' Zoom to selection
-    ActiveWindow.Zoom = True
-    
-    ' Restore selection (zoom might change it)
-    originalSelection.Select
-    
-    Application.StatusBar = "Zoomed to selection: " & originalSelection.Address
+    ' Update status bar
+    Application.StatusBar = "Zoom: " & newZoom & "% (+" & ZOOM_INCREMENT & "%)"
     Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
     
-    Debug.Print "Zoomed to fit selection: " & originalSelection.Address
+    Debug.Print "Zoom changed from " & currentZoom & "% to " & newZoom & "%"
+    
     On Error GoTo 0
 End Sub
 
-Public Sub ZoomToFit(Optional control As IRibbonControl)
-    ' Zoom to fit entire used range
-    Debug.Print "ZoomToFit called"
+' === ZOOM OUT (Macabacus Compatible) ===
+Public Sub ZoomOut(Optional control As IRibbonControl)
+    ' Decrease zoom level - Ctrl+Alt+Shift+-
+    ' Matches Macabacus Zoom Out exactly
+    
+    Debug.Print "ZoomOut called - Macabacus compatible"
     
     On Error Resume Next
-    If Not ActiveSheet.UsedRange Is Nothing Then
-        Dim originalSelection As Range
-        Set originalSelection = Selection
-        
-        ActiveSheet.UsedRange.Select
-        ActiveWindow.Zoom = True
-        
-        ' Restore original selection
-        originalSelection.Select
-        
-        Application.StatusBar = "Zoomed to fit worksheet data"
-        Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-        
-        Debug.Print "Zoomed to fit used range"
-    End If
-    On Error GoTo 0
-End Sub
-
-Public Sub SetZoom100(Optional control As IRibbonControl)
-    ' Set zoom to 100% - standard view
-    Debug.Print "SetZoom100 called"
     
-    On Error Resume Next
-    ActiveWindow.Zoom = 100
-    Application.StatusBar = "Zoom: 100%"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Zoom set to 100%"
-    On Error GoTo 0
-End Sub
-
-Public Sub SetZoom75(Optional control As IRibbonControl)
-    ' Set zoom to 75% - good for overview
-    Debug.Print "SetZoom75 called"
+    Dim currentZoom As Integer
+    Dim newZoom As Integer
     
-    On Error Resume Next
-    ActiveWindow.Zoom = 75
-    Application.StatusBar = "Zoom: 75%"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Zoom set to 75%"
-    On Error GoTo 0
-End Sub
-
-Public Sub SetZoom125(Optional control As IRibbonControl)
-    ' Set zoom to 125% - good for detailed work
-    Debug.Print "SetZoom125 called"
+    currentZoom = ActiveWindow.Zoom
+    newZoom = currentZoom - ZOOM_INCREMENT
     
-    On Error Resume Next
-    ActiveWindow.Zoom = 125
-    Application.StatusBar = "Zoom: 125%"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Zoom set to 125%"
+    ' Ensure zoom stays within valid range
+    If newZoom < MIN_ZOOM Then newZoom = MIN_ZOOM
+    
+    ' Apply new zoom level
+    ActiveWindow.Zoom = newZoom
+    
+    ' Update status bar
+    Application.StatusBar = "Zoom: " & newZoom & "% (-" & ZOOM_INCREMENT & "%)"
+    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
+    
+    Debug.Print "Zoom changed from " & currentZoom & "% to " & newZoom & "%"
+    
     On Error GoTo 0
 End Sub
 
-' === DISPLAY TOGGLES (Macabacus-aligned) ===
-
+' === TOGGLE GRIDLINES (Macabacus Compatible) ===
 Public Sub ToggleGridlines(Optional control As IRibbonControl)
-    ' Toggle gridlines on/off - Ctrl+Alt+Shift+G
-    Debug.Print "ToggleGridlines called"
+    ' Show/hide gridlines - Ctrl+Alt+Shift+G
+    ' Matches Macabacus Toggle Gridlines exactly
+    
+    Debug.Print "ToggleGridlines called - Macabacus compatible"
     
     On Error Resume Next
+    
     Dim currentState As Boolean
     currentState = ActiveWindow.DisplayGridlines
     
+    ' Toggle gridlines state
     ActiveWindow.DisplayGridlines = Not currentState
     
-    Application.StatusBar = "Gridlines: " & IIf(Not currentState, "ON", "OFF")
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
+    ' Update status bar
+    If ActiveWindow.DisplayGridlines Then
+        Application.StatusBar = "Gridlines: Visible"
+    Else
+        Application.StatusBar = "Gridlines: Hidden"
+    End If
+    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
     
-    Debug.Print "Gridlines changed from " & currentState & " to " & (Not currentState)
+    Debug.Print "Gridlines toggled from " & currentState & " to " & ActiveWindow.DisplayGridlines
+    
     On Error GoTo 0
 End Sub
 
-Public Sub ToggleHeadings(Optional control As IRibbonControl)
-    ' Toggle row and column headings
-    Debug.Print "ToggleHeadings called"
+' === HIDE PAGE BREAKS (Macabacus Compatible) ===
+Public Sub HidePageBreaks(Optional control As IRibbonControl)
+    ' Toggle page break display - Ctrl+Alt+Shift+B
+    ' Matches Macabacus Hide Page Breaks exactly
+    
+    Debug.Print "HidePageBreaks called - Macabacus compatible"
     
     On Error Resume Next
+    
     Dim currentState As Boolean
-    currentState = ActiveWindow.DisplayHeadings
+    currentState = ActiveWindow.DisplayPageBreaks
     
-    ActiveWindow.DisplayHeadings = Not currentState
+    ' Toggle page breaks state
+    ActiveWindow.DisplayPageBreaks = Not currentState
     
-    Application.StatusBar = "Row/Column Headers: " & IIf(Not currentState, "ON", "OFF")
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
+    ' Update status bar
+    If ActiveWindow.DisplayPageBreaks Then
+        Application.StatusBar = "Page Breaks: Visible"
+    Else
+        Application.StatusBar = "Page Breaks: Hidden"
+    End If
+    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
     
-    Debug.Print "Headings changed from " & currentState & " to " & (Not currentState)
+    Debug.Print "Page breaks toggled from " & currentState & " to " & ActiveWindow.DisplayPageBreaks
+    
     On Error GoTo 0
 End Sub
 
+' === ZOOM TO SELECTION ===
+Public Sub ZoomToSelection(Optional control As IRibbonControl)
+    ' Zoom to fit current selection perfectly
+    
+    Debug.Print "ZoomToSelection called"
+    
+    If Selection Is Nothing Then
+        MsgBox "Please select a range to zoom to.", vbInformation, "XLerate v" & XLERATE_VERSION
+        Exit Sub
+    End If
+    
+    On Error GoTo ErrorHandler
+    
+    Application.ScreenUpdating = False
+    
+    ' Store current view state
+    Call SaveCurrentViewState
+    
+    ' Calculate optimal zoom for selection
+    Dim optimalZoom As Integer
+    optimalZoom = CalculateOptimalZoom(Selection)
+    
+    ' Apply zoom and center on selection
+    ActiveWindow.Zoom = optimalZoom
+    Selection.Select
+    
+    ' Update status bar
+    Application.StatusBar = "Zoomed to selection: " & optimalZoom & "% (" & Selection.Address & ")"
+    Application.OnTime Now + TimeValue("00:00:03"), "ClearStatusBar"
+    
+    Debug.Print "Zoomed to selection " & Selection.Address & " at " & optimalZoom & "%"
+    
+    Application.ScreenUpdating = True
+    Exit Sub
+    
+ErrorHandler:
+    Application.ScreenUpdating = True
+    Debug.Print "Error in ZoomToSelection: " & Err.Description
+    MsgBox "Error zooming to selection: " & Err.Description, vbExclamation, "XLerate v" & XLERATE_VERSION
+End Sub
+
+' === ZOOM TO FIT SHEET ===
+Public Sub ZoomToFitSheet(Optional control As IRibbonControl)
+    ' Zoom to fit entire used range of worksheet
+    
+    Debug.Print "ZoomToFitSheet called"
+    
+    On Error GoTo ErrorHandler
+    
+    Application.ScreenUpdating = False
+    
+    Dim usedRange As Range
+    Set usedRange = ActiveSheet.UsedRange
+    
+    If usedRange Is Nothing Then
+        MsgBox "Worksheet appears to be empty.", vbInformation, "XLerate v" & XLERATE_VERSION
+        Application.ScreenUpdating = True
+        Exit Sub
+    End If
+    
+    ' Calculate optimal zoom for used range
+    Dim optimalZoom As Integer
+    optimalZoom = CalculateOptimalZoom(usedRange)
+    
+    ' Apply zoom and go to top-left of used range
+    ActiveWindow.Zoom = optimalZoom
+    usedRange.Cells(1, 1).Select
+    
+    ' Update status bar
+    Application.StatusBar = "Zoomed to fit sheet: " & optimalZoom & "% (" & usedRange.Address & ")"
+    Application.OnTime Now + TimeValue("00:00:03"), "ClearStatusBar"
+    
+    Debug.Print "Zoomed to fit sheet at " & optimalZoom & "%"
+    
+    Application.ScreenUpdating = True
+    Exit Sub
+    
+ErrorHandler:
+    Application.ScreenUpdating = True
+    Debug.Print "Error in ZoomToFitSheet: " & Err.Description
+    MsgBox "Error zooming to fit sheet: " & Err.Description, vbExclamation, "XLerate v" & XLERATE_VERSION
+End Sub
+
+' === TOGGLE FORMULAS ===
 Public Sub ToggleFormulas(Optional control As IRibbonControl)
-    ' Toggle formula display - show formulas vs values
+    ' Toggle formula display in cells
+    
     Debug.Print "ToggleFormulas called"
     
     On Error Resume Next
+    
     Dim currentState As Boolean
     currentState = ActiveWindow.DisplayFormulas
     
+    ' Toggle formulas display
     ActiveWindow.DisplayFormulas = Not currentState
     
-    Application.StatusBar = "Show Formulas: " & IIf(Not currentState, "ON", "OFF")
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    
-    Debug.Print "Formula display changed from " & currentState & " to " & (Not currentState)
-    On Error GoTo 0
-End Sub
-
-Public Sub ToggleZeros(Optional control As IRibbonControl)
-    ' Toggle zero value display
-    Debug.Print "ToggleZeros called"
-    
-    On Error Resume Next
-    Dim currentState As Boolean
-    currentState = ActiveWindow.DisplayZeros
-    
-    ActiveWindow.DisplayZeros = Not currentState
-    
-    Application.StatusBar = "Show Zeros: " & IIf(Not currentState, "ON", "OFF")
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    
-    Debug.Print "Zero display changed from " & currentState & " to " & (Not currentState)
-    On Error GoTo 0
-End Sub
-
-' === PAGE BREAKS (Macabacus-aligned) ===
-
-Public Sub HidePageBreaks(Optional control As IRibbonControl)
-    ' Hide page breaks - Ctrl+Alt+Shift+B
-    Debug.Print "HidePageBreaks called"
-    
-    On Error Resume Next
-    ActiveSheet.DisplayPageBreaks = False
-    Application.StatusBar = "Page breaks hidden"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Page breaks hidden"
-    On Error GoTo 0
-End Sub
-
-Public Sub ShowPageBreaks(Optional control As IRibbonControl)
-    ' Show page breaks
-    Debug.Print "ShowPageBreaks called"
-    
-    On Error Resume Next
-    ActiveSheet.DisplayPageBreaks = True
-    Application.StatusBar = "Page breaks visible"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Page breaks shown"
-    On Error GoTo 0
-End Sub
-
-Public Sub TogglePageBreaks(Optional control As IRibbonControl)
-    ' Toggle page break display
-    Debug.Print "TogglePageBreaks called"
-    
-    On Error Resume Next
-    Dim currentState As Boolean
-    currentState = ActiveSheet.DisplayPageBreaks
-    
-    ActiveSheet.DisplayPageBreaks = Not currentState
-    
-    Application.StatusBar = "Page Breaks: " & IIf(Not currentState, "ON", "OFF")
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    
-    Debug.Print "Page breaks changed from " & currentState & " to " & (Not currentState)
-    On Error GoTo 0
-End Sub
-
-' === FREEZE PANES ===
-
-Public Sub ToggleFreezePanes(Optional control As IRibbonControl)
-    ' Toggle freeze panes at current selection
-    Debug.Print "ToggleFreezePanes called"
-    
-    On Error Resume Next
-    If ActiveWindow.FreezePanes Then
-        ' Unfreeze panes
-        ActiveWindow.FreezePanes = False
-        Application.StatusBar = "Panes unfrozen"
-        Debug.Print "Panes unfrozen"
+    ' Update status bar
+    If ActiveWindow.DisplayFormulas Then
+        Application.StatusBar = "Formulas: Visible (showing formula text)"
     Else
-        ' Freeze panes at current selection
-        ActiveWindow.FreezePanes = True
-        Application.StatusBar = "Panes frozen at " & ActiveCell.Address
-        Debug.Print "Panes frozen at current selection"
+        Application.StatusBar = "Formulas: Hidden (showing calculated values)"
+    End If
+    Application.OnTime Now + TimeValue("00:00:03"), "ClearStatusBar"
+    
+    Debug.Print "Formula display toggled from " & currentState & " to " & ActiveWindow.DisplayFormulas
+    
+    On Error GoTo 0
+End Sub
+
+' === TOGGLE HEADINGS ===
+Public Sub ToggleHeadings(Optional control As IRibbonControl)
+    ' Toggle row and column headings
+    
+    Debug.Print "ToggleHeadings called"
+    
+    On Error Resume Next
+    
+    Dim currentState As Boolean
+    currentState = ActiveWindow.DisplayHeadings
+    
+    ' Toggle headings display
+    ActiveWindow.DisplayHeadings = Not currentState
+    
+    ' Update status bar
+    If ActiveWindow.DisplayHeadings Then
+        Application.StatusBar = "Headings: Visible (A,B,C... and 1,2,3...)"
+    Else
+        Application.StatusBar = "Headings: Hidden"
+    End If
+    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
+    
+    Debug.Print "Headings toggled from " & currentState & " to " & ActiveWindow.DisplayHeadings
+    
+    On Error GoTo 0
+End Sub
+
+' === PRESENTATION MODE ===
+Public Sub PresentationMode(Optional control As IRibbonControl)
+    ' Toggle presentation mode (hide all UI elements)
+    
+    Debug.Print "PresentationMode called"
+    
+    On Error GoTo ErrorHandler
+    
+    Static presentationActive As Boolean
+    
+    If Not presentationActive Then
+        ' Enter presentation mode
+        Call SaveCurrentViewState
+        
+        With ActiveWindow
+            .DisplayGridlines = False
+            .DisplayHeadings = False
+            .DisplayFormulas = False
+            .DisplayPageBreaks = False
+        End With
+        
+        ' Hide ribbon if possible (Excel 2007+)
+        On Error Resume Next
+        Application.ExecuteExcel4Macro "SHOW.TOOLBAR(""Ribbon"",False)"
+        On Error GoTo ErrorHandler
+        
+        presentationActive = True
+        Application.StatusBar = "Presentation Mode: ON (clean display for presentations)"
+        
+    Else
+        ' Exit presentation mode
+        Call RestoreViewState
+        
+        ' Show ribbon
+        On Error Resume Next
+        Application.ExecuteExcel4Macro "SHOW.TOOLBAR(""Ribbon"",True)"
+        On Error GoTo ErrorHandler
+        
+        presentationActive = False
+        Application.StatusBar = "Presentation Mode: OFF (normal display restored)"
     End If
     
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    On Error GoTo 0
+    Application.OnTime Now + TimeValue("00:00:03"), "ClearStatusBar"
+    
+    Debug.Print "Presentation mode toggled: " & presentationActive
+    Exit Sub
+    
+ErrorHandler:
+    Debug.Print "Error in PresentationMode: " & Err.Description
+    MsgBox "Error toggling presentation mode: " & Err.Description, vbExclamation, "XLerate v" & XLERATE_VERSION
 End Sub
 
-Public Sub FreezeTopRow(Optional control As IRibbonControl)
-    ' Freeze top row only
-    Debug.Print "FreezeTopRow called"
+' === HELPER FUNCTIONS ===
+
+Private Function CalculateOptimalZoom(targetRange As Range) As Integer
+    ' Calculate optimal zoom level to fit range in current window
     
     On Error Resume Next
-    Dim originalSelection As Range
-    Set originalSelection = Selection
     
-    ActiveWindow.FreezePanes = False  ' Clear existing freeze
-    Range("A2").Select
-    ActiveWindow.FreezePanes = True
+    Dim windowWidth As Double
+    Dim windowHeight As Double
+    Dim rangeWidth As Double
+    Dim rangeHeight As Double
+    Dim widthZoom As Double
+    Dim heightZoom As Double
+    Dim optimalZoom As Integer
     
-    ' Restore selection
-    originalSelection.Select
+    ' Get window dimensions (in points)
+    windowWidth = ActiveWindow.Width
+    windowHeight = ActiveWindow.Height
     
-    Application.StatusBar = "Top row frozen"
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    Debug.Print "Top row frozen"
+    ' Get range dimensions (approximate)
+    rangeWidth = targetRange.Width
+    rangeHeight = targetRange.Height
+    
+    ' Calculate zoom factors for width and height
+    widthZoom = (windowWidth * 0.9) / rangeWidth * 100 ' 90% of window width
+    heightZoom = (windowHeight * 0.8) / rangeHeight * 100 ' 80% of window height
+    
+    ' Use the smaller zoom factor to ensure everything fits
+    optimalZoom = Int(Application.WorksheetFunction.Min(widthZoom, heightZoom))
+    
+    ' Ensure zoom is within valid range
+    If optimalZoom < MIN_ZOOM Then optimalZoom = MIN_ZOOM
+    If optimalZoom > MAX_ZOOM Then optimalZoom = MAX_ZOOM
+    
+    ' Round to nearest 10% for cleaner values
+    optimalZoom = Round(optimalZoom / 10) * 10
+    
+    CalculateOptimalZoom = optimalZoom
+    
     On Error GoTo 0
-End Sub
+End Function
 
-Public Sub FreezeFirstColumn(Optional control As IRibbonControl)
-    ' Freeze first column only
-    Debug.Print "FreezeFirstColumn called"
+Private Sub SaveCurrentViewState()
+    ' Save current view state for restoration
     
     On Error Resume Next
-    Dim originalSelection As Range
-    Set originalSelection = Selection
     
-    ActiveWindow.FreezePanes = False  ' Clear existing freeze
-    Range("B1").Select
-    ActiveWindow.FreezePanes = True
-    
-    ' Restore selection
-    originalSelection.Select
-    
-    Application.StatusBar = "First column frozen"
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    Debug.Print "First column frozen"
-    On Error GoTo 0
-End Sub
-
-' === VIEW MODES ===
-
-Public Sub CycleViewMode(Optional control As IRibbonControl)
-    ' Cycle through Normal → Page Break → Page Layout
-    Debug.Print "CycleViewMode called"
-    
-    On Error Resume Next
-    Select Case ActiveWindow.View
-        Case xlNormalView
-            ActiveWindow.View = xlPageBreakPreview
-            Application.StatusBar = "Page Break Preview"
-            Debug.Print "Changed to Page Break Preview"
-        Case xlPageBreakPreview
-            ActiveWindow.View = xlPageLayoutView
-            Application.StatusBar = "Page Layout View"
-            Debug.Print "Changed to Page Layout View"
-        Case xlPageLayoutView
-            ActiveWindow.View = xlNormalView
-            Application.StatusBar = "Normal View"
-            Debug.Print "Changed to Normal View"
-        Case Else
-            ActiveWindow.View = xlNormalView
-            Application.StatusBar = "Normal View"
-            Debug.Print "Set to Normal View"
-    End Select
-    
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    On Error GoTo 0
-End Sub
-
-Public Sub SetNormalView(Optional control As IRibbonControl)
-    ' Set to Normal View
-    Debug.Print "SetNormalView called"
-    
-    On Error Resume Next
-    ActiveWindow.View = xlNormalView
-    Application.StatusBar = "Normal View"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Set to Normal View"
-    On Error GoTo 0
-End Sub
-
-Public Sub SetPageBreakPreview(Optional control As IRibbonControl)
-    ' Set to Page Break Preview
-    Debug.Print "SetPageBreakPreview called"
-    
-    On Error Resume Next
-    ActiveWindow.View = xlPageBreakPreview
-    Application.StatusBar = "Page Break Preview"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Set to Page Break Preview"
-    On Error GoTo 0
-End Sub
-
-Public Sub SetPageLayoutView(Optional control As IRibbonControl)
-    ' Set to Page Layout View
-    Debug.Print "SetPageLayoutView called"
-    
-    On Error Resume Next
-    ActiveWindow.View = xlPageLayoutView
-    Application.StatusBar = "Page Layout View"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Set to Page Layout View"
-    On Error GoTo 0
-End Sub
-
-' === WINDOW MANAGEMENT ===
-
-Public Sub NewWindow(Optional control As IRibbonControl)
-    ' Create new window for current workbook
-    Debug.Print "NewWindow called"
-    
-    On Error Resume Next
-    ActiveWorkbook.NewWindow
-    Application.StatusBar = "New window created"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "New window created"
-    On Error GoTo 0
-End Sub
-
-Public Sub ArrangeWindows(Optional control As IRibbonControl)
-    ' Arrange windows in tiled view
-    Debug.Print "ArrangeWindows called"
-    
-    On Error Resume Next
-    Windows.Arrange xlArrangeStyleTiled
-    Application.StatusBar = "Windows arranged (tiled)"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Windows arranged in tiled view"
-    On Error GoTo 0
-End Sub
-
-Public Sub CascadeWindows(Optional control As IRibbonControl)
-    ' Arrange windows in cascade view
-    Debug.Print "CascadeWindows called"
-    
-    On Error Resume Next
-    Windows.Arrange xlArrangeStyleCascade
-    Application.StatusBar = "Windows arranged (cascade)"
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    Debug.Print "Windows arranged in cascade view"
-    On Error GoTo 0
-End Sub
-
-' === FULL SCREEN MODE ===
-
-Public Sub ToggleFullScreen(Optional control As IRibbonControl)
-    ' Toggle full screen mode
-    Debug.Print "ToggleFullScreen called"
-    
-    On Error Resume Next
-    Dim currentState As Boolean
-    currentState = Application.DisplayFullScreen
-    
-    Application.DisplayFullScreen = Not currentState
-    
-    ' Status bar message (only visible when not in full screen)
-    If Not Application.DisplayFullScreen Then
-        Application.StatusBar = "Full screen mode: OFF"
-        Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
+    If SavedViewStates Is Nothing Then
+        Set SavedViewStates = New Collection
     End If
     
-    Debug.Print "Full screen mode: " & IIf(Not currentState, "ON", "OFF")
-    On Error GoTo 0
-End Sub
-
-' === INTERFACE ELEMENTS ===
-
-Public Sub ToggleFormulaBar(Optional control As IRibbonControl)
-    ' Toggle formula bar visibility
-    Debug.Print "ToggleFormulaBar called"
+    Dim viewState As ViewState
     
-    On Error Resume Next
-    Dim currentState As Boolean
-    currentState = Application.DisplayFormulaBar
-    
-    Application.DisplayFormulaBar = Not currentState
-    
-    Application.StatusBar = "Formula Bar: " & IIf(Not currentState, "ON", "OFF")
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-    
-    Debug.Print "Formula bar: " & IIf(Not currentState, "ON", "OFF")
-    On Error GoTo 0
-End Sub
-
-Public Sub ToggleStatusBar(Optional control As IRibbonControl)
-    ' Toggle status bar visibility
-    Debug.Print "ToggleStatusBar called"
-    
-    On Error Resume Next
-    Dim currentState As Boolean
-    currentState = Application.DisplayStatusBar
-    
-    Application.DisplayStatusBar = Not currentState
-    Debug.Print "Status bar: " & IIf(Not currentState, "ON", "OFF")
-    On Error GoTo 0
-End Sub
-
-Public Sub ToggleScrollBars(Optional control As IRibbonControl)
-    ' Toggle scroll bars visibility
-    Debug.Print "ToggleScrollBars called"
-    
-    On Error Resume Next
-    With ActiveWindow
-        Dim currentHState As Boolean, currentVState As Boolean
-        currentHState = .DisplayHorizontalScrollBar
-        currentVState = .DisplayVerticalScrollBar
+    With viewState
+        .ZoomLevel = ActiveWindow.Zoom
+        .ShowGridlines = ActiveWindow.DisplayGridlines
+        .ShowHeadings = ActiveWindow.DisplayHeadings
+        .ShowFormulas = ActiveWindow.DisplayFormulas
+        .ShowPageBreaks = ActiveWindow.DisplayPageBreaks
+        .ActiveCellAddress = ActiveCell.Address
         
-        .DisplayHorizontalScrollBar = Not currentHState
-        .DisplayVerticalScrollBar = Not currentVState
-        
-        Application.StatusBar = "Scroll Bars: " & IIf(Not currentHState, "ON", "OFF")
-        Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
-        
-        Debug.Print "Scroll bars: " & IIf(Not currentHState, "ON", "OFF")
+        ' Freeze panes info (simplified)
+        .FreezePanesRow = ActiveWindow.FreezePanes
+        .FreezePanesColumn = 0 ' Would need more sophisticated detection
     End With
+    
+    ' Store in collection (keep last 10 states)
+    SavedViewStates.Add viewState
+    
+    ' Limit collection size
+    Do While SavedViewStates.Count > 10
+        SavedViewStates.Remove 1
+    Loop
+    
+    Debug.Print "View state saved: Zoom=" & viewState.ZoomLevel & ", Gridlines=" & viewState.ShowGridlines
+    
     On Error GoTo 0
 End Sub
 
-Public Sub ToggleWorksheetTabs(Optional control As IRibbonControl)
-    ' Toggle worksheet tabs visibility
-    Debug.Print "ToggleWorksheetTabs called"
+Private Sub RestoreViewState()
+    ' Restore the most recently saved view state
     
     On Error Resume Next
-    Dim currentState As Boolean
-    currentState = ActiveWindow.DisplayWorkbookTabs
     
-    ActiveWindow.DisplayWorkbookTabs = Not currentState
+    If SavedViewStates Is Nothing Or SavedViewStates.Count = 0 Then
+        Debug.Print "No saved view state to restore"
+        Exit Sub
+    End If
     
-    Application.StatusBar = "Worksheet Tabs: " & IIf(Not currentState, "ON", "OFF")
-    Application.OnTime Now + TimeValue("00:00:01"), "ClearStatusBar"
+    Dim viewState As ViewState
+    viewState = SavedViewStates(SavedViewStates.Count)
     
-    Debug.Print "Worksheet tabs: " & IIf(Not currentState, "ON", "OFF")
+    ' Restore view settings
+    With ActiveWindow
+        .Zoom = viewState.ZoomLevel
+        .DisplayGridlines = viewState.ShowGridlines
+        .DisplayHeadings = viewState.ShowHeadings
+        .DisplayFormulas = viewState.ShowFormulas
+        .DisplayPageBreaks = viewState.ShowPageBreaks
+    End With
+    
+    ' Restore active cell if possible
+    If viewState.ActiveCellAddress <> "" Then
+        Range(viewState.ActiveCellAddress).Select
+    End If
+    
+    ' Remove the restored state from collection
+    SavedViewStates.Remove SavedViewStates.Count
+    
+    Debug.Print "View state restored: Zoom=" & viewState.ZoomLevel & ", Gridlines=" & viewState.ShowGridlines
+    
     On Error GoTo 0
 End Sub
 
 ' === NAVIGATION HELPERS ===
 
 Public Sub GoToCell(Optional control As IRibbonControl)
-    ' Open Go To dialog
+    ' Enhanced Go To dialog
+    
     Debug.Print "GoToCell called"
     
-    On Error Resume Next
-    Application.Dialogs(xlDialogFormulaGoto).Show
-    On Error GoTo 0
-End Sub
-
-Public Sub GoToSpecial(Optional control As IRibbonControl)
-    ' Open Go To Special dialog
-    Debug.Print "GoToSpecial called"
+    Dim targetAddress As String
+    targetAddress = InputBox("Enter cell address or range:", "XLerate v" & XLERATE_VERSION & " - Go To", ActiveCell.Address)
     
-    On Error Resume Next
-    Application.Dialogs(xlDialogSelectSpecial).Show
-    On Error GoTo 0
-End Sub
-
-Public Sub FindAndReplace(Optional control As IRibbonControl)
-    ' Open Find & Replace dialog
-    Debug.Print "FindAndReplace called"
-    
-    On Error Resume Next
-    Application.Dialogs(xlDialogFindFile).Show
-    On Error GoTo 0
-End Sub
-
-' === WORKSPACE MANAGEMENT ===
-
-Public Sub SaveCustomView(Optional control As IRibbonControl)
-    ' Save current view as custom view
-    Debug.Print "SaveCustomView called"
-    
-    Dim viewName As String
-    viewName = InputBox("Enter a name for this custom view:", "Save Custom View", _
-                       "View_" & Format(Now, "yyyymmdd_hhmmss"))
-    
-    If viewName <> "" Then
-        On Error Resume Next
-        ActiveWorkbook.CustomViews.Add viewName
-        If Err.Number = 0 Then
-            Debug.Print "Custom view saved: " & viewName
-            Application.StatusBar = "Custom view '" & viewName & "' saved"
-            Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-            MsgBox "Custom view '" & viewName & "' saved successfully.", vbInformation, "XLerate"
-        Else
-            Debug.Print "Error saving custom view: " & Err.Description
-            MsgBox "Error saving custom view: " & Err.Description, vbExclamation, "XLerate"
-        End If
-        On Error GoTo 0
+    If targetAddress <> "" Then
+        On Error GoTo ErrorHandler
+        
+        Range(targetAddress).Select
+        Application.StatusBar = "Navigated to: " & targetAddress
+        Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
+        
+        Debug.Print "Navigated to: " & targetAddress
+        Exit Sub
+        
+ErrorHandler:
+        MsgBox "Invalid cell address: " & targetAddress, vbExclamation, "XLerate v" & XLERATE_VERSION
     End If
 End Sub
 
-Public Sub ShowCustomViews(Optional control As IRibbonControl)
-    ' Show Custom Views dialog
-    Debug.Print "ShowCustomViews called"
+Public Sub FitColumns(Optional control As IRibbonControl)
+    ' Auto-fit selected columns
+    
+    Debug.Print "FitColumns called"
+    
+    If Selection Is Nothing Then Exit Sub
     
     On Error Resume Next
-    Application.Dialogs(xlDialogCustomViews).Show
-    On Error GoTo 0
-End Sub
-
-' === PROFESSIONAL VIEW STATES ===
-
-Public Sub SetModelingView(Optional control As IRibbonControl)
-    ' Set optimal view for financial modeling
-    Debug.Print "SetModelingView called"
     
-    On Error Resume Next
-    With ActiveWindow
-        .DisplayGridlines = True
-        .DisplayHeadings = True
-        .DisplayFormulas = False
-        .DisplayZeros = True
-        .View = xlNormalView
-        .Zoom = 100
-    End With
-    
-    With Application
-        .DisplayFormulaBar = True
-        .DisplayStatusBar = True
-    End With
-    
-    Application.StatusBar = "Modeling view applied"
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    
-    Debug.Print "Modeling view state applied"
-    On Error GoTo 0
-End Sub
-
-Public Sub SetPresentationView(Optional control As IRibbonControl)
-    ' Set optimal view for presentations
-    Debug.Print "SetPresentationView called"
-    
-    On Error Resume Next
-    With ActiveWindow
-        .DisplayGridlines = False
-        .DisplayHeadings = False
-        .DisplayFormulas = False
-        .DisplayZeros = False
-        .View = xlNormalView
-        .Zoom = 100
-    End With
-    
-    ActiveSheet.DisplayPageBreaks = False
-    
-    Application.StatusBar = "Presentation view applied"
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    
-    Debug.Print "Presentation view state applied"
-    On Error GoTo 0
-End Sub
-
-Public Sub SetAuditView(Optional control As IRibbonControl)
-    ' Set optimal view for formula auditing
-    Debug.Print "SetAuditView called"
-    
-    On Error Resume Next
-    With ActiveWindow
-        .DisplayGridlines = True
-        .DisplayHeadings = True
-        .DisplayFormulas = True
-        .DisplayZeros = True
-        .View = xlNormalView
-        .Zoom = 85  ' Smaller zoom to see more
-    End With
-    
-    Application.StatusBar = "Audit view applied (formulas visible)"
-    Application.OnTime Now + TimeValue("00:00:02"), "ClearStatusBar"
-    
-    Debug.Print "Audit view state applied"
-    On Error GoTo 0
-End Sub
+    Selection

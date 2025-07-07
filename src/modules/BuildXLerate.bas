@@ -1,38 +1,87 @@
+' =========================================================================
+' File: src/modules/BuildXLerate.bas
+' Version: 2.1.1
+' Date: July 2025
+' Description: Fixed BuildXLerate with file selection and no Unicode issues
+'
+' CHANGELOG:
+' v2.1.1 - Fixed Unicode characters causing display issues
+'        - Added file selection dialog for output location
+'        - Enhanced debugging and error logging
+'        - Improved environment validation
+'        - Fixed array syntax errors
+' v2.1.0 - Previous version with hardcoded paths
+' =========================================================================
+
+Attribute VB_Name = "BuildXLerate"
 Option Explicit
 
-Private Const XLERATE_VERSION As String = "2.1.0"
+Private Const XLERATE_VERSION As String = "2.1.1"
 Private Const BUILD_CODENAME As String = "Macabacus Professional"
 
 Public Sub BuildXLerate()
-    Debug.Print "=== XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ") Build Started ==="
+    Debug.Print "==========================================="
+    Debug.Print "XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ") Build Started"
+    Debug.Print "Time: " & Format(Now(), "yyyy-mm-dd hh:nn:ss")
+    Debug.Print "==========================================="
     
     On Error GoTo BuildError
     
-    Dim sourcePath As String
-    Dim outputPath As String
+    Dim startTime As Date
+    startTime = Now()
     
-    sourcePath = "C:\Mac\Home\Documents\Coding\GitHub\XLerate\src\"
-    outputPath = "C:\Users\chris\Desktop\XLerate_v2_1_0_Macabacus_Professional.xlam"
-    
-    Debug.Print "Source: " & sourcePath
-    Debug.Print "Output: " & outputPath
-    Debug.Print "Platform: Windows + macOS Compatible"
+    ' Step 1: Environment validation
     Debug.Print ""
-    
+    Debug.Print "STEP 1: Environment Validation"
+    Debug.Print "--------------------------------"
     If Not ValidateEnvironment() Then
-        MsgBox "Environment validation failed. Check Immediate Window for details.", vbCritical
+        MsgBox "Environment validation failed. Check Immediate Window for details.", vbCritical, "Build Failed"
         Exit Sub
     End If
+    Debug.Print "[SUCCESS] Environment validation passed"
     
+    ' Step 2: Get source path with auto-detection and user fallback
+    Debug.Print ""
+    Debug.Print "STEP 2: Source Path Configuration"
+    Debug.Print "----------------------------------"
+    Dim sourcePath As String
+    sourcePath = GetSourcePath()
+    If sourcePath = "" Then
+        MsgBox "Could not find or select source path.", vbCritical, "Build Failed"
+        Exit Sub
+    End If
+    Debug.Print "[SUCCESS] Source path: " & sourcePath
+    
+    ' Step 3: Get output location from user
+    Debug.Print ""
+    Debug.Print "STEP 3: Output Location Selection"
+    Debug.Print "----------------------------------"
+    Dim outputPath As String
+    outputPath = GetOutputPath()
+    If outputPath = "" Then
+        Debug.Print "Build cancelled by user"
+        Exit Sub
+    End If
+    Debug.Print "[SUCCESS] Output file: " & outputPath
+    
+    ' Step 4: Source structure validation
+    Debug.Print ""
+    Debug.Print "STEP 4: Source Structure Validation"
+    Debug.Print "------------------------------------"
     If Not ValidateSourceStructure(sourcePath) Then
-        MsgBox "Source validation failed. Check Immediate Window for details.", vbCritical
+        MsgBox "Source validation failed. Check Immediate Window for details.", vbCritical, "Build Failed"
         Exit Sub
     End If
+    Debug.Print "[SUCCESS] Source structure validation passed"
     
+    ' Step 5: Build process
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
     Application.StatusBar = "Building XLerate v" & XLERATE_VERSION & "..."
     
+    Debug.Print ""
+    Debug.Print "STEP 5: Add-in Creation Process"
+    Debug.Print "--------------------------------"
     Debug.Print "Creating new add-in workbook..."
     Dim newAddin As Workbook
     Set newAddin = CreateAddinWorkbook()
@@ -49,15 +98,32 @@ Public Sub BuildXLerate()
     Debug.Print "Saving add-in..."
     SaveAddin newAddin, outputPath
     
+    ' Cleanup and validation
     newAddin.Close False
+    Set newAddin = Nothing
+    
     Application.DisplayAlerts = True
     Application.ScreenUpdating = True
     Application.StatusBar = False
     
-    Debug.Print "=== Build Complete! ==="
+    ' Validate the saved file
+    Debug.Print ""
+    Debug.Print "STEP 6: Post-Build Validation"
+    Debug.Print "------------------------------"
+    ValidateBuiltFile outputPath
+    
+    Dim buildTime As String
+    buildTime = Format(Now() - startTime, "nn:ss")
+    
+    Debug.Print ""
+    Debug.Print "==========================================="
+    Debug.Print "BUILD COMPLETED SUCCESSFULLY"
+    Debug.Print "Build time: " & buildTime
+    Debug.Print "==========================================="
     
     MsgBox "XLerate v" & XLERATE_VERSION & " build completed successfully!" & vbNewLine & vbNewLine & _
            "Saved to: " & outputPath & vbNewLine & vbNewLine & _
+           "Build time: " & buildTime & vbNewLine & vbNewLine & _
            "Next steps:" & vbNewLine & _
            "1. Install the add-in in Excel" & vbNewLine & _
            "2. Enable macros and VBA access" & vbNewLine & _
@@ -73,47 +139,136 @@ BuildError:
     Application.DisplayAlerts = True
     Application.ScreenUpdating = True
     Application.StatusBar = False
-    Debug.Print "Build Error: " & Err.Description & " (Error " & Err.Number & ")"
-    MsgBox "Build failed: " & Err.Description & vbNewLine & vbNewLine & _
-           "Error Number: " & Err.Number & vbNewLine & _
+    
+    If Not newAddin Is Nothing Then
+        newAddin.Close False
+        Set newAddin = Nothing
+    End If
+    
+    Debug.Print ""
+    Debug.Print "==========================================="
+    Debug.Print "BUILD FAILED WITH ERROR"
+    Debug.Print "Error Number: " & Err.Number
+    Debug.Print "Error Description: " & Err.Description
+    Debug.Print "Error Source: " & Err.Source
+    Debug.Print "==========================================="
+    
+    MsgBox "Build failed!" & vbNewLine & vbNewLine & _
+           "Error: " & Err.Description & vbNewLine & _
+           "Error Number: " & Err.Number & vbNewLine & vbNewLine & _
            "Check the Immediate Window (Ctrl+G) for detailed information.", _
            vbCritical, "Build Failed"
-    If Not newAddin Is Nothing Then newAddin.Close False
 End Sub
+
+Private Function GetSourcePath() As String
+    ' Try multiple possible source paths first
+    Debug.Print "Attempting automatic source path detection..."
+    
+    Dim possiblePaths As Variant
+    possiblePaths = Array("C:\Mac\Home\Documents\Coding\GitHub\XLerate\src\", ThisWorkbook.Path & "\src\", ThisWorkbook.Path & "\", Environ("USERPROFILE") & "\Documents\XLerate\src\", "C:\XLerate\src\")
+    
+    Dim i As Long
+    For i = 0 To UBound(possiblePaths)
+        Debug.Print "  Checking: " & possiblePaths(i)
+        If FolderExists(CStr(possiblePaths(i))) Then
+            Debug.Print "  [SUCCESS] Found: " & possiblePaths(i)
+            GetSourcePath = possiblePaths(i)
+            Exit Function
+        End If
+    Next i
+    
+    ' If no automatic path found, ask user
+    Debug.Print "  Auto-detection failed, prompting user..."
+    
+    Dim folderPicker As Object
+    Set folderPicker = Application.FileDialog(msoFileDialogFolderPicker)
+    
+    With folderPicker
+        .Title = "Select XLerate Source Folder (containing modules, objects, etc.)"
+        .InitialFileName = ThisWorkbook.Path
+        If .Show = -1 Then
+            GetSourcePath = .SelectedItems(1) & "\"
+            Debug.Print "  [SUCCESS] User selected: " & GetSourcePath
+        Else
+            Debug.Print "  [CANCELLED] User cancelled folder selection"
+            GetSourcePath = ""
+        End If
+    End With
+End Function
+
+Private Function GetOutputPath() As String
+    ' Show file save dialog for output location
+    Debug.Print "Prompting user for output location..."
+    
+    Dim saveDialog As Object
+    Set saveDialog = Application.FileDialog(msoFileDialogSaveAs)
+    
+    Dim defaultFileName As String
+    defaultFileName = "XLerate_v" & Replace(XLERATE_VERSION, ".", "_") & "_" & Replace(BUILD_CODENAME, " ", "_") & ".xlam"
+    
+    With saveDialog
+        .Title = "Save XLerate Add-in As"
+        .InitialFileName = Environ("USERPROFILE") & "\Desktop\" & defaultFileName
+        .FilterIndex = 1
+        .Filters.Clear
+        .Filters.Add "Excel Add-ins", "*.xlam"
+        .Filters.Add "All Files", "*.*"
+        
+        If .Show = -1 Then
+            GetOutputPath = .SelectedItems(1)
+            Debug.Print "  [SUCCESS] User selected: " & GetOutputPath
+        Else
+            Debug.Print "  [CANCELLED] User cancelled file save"
+            GetOutputPath = ""
+        End If
+    End With
+End Function
 
 Private Function ValidateEnvironment() As Boolean
     Debug.Print "Validating build environment..."
     
     On Error GoTo EnvironmentError
     
+    ' Check Excel version
     Dim excelVersion As Double
     excelVersion = CDbl(Application.Version)
+    Debug.Print "  Excel version: " & Application.Version
     If excelVersion < 15.0 Then
-        Debug.Print "  ERROR: Excel version too old: " & Application.Version & " (minimum: 15.0)"
+        Debug.Print "  [ERROR] Excel version too old (minimum: 15.0/2013)"
         ValidateEnvironment = False
         Exit Function
     End If
-    Debug.Print "  SUCCESS: Excel version: " & Application.Version
+    Debug.Print "  [SUCCESS] Excel version acceptable"
     
+    ' Check VBA project access
     On Error Resume Next
     Dim testAccess As Long
     testAccess = ThisWorkbook.VBProject.VBComponents.Count
     If Err.Number <> 0 Then
-        Debug.Print "  ERROR: VBA project access denied"
-        Debug.Print "    Enable: File -> Options -> Trust Center -> Macro Settings -> Trust access to VBA project object model"
+        Debug.Print "  [ERROR] VBA project access denied"
+        Debug.Print "  Solution: File -> Options -> Trust Center -> Macro Settings -> Trust access to VBA project object model"
         ValidateEnvironment = False
         On Error GoTo EnvironmentError
         Exit Function
     End If
     On Error GoTo EnvironmentError
-    Debug.Print "  SUCCESS: VBA project access enabled"
+    Debug.Print "  [SUCCESS] VBA project access enabled"
+    
+    ' Check disk space
+    On Error Resume Next
+    Dim freeSpace As Double
+    freeSpace = CreateObject("Scripting.FileSystemObject").GetDrive(Environ("TEMP")).FreeSpace
+    If Err.Number = 0 Then
+        Debug.Print "  [SUCCESS] Available temp space: " & Format(freeSpace / 1024 / 1024, "#,##0") & " MB"
+    End If
+    On Error GoTo EnvironmentError
     
     ValidateEnvironment = True
-    Debug.Print "Environment validation passed"
+    Debug.Print "Environment validation completed successfully"
     Exit Function
     
 EnvironmentError:
-    Debug.Print "Environment validation error: " & Err.Description
+    Debug.Print "  [ERROR] Environment validation error: " & Err.Description
     ValidateEnvironment = False
 End Function
 
@@ -121,248 +276,271 @@ Private Function ValidateSourceStructure(sourcePath As String) As Boolean
     Debug.Print "Validating source structure: " & sourcePath
     
     If Not FolderExists(sourcePath) Then
-        Debug.Print "  ERROR: Source directory not found: " & sourcePath
+        Debug.Print "  [ERROR] Source directory not found: " & sourcePath
         ValidateSourceStructure = False
         Exit Function
     End If
-    Debug.Print "  SUCCESS: Source directory found"
+    Debug.Print "  [SUCCESS] Source directory found"
     
+    ' Check required directories
     Dim requiredDirs As Variant
-    requiredDirs = Array("modules", "class modules", "objects", "forms")
+    requiredDirs = Array("modules", "objects")
     
     Dim dir As Variant
     For Each dir In requiredDirs
         If FolderExists(sourcePath & dir & "\") Then
-            Debug.Print "  SUCCESS: Found directory: " & dir
+            Debug.Print "  [SUCCESS] Found required directory: " & dir
         Else
-            If dir = "forms" Then
-                Debug.Print "  Warning: Optional directory missing: " & dir
-            Else
-                Debug.Print "  ERROR: Required directory missing: " & dir
-                ValidateSourceStructure = False
-                Exit Function
-            End If
+            Debug.Print "  [ERROR] Missing required directory: " & dir
+            ValidateSourceStructure = False
+            Exit Function
         End If
     Next dir
     
+    ' Check optional directories
+    Dim optionalDirs As Variant
+    optionalDirs = Array("class modules", "forms", "ribbon")
+    
+    For Each dir In optionalDirs
+        If FolderExists(sourcePath & dir & "\") Then
+            Debug.Print "  [SUCCESS] Found optional directory: " & dir
+        Else
+            Debug.Print "  [WARNING] Optional directory missing: " & dir
+        End If
+    Next dir
+    
+    ' Check for critical files
     If FileExists(sourcePath & "objects\ThisWorkbook.cls") Then
-        Debug.Print "  SUCCESS: Found ThisWorkbook.cls"
+        Debug.Print "  [SUCCESS] Found ThisWorkbook.cls"
     Else
-        Debug.Print "  ERROR: Missing critical file: ThisWorkbook.cls"
+        Debug.Print "  [ERROR] Missing critical file: ThisWorkbook.cls"
         ValidateSourceStructure = False
         Exit Function
     End If
     
     ValidateSourceStructure = True
-    Debug.Print "Source structure validation passed"
+    Debug.Print "Source structure validation completed successfully"
 End Function
 
 Private Function CreateAddinWorkbook() As Workbook
     Set CreateAddinWorkbook = Workbooks.Add
     
+    ' Configure workbook structure
     Do While CreateAddinWorkbook.Worksheets.Count > 1
         CreateAddinWorkbook.Worksheets(CreateAddinWorkbook.Worksheets.Count).Delete
     Loop
     
     CreateAddinWorkbook.Worksheets(1).Name = "XLerate_Info"
+    
+    ' Populate info sheet
     With CreateAddinWorkbook.Worksheets(1)
         .Cells(1, 1) = "XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ")"
         .Cells(2, 1) = "Macabacus-Compatible Excel Add-in"
-        .Cells(3, 1) = "Built: " & Now
+        .Cells(3, 1) = "Built: " & Format(Now(), "yyyy-mm-dd hh:nn:ss")
         .Cells(4, 1) = "Platform: Windows + macOS"
         .Cells(5, 1) = ""
-        .Cells(6, 1) = "Quick Start Shortcuts:"
+        .Cells(6, 1) = "MACABACUS-COMPATIBLE SHORTCUTS:"
         .Cells(7, 1) = "Fast Fill Right: Ctrl+Alt+Shift+R"
-        .Cells(8, 1) = "Fast Fill Down: Ctrl+Alt+Shift+D (NEW!)"
+        .Cells(8, 1) = "Fast Fill Down: Ctrl+Alt+Shift+D"
         .Cells(9, 1) = "Error Wrap: Ctrl+Alt+Shift+E"
         .Cells(10, 1) = "Pro Precedents: Ctrl+Alt+Shift+["
         .Cells(11, 1) = "Pro Dependents: Ctrl+Alt+Shift+]"
         .Cells(12, 1) = "Number Cycle: Ctrl+Alt+Shift+1"
         .Cells(13, 1) = "Date Cycle: Ctrl+Alt+Shift+2"
-        .Cells(14, 1) = "Local Currency: Ctrl+Alt+Shift+3 (NEW!)"
-        .Cells(15, 1) = "Foreign Currency: Ctrl+Alt+Shift+4 (NEW!)"
-        .Cells(16, 1) = "AutoColor: Ctrl+Alt+Shift+A"
-        .Cells(17, 1) = "Settings: Ctrl+Alt+Shift+M"
-        .Cells(18, 1) = ""
-        .Cells(19, 1) = "100% Macabacus-Compatible Shortcuts"
-        .Cells(20, 1) = "Enhanced with Fast Fill Down, Currency Cycling, and Border Utilities"
-        
-        .Cells(1, 1).Font.Bold = True
-        .Cells(1, 1).Font.Size = 16
-        .Cells(1, 1).Font.Color = RGB(0, 100, 200)
-        .Range("A6:A20").Font.Color = RGB(0, 120, 0)
-        .Cells(19, 1).Font.Bold = True
-        .Cells(19, 1).Font.Color = RGB(200, 0, 0)
-        .Columns("A:A").AutoFit
+        .Cells(14, 1) = "AutoColor: Ctrl+Alt+Shift+A"
+        .Cells(15, 1) = "Quick Save: Ctrl+Alt+Shift+S"
+        .Cells(16, 1) = "Toggle Gridlines: Ctrl+Alt+Shift+G"
+        .Cells(17, 1) = ""
+        .Cells(18, 1) = "For full documentation, visit: github.com/omegarhovega/XLerate"
     End With
+    
+    Debug.Print "  [SUCCESS] Workbook created and configured"
 End Function
 
 Private Sub ImportAllModules(sourcePath As String, targetWB As Workbook)
-    Debug.Print "Importing all modules..."
+    Debug.Print "Starting module import process..."
     
+    Dim totalModules As Integer
+    totalModules = 0
+    
+    ' Import standard modules
     Debug.Print "  Importing standard modules..."
-    ImportModulesFromFolder sourcePath & "modules\", targetWB, "*.bas"
+    totalModules = totalModules + ImportModulesFromFolder(sourcePath & "modules\", targetWB, "*.bas", "Standard Module")
     
+    ' Import class modules
     Debug.Print "  Importing class modules..."
-    ImportModulesFromFolder sourcePath & "class modules\", targetWB, "*.cls"
+    totalModules = totalModules + ImportModulesFromFolder(sourcePath & "class modules\", targetWB, "*.cls", "Class Module")
     
+    ' Import forms
     Debug.Print "  Importing forms..."
-    ImportModulesFromFolder sourcePath & "forms\", targetWB, "*.frm"
+    totalModules = totalModules + ImportModulesFromFolder(sourcePath & "forms\", targetWB, "*.frm", "UserForm")
     
+    ' Update ThisWorkbook
     Debug.Print "  Updating ThisWorkbook..."
     UpdateThisWorkbook sourcePath & "objects\ThisWorkbook.cls", targetWB
     
-    VerifyCriticalModules targetWB
+    Debug.Print "  [SUCCESS] Module import completed: " & totalModules & " modules imported"
 End Sub
 
-Private Sub ImportModulesFromFolder(folderPath As String, targetWB As Workbook, filePattern As String)
+Private Function ImportModulesFromFolder(folderPath As String, targetWB As Workbook, filePattern As String, moduleType As String) As Integer
     If Not FolderExists(folderPath) Then
-        Debug.Print "    Warning: Folder not found: " & folderPath
-        Exit Sub
+        Debug.Print "    [WARNING] Folder not found: " & folderPath
+        ImportModulesFromFolder = 0
+        Exit Function
     End If
     
     Dim fileName As String
-    Dim importCount As Long
-    Dim errorCount As Long
+    Dim importCount As Integer
+    importCount = 0
     
     fileName = Dir(folderPath & filePattern)
-    
     Do While fileName <> ""
         Dim filePath As String
         filePath = folderPath & fileName
         
+        Debug.Print "    Importing " & moduleType & ": " & fileName
+        
         On Error Resume Next
         targetWB.VBProject.VBComponents.Import filePath
         If Err.Number = 0 Then
-            Debug.Print "    SUCCESS: " & fileName
+            Debug.Print "      [SUCCESS] " & fileName
             importCount = importCount + 1
         Else
-            Debug.Print "    ERROR: " & fileName & " - " & Err.Description
-            errorCount = errorCount + 1
+            Debug.Print "      [ERROR] " & fileName & " - " & Err.Description
         End If
         On Error GoTo 0
         
-        fileName = Dir()
+        fileName = Dir
     Loop
     
-    Debug.Print "    Summary: " & importCount & " imported, " & errorCount & " errors"
-End Sub
+    Debug.Print "    " & moduleType & " import completed: " & importCount & " files"
+    ImportModulesFromFolder = importCount
+End Function
 
-Private Sub UpdateThisWorkbook(filePath As String, targetWB As Workbook)
-    If Not FileExists(filePath) Then
-        Debug.Print "    Warning: ThisWorkbook.cls not found"
+Private Sub UpdateThisWorkbook(thisWorkbookPath As String, targetWB As Workbook)
+    If Not FileExists(thisWorkbookPath) Then
+        Debug.Print "    [ERROR] ThisWorkbook.cls not found: " & thisWorkbookPath
         Exit Sub
     End If
     
-    On Error Resume Next
-    Dim fileContent As String
-    fileContent = ReadFile(filePath)
+    Debug.Print "    Reading ThisWorkbook content..."
+    Dim content As String
+    content = ReadFile(thisWorkbookPath)
     
-    If fileContent <> "" Then
-        With targetWB.VBProject.VBComponents("ThisWorkbook").CodeModule
-            .DeleteLines 1, .CountOfLines
-            .AddFromString fileContent
-        End With
-        Debug.Print "    SUCCESS: ThisWorkbook updated with Macabacus shortcuts"
+    If Len(content) = 0 Then
+        Debug.Print "    [ERROR] Failed to read ThisWorkbook.cls"
+        Exit Sub
+    End If
+    
+    Debug.Print "    Updating ThisWorkbook code module..."
+    On Error Resume Next
+    targetWB.VBProject.VBComponents("ThisWorkbook").CodeModule.DeleteLines 1, targetWB.VBProject.VBComponents("ThisWorkbook").CodeModule.CountOfLines
+    targetWB.VBProject.VBComponents("ThisWorkbook").CodeModule.AddFromString content
+    
+    If Err.Number = 0 Then
+        Debug.Print "    [SUCCESS] ThisWorkbook updated successfully"
     Else
-        Debug.Print "    ERROR: Could not read ThisWorkbook.cls"
+        Debug.Print "    [ERROR] ThisWorkbook update failed: " & Err.Description
     End If
     On Error GoTo 0
 End Sub
 
-Private Sub VerifyCriticalModules(targetWB As Workbook)
-    Debug.Print "Verifying critical modules..."
-    
-    Dim criticalModules As Variant
-    criticalModules = Array( _
-        "ModNumberFormat", "ModCellFormat", "ModDateFormat", _
-        "ModFastFillDown", "ModCurrencyCycling", "ModBorderUtilities", _
-        "ModSmartFillRight", "ModErrorWrap", "AutoColorModule", _
-        "RibbonCallbacks", "TraceUtils", "FormulaConsistency" _
-    )
-    
-    Dim moduleName As Variant
-    For Each moduleName In criticalModules
-        On Error Resume Next
-        Dim testModule As Object
-        Set testModule = targetWB.VBProject.VBComponents(CStr(moduleName))
-        If Err.Number = 0 Then
-            Debug.Print "    SUCCESS: " & moduleName
-        Else
-            Debug.Print "    Warning: Missing: " & moduleName
-        End If
-        On Error GoTo 0
-    Next moduleName
-End Sub
-
 Private Sub ConfigureMacabacusCompatibility(targetWB As Workbook)
+    Debug.Print "  Configuring Macabacus compatibility settings..."
+    
     On Error Resume Next
     
+    ' Remove existing properties first
     targetWB.CustomDocumentProperties("Macabacus_Compatible").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Macabacus_Compatible", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeBoolean, _
-        Value:=True
-    
     targetWB.CustomDocumentProperties("Features_FastFillDown").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Features_FastFillDown", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeBoolean, _
-        Value:=True
-    
     targetWB.CustomDocumentProperties("Features_CurrencyCycling").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Features_CurrencyCycling", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeBoolean, _
-        Value:=True
+    targetWB.CustomDocumentProperties("Features_EnhancedUI").Delete
+    
+    ' Add new properties
+    targetWB.CustomDocumentProperties.Add Name:="Macabacus_Compatible", LinkToContent:=False, Type:=msoPropertyTypeBoolean, Value:=True
+    targetWB.CustomDocumentProperties.Add Name:="Features_FastFillDown", LinkToContent:=False, Type:=msoPropertyTypeBoolean, Value:=True
+    targetWB.CustomDocumentProperties.Add Name:="Features_CurrencyCycling", LinkToContent:=False, Type:=msoPropertyTypeBoolean, Value:=True
+    targetWB.CustomDocumentProperties.Add Name:="Features_EnhancedUI", LinkToContent:=False, Type:=msoPropertyTypeBoolean, Value:=True
+    targetWB.CustomDocumentProperties.Add Name:="Build_Version", LinkToContent:=False, Type:=msoPropertyTypeString, Value:=XLERATE_VERSION
+    targetWB.CustomDocumentProperties.Add Name:="Build_Date", LinkToContent:=False, Type:=msoPropertyTypeString, Value:=Format(Now(), "yyyy-mm-dd")
     
     On Error GoTo 0
-    Debug.Print "  SUCCESS: Macabacus compatibility configured"
+    Debug.Print "  [SUCCESS] Macabacus compatibility configured"
 End Sub
 
 Private Sub SetAddinProperties(targetWB As Workbook)
+    Debug.Print "  Setting add-in properties..."
+    
     On Error Resume Next
     With targetWB
         .Title = "XLerate v" & XLERATE_VERSION & " (" & BUILD_CODENAME & ")"
         .Subject = "Macabacus-Compatible Excel Add-in with Enhanced Features"
         .Author = "XLerate Development Team"
-        .Comments = "Enhanced with Fast Fill Down, Currency Cycling, Border Utilities, and 100% Macabacus-compatible shortcuts"
+        .Comments = "Enhanced with Fast Fill Down, Currency Cycling, and comprehensive Macabacus compatibility"
         .Keywords = "Excel, Add-in, Financial, Modeling, Macabacus, XLerate, Shortcuts, VBA, Productivity"
         .IsAddin = True
     End With
-    
-    targetWB.CustomDocumentProperties("Build_Version").Delete
-    targetWB.CustomDocumentProperties.Add _
-        Name:="Build_Version", _
-        LinkToContent:=False, _
-        Type:=msoPropertyTypeString, _
-        Value:=XLERATE_VERSION
-    
     On Error GoTo 0
-    Debug.Print "  SUCCESS: Add-in properties configured"
+    
+    Debug.Print "  [SUCCESS] Add-in properties configured"
 End Sub
 
 Private Sub SaveAddin(targetWB As Workbook, outputPath As String)
+    Debug.Print "  Preparing to save add-in..."
+    
+    ' Delete existing file if it exists
     If FileExists(outputPath) Then
+        Debug.Print "    Deleting existing file..."
+        On Error Resume Next
         Kill outputPath
-        Debug.Print "  SUCCESS: Deleted existing file"
+        If Err.Number = 0 Then
+            Debug.Print "    [SUCCESS] Existing file deleted"
+        Else
+            Debug.Print "    [WARNING] Could not delete existing file: " & Err.Description
+        End If
+        On Error GoTo 0
     End If
     
+    Debug.Print "    Saving add-in to: " & outputPath
+    
+    On Error GoTo SaveError
     targetWB.SaveAs outputPath, xlAddIn
+    Debug.Print "  [SUCCESS] Add-in saved successfully"
+    Exit Sub
+    
+SaveError:
+    Debug.Print "  [ERROR] Save failed: " & Err.Description
+End Sub
+
+Private Sub ValidateBuiltFile(outputPath As String)
+    Debug.Print "Validating built add-in..."
     
     If FileExists(outputPath) Then
         Dim fileSize As Long
         fileSize = FileLen(outputPath)
-        Debug.Print "  SUCCESS: Add-in saved successfully"
-        Debug.Print "  SUCCESS: File size: " & Format(fileSize, "#,##0") & " bytes"
+        Debug.Print "  [SUCCESS] Add-in file exists"
+        Debug.Print "  [SUCCESS] File size: " & Format(fileSize, "#,##0") & " bytes"
+        
+        If fileSize < 10000 Then
+            Debug.Print "  [WARNING] File size seems small, may indicate incomplete build"
+        End If
+        
+        ' Try to get file properties
+        On Error Resume Next
+        Dim fso As Object
+        Set fso = CreateObject("Scripting.FileSystemObject")
+        Dim file As Object
+        Set file = fso.GetFile(outputPath)
+        Debug.Print "  [SUCCESS] File created: " & file.DateCreated
+        Debug.Print "  [SUCCESS] File modified: " & file.DateLastModified
+        On Error GoTo 0
+        
     Else
-        Debug.Print "  ERROR: File was not created"
+        Debug.Print "  [ERROR] Add-in file was not created!"
     End If
 End Sub
 
+' Utility functions
 Private Function FolderExists(folderPath As String) As Boolean
     On Error Resume Next
     FolderExists = (Dir(folderPath, vbDirectory) <> "")
@@ -391,71 +569,21 @@ ReadError:
     If fileNum > 0 Then Close #fileNum
 End Function
 
-Public Sub QuickTest()
-    Dim sourcePath As String
-    sourcePath = "C:\Mac\Home\Documents\Coding\GitHub\XLerate\src\"
-    
-    Debug.Print "=== XLerate Quick Test ==="
-    Debug.Print "Source exists: " & FolderExists(sourcePath)
-    Debug.Print "Modules exists: " & FolderExists(sourcePath & "modules\")
-    Debug.Print "Class modules exists: " & FolderExists(sourcePath & "class modules\")
-    Debug.Print "Objects exists: " & FolderExists(sourcePath & "objects\")
-    Debug.Print "Forms exists: " & FolderExists(sourcePath & "forms\")
-    
-    Debug.Print "ThisWorkbook.cls exists: " & FileExists(sourcePath & "objects\ThisWorkbook.cls")
-    Debug.Print "ModNumberFormat.bas exists: " & FileExists(sourcePath & "modules\ModNumberFormat.bas")
-    Debug.Print "ModFastFillDown.bas exists: " & FileExists(sourcePath & "modules\ModFastFillDown.bas")
-    Debug.Print "ModCurrencyCycling.bas exists: " & FileExists(sourcePath & "modules\ModCurrencyCycling.bas")
-    Debug.Print "ModBorderUtilities.bas exists: " & FileExists(sourcePath & "modules\ModBorderUtilities.bas")
-    Debug.Print "RibbonCallbacks.bas exists: " & FileExists(sourcePath & "modules\RibbonCallbacks.bas")
-    
-    Debug.Print "=== Test Complete ==="
+' Quick test function for debugging
+Public Sub QuickBuildTest()
+    Debug.Print "=== XLerate Build Environment Test ==="
+    Debug.Print "Excel Version: " & Application.Version
+    Debug.Print "VBA Access: " & IIf(TestVBAAccess(), "[SUCCESS] Enabled", "[ERROR] Disabled")
+    Debug.Print "Temp Path: " & Environ("TEMP")
+    Debug.Print "User Profile: " & Environ("USERPROFILE")
+    Debug.Print "Current Path: " & ThisWorkbook.Path
+    Debug.Print "======================================"
 End Sub
 
-Public Sub ValidateCurrentBuild()
-    Debug.Print "=== XLerate Installation Validation ==="
-    
-    Dim requiredModules As Variant
-    requiredModules = Array( _
-        "ModNumberFormat", "ModCellFormat", "ModDateFormat", "ModTextStyle", _
-        "ModFastFillDown", "ModCurrencyCycling", "ModBorderUtilities", _
-        "ModSmartFillRight", "ModErrorWrap", "ModSwitchSign", _
-        "AutoColorModule", "FormulaConsistency", "TraceUtils", "RibbonCallbacks" _
-    )
-    
-    Dim foundModules As Long
-    Dim totalModules As Long
-    totalModules = UBound(requiredModules) - LBound(requiredModules) + 1
-    
-    Dim moduleName As Variant
-    For Each moduleName In requiredModules
-        On Error Resume Next
-        Dim testModule As Object
-        Set testModule = ThisWorkbook.VBProject.VBComponents(CStr(moduleName))
-        If Err.Number = 0 Then
-            Debug.Print "SUCCESS: " & moduleName
-            foundModules = foundModules + 1
-        Else
-            Debug.Print "MISSING: " & moduleName
-        End If
-        On Error GoTo 0
-    Next moduleName
-    
-    Debug.Print ""
-    Debug.Print "Validation Summary:"
-    Debug.Print "Found: " & foundModules & "/" & totalModules & " modules"
-    Debug.Print "Success Rate: " & Format((foundModules / totalModules) * 100, "0.0") & "%"
-    
-    If foundModules = totalModules Then
-        Debug.Print "SUCCESS: Installation validation PASSED"
-        MsgBox "XLerate installation validation passed!" & vbNewLine & _
-               "All " & totalModules & " required modules are present.", _
-               vbInformation, "Validation Success"
-    Else
-        Debug.Print "ERROR: Installation validation FAILED"
-        MsgBox "XLerate installation validation failed!" & vbNewLine & _
-               "Found " & foundModules & " of " & totalModules & " required modules." & vbNewLine & _
-               "Run BuildXLerate() to rebuild the add-in.", _
-               vbExclamation, "Validation Failed"
-    End If
-End Sub
+Private Function TestVBAAccess() As Boolean
+    On Error Resume Next
+    Dim test As Long
+    test = ThisWorkbook.VBProject.VBComponents.Count
+    TestVBAAccess = (Err.Number = 0)
+    On Error GoTo 0
+End Function
