@@ -1,10 +1,15 @@
 ' =========================================================================
 ' File: src/modules/BuildXLerate.bas
-' Version: 2.1.1
+' Version: 2.1.2
 ' Date: July 2025
 ' Description: Fixed BuildXLerate with file selection and no Unicode issues
 '
 ' CHANGELOG:
+' v2.1.2 - Fixed ByRef argument type mismatch errors
+'        - Replaced FileDialog with GetSaveAsFilename for compatibility
+'        - Fixed dialog issues with msoFileDialog constants
+'        - Added InputBox fallback for folder selection
+'        - Enhanced error handling for dialog failures
 ' v2.1.1 - Fixed Unicode characters causing display issues
 '        - Added file selection dialog for output location
 '        - Enhanced debugging and error logging
@@ -16,7 +21,7 @@
 Attribute VB_Name = "BuildXLerate"
 Option Explicit
 
-Private Const XLERATE_VERSION As String = "2.1.1"
+Private Const XLERATE_VERSION As String = "2.1.2"
 Private Const BUILD_CODENAME As String = "Macabacus Professional"
 
 Public Sub BuildXLerate()
@@ -169,10 +174,10 @@ Private Function GetSourcePath() As String
     
     Dim i As Long
     For i = 0 To UBound(possiblePaths)
-        Debug.Print "  Checking: " & possiblePaths(i)
+        Debug.Print "  Checking: " & CStr(possiblePaths(i))
         If FolderExists(CStr(possiblePaths(i))) Then
-            Debug.Print "  [SUCCESS] Found: " & possiblePaths(i)
-            GetSourcePath = possiblePaths(i)
+            Debug.Print "  [SUCCESS] Found: " & CStr(possiblePaths(i))
+            GetSourcePath = CStr(possiblePaths(i))
             Exit Function
         End If
     Next i
@@ -180,48 +185,58 @@ Private Function GetSourcePath() As String
     ' If no automatic path found, ask user
     Debug.Print "  Auto-detection failed, prompting user..."
     
-    Dim folderPicker As Object
-    Set folderPicker = Application.FileDialog(msoFileDialogFolderPicker)
-    
-    With folderPicker
-        .Title = "Select XLerate Source Folder (containing modules, objects, etc.)"
-        .InitialFileName = ThisWorkbook.Path
-        If .Show = -1 Then
-            GetSourcePath = .SelectedItems(1) & "\"
-            Debug.Print "  [SUCCESS] User selected: " & GetSourcePath
-        Else
-            Debug.Print "  [CANCELLED] User cancelled folder selection"
-            GetSourcePath = ""
-        End If
-    End With
+    ' Use simple InputBox as fallback for folder selection
+    Dim userPath As String
+    userPath = InputBox("Source folder not found automatically." & vbNewLine & vbNewLine & _
+                       "Please enter the path to your XLerate source folder:" & vbNewLine & _
+                       "(Should contain 'modules' and 'objects' subfolders)", _
+                       "XLerate Source Path", ThisWorkbook.Path)
+
+    If userPath <> "" Then
+        If Right(userPath, 1) <> "\" Then userPath = userPath & "\"
+        GetSourcePath = userPath
+        Debug.Print "  [SUCCESS] User entered: " & GetSourcePath
+    Else
+        Debug.Print "  [CANCELLED] User cancelled"
+        GetSourcePath = ""
+    End If
 End Function
 
 Private Function GetOutputPath() As String
-    ' Show file save dialog for output location
+    ' Show file save dialog for output location - FIXED VERSION
     Debug.Print "Prompting user for output location..."
     
-    Dim saveDialog As Object
-    Set saveDialog = Application.FileDialog(msoFileDialogSaveAs)
+    On Error GoTo DialogError
     
     Dim defaultFileName As String
     defaultFileName = "XLerate_v" & Replace(XLERATE_VERSION, ".", "_") & "_" & Replace(BUILD_CODENAME, " ", "_") & ".xlam"
     
-    With saveDialog
-        .Title = "Save XLerate Add-in As"
-        .InitialFileName = Environ("USERPROFILE") & "\Desktop\" & defaultFileName
-        .FilterIndex = 1
-        .Filters.Clear
-        .Filters.Add "Excel Add-ins", "*.xlam"
-        .Filters.Add "All Files", "*.*"
-        
-        If .Show = -1 Then
-            GetOutputPath = .SelectedItems(1)
-            Debug.Print "  [SUCCESS] User selected: " & GetOutputPath
-        Else
-            Debug.Print "  [CANCELLED] User cancelled file save"
-            GetOutputPath = ""
-        End If
-    End With
+    Dim defaultPath As String
+    defaultPath = Environ("USERPROFILE") & "\Desktop\" & defaultFileName
+    
+    ' Use Application.GetSaveAsFilename instead of FileDialog
+    Dim selectedPath As Variant
+    selectedPath = Application.GetSaveAsFilename( _
+        InitialFileName:=defaultPath, _
+        FileFilter:="Excel Add-ins (*.xlam), *.xlam, All Files (*.*), *.*", _
+        Title:="Save XLerate Add-in As" _
+    )
+    
+    If selectedPath <> False Then
+        GetOutputPath = CStr(selectedPath)
+        Debug.Print "  [SUCCESS] User selected: " & GetOutputPath
+    Else
+        Debug.Print "  [CANCELLED] User cancelled file save"
+        GetOutputPath = ""
+    End If
+    
+    Exit Function
+    
+DialogError:
+    Debug.Print "  [ERROR] Dialog error: " & Err.Description
+    ' Fallback to default location
+    GetOutputPath = Environ("USERPROFILE") & "\Desktop\" & defaultFileName
+    Debug.Print "  [FALLBACK] Using default: " & GetOutputPath
 End Function
 
 Private Function ValidateEnvironment() As Boolean

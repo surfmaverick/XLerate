@@ -10,12 +10,12 @@ Attribute VB_Exposed = False
 ' clsDynamicButtonHandler
 Option Explicit
 
-Public WithEvents DynamicButton As MSForms.CommandButton
+Public WithEvents DynamicButton As Object
 Attribute DynamicButton.VB_VarHelpID = -1
 Private ButtonRole As String
 Private ParentForm As Object
 
-Public Sub Initialize(ByRef Button As MSForms.CommandButton, ByVal Role As String, ByRef Parent As Object)
+Public Sub Initialize(ByRef Button As Object, ByVal Role As String)
     Debug.Print "Initializing button handler for role: " & Role
     Set DynamicButton = Button
     ButtonRole = Role
